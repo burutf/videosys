@@ -64,8 +64,16 @@ export default {
             file,
             this.fhopiton()
           );
-          //执行这个函数可以给文件列表后面打钩
-          filec.onSuccess();
+          //上传成功后的操作
+          if (uploadreturn.res.status===200){
+            //执行这个函数可以给文件列表后面打钩
+            filec.onSuccess();
+            //借口返回数据后，代表完全成功，进度置为100%
+            this.fileList.forEach(e=>{
+              if (e.uid=== file.uid) e.percentage=100
+            })
+          }
+          
         } catch (error) {
           //文件传输错误捕获
         }

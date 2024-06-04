@@ -12,7 +12,6 @@ export const upload = async (FileName, fileobj, options) => {
     const clientOSS = await configOss()
     //开始上传
     const putdata = await clientOSS.multipartUpload(FileName, fileobj, { ...options })
-    clientOSS.cancel();
 
     return putdata
 }
