@@ -66,9 +66,15 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.aside{
+    width: 200px;
+}
 .el-menu-vertical-demo:not(.el-menu--collapse) {
     width: 200px;
-    height: 100vh;
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
 }
 
 .buttonupload {

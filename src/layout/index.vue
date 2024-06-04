@@ -39,32 +39,17 @@ export default {
 }
 
 .el-aside {
-    background-color: #D3DCE6;
-    color: #333;
     text-align: center;
+    
 }
 
-.el-main {
-    background-color: #E9EEF3;
-    color: #333;
-    text-align: center;
-    line-height: 160px;
-}
 
 body>.el-container {
     margin-bottom: 40px;
 }
 
-.el-container:nth-child(5) .el-aside,
-.el-container:nth-child(6) .el-aside {
-    line-height: 260px;
-}
-
-.el-container:nth-child(7) .el-aside {
-    line-height: 320px;
-}
-
 .home{
-    height: 500px;
+    // min-height: 500px;
+    min-width: 900px;
 }
 </style>

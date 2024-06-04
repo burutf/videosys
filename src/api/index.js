@@ -7,20 +7,6 @@ export const stsOSS = () => {
     return http.get('/sts')
 }
 
-
-// //分片上传时获取id
-// export const inituploadid = async (FileName)=>{
-//     const clientOSS = await configOss()
-//     const res = await clientOSS.initMultipartUpload(FileName)
-//     return res
-// }
-// //开始分片，进行上传
-// export const partupload = async (name, uploadId, partNo, file, start, end)=>{
-//     const clientOSS = await configOss()
-//     const partResult = await clientOSS.uploadPart(name, uploadId, partNo, file, start, end);
-//     return partResult
-// }
-
 //上传文件（分片上传）
 export const upload = async (FileName, fileobj, options) => {
     const clientOSS = await configOss()
@@ -38,7 +24,8 @@ export const delupload = async (FileName) => {
 }
 
 //取消上传
-export const cancelupload = async ()=>{
+export const abortMultipartUpload = async (name, uploadId)=>{
     const clientOSS = await configOss()
-    clientOSS.cancel();
+    const result  = await clientOSS.abortMultipartUpload(name, uploadId)
+    return result
 }

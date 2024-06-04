@@ -1,36 +1,54 @@
 <template>
   <div>
-    <el-upload
-      class="upload-demo"
-      action=""
-      ref="upload"
-      multiple
-      :limit="50"
-      :file-list="fileList"
-      :http-request="handleUploadFile"
-      :before-upload="beforeUpload"
-      :before-remove="beforeremove"
-      :on-change="onchange"
-    >
-      <el-button size="small" type="primary">上传文件</el-button>
-    </el-upload>
+    <div class="listdiv">
+      <el-upload
+        class="upload-demo"
+        action=""
+        ref="upload"
+        multiple
+        :limit="50"
+        :file-list="fileList"
+        :http-request="handleUploadFile"
+        :before-upload="beforeUpload"
+        :before-remove="beforeremove"
+        :on-change="onchange"
+        :show-file-list="false"
+      >
+        <i class="el-icon-plus avatar-uploader-icon"></i>
+        <span class="djsc">点击上传</span>
+      </el-upload>
+      <!-- 文件列表 -->
+      <ul class="ullist">
+        <li v-for="(item, i) in fileList" :key="i">
+          <span>{{ item.name }}</span>
+          <!-- 显示当前的上传成没成功 -->
+          <i
+            v-if="item.status === 'success'"
+            class="el-icon-success status"
+          ></i>
+          <el-progress :percentage="item.percentage"></el-progress>
+
+          <i @click="delflielist(item)" class="el-icon-close del"></i>
+        </li>
+      </ul>
+    </div>
     {{ fileList }}
-    {{ filefpid }}
   </div>
 </template>
 
 <script>
-
 export default {
   name: "UploadFile",
   data() {
     return {
       dada: {},
       fileList: [],
-      userid:10001,
-      uploadTemUrl:"temporary/",
-      //每个分片上传文件的id
-      filefpid:[]
+      userid: 10001,
+      uploadTemUrl: "temporary/",
+      //对象数组，{uid：00000,uploadId:000021awdaw} 方便后面做
+      filefpid: [],
+      //校验失败的文件们
+      errfile: [],
     };
   },
   methods: {
@@ -38,116 +56,263 @@ export default {
     handleUploadFile(filec) {
       //等下DOM再执行获取文件列表
       this.$nextTick(async () => {
-        const {name} = filec.file
-        const {file} = filec
-        const uploadreturn = await this.$API.upload(`${this.temlurl}${name}`,file,this.fhopiton());
-        
-
-
-        // //获取每个文件分片上传时的ID
-        // const resid = await this.$API.inituploadid(`${this.temlurl}${name}`)
-        // //名字
-        // const namefp = resid.name
-        // //id
-        // const uploadId = resid.uploadId
-        // this.filefpid.push({
-        //   [namefp]:uploadId
-        // })
-        // console.log(uploadId);
-        // //开始分片进行上传，中途可停止
-        // const partupload = await this.$API.partupload(1,uploadId)
-        // console.log(partupload);
-
-
-
-
-        //执行这个函数可以给文件列表后面打钩
-        filec.onSuccess()
+        const { name } = filec.file;
+        const { file } = filec;
+        try {
+          const uploadreturn = await this.$API.upload(
+            `${this.temlurl}${name}`,
+            file,
+            this.fhopiton()
+          );
+          //执行这个函数可以给文件列表后面打钩
+          filec.onSuccess();
+        } catch (error) {
+          //文件传输错误捕获
+        }
       });
     },
     //上传之前做校验
     beforeUpload(file) {
+      //找当前文件是不是已经校验不通过了
+      const ischckout = this.errfile.some((e) => {
+        return e.file.uid === file.uid;
+      });
+      //确实校验不通过过，就return出去，不必重复执行
+      if (ischckout) return true;
+      console.log("我进行上传前校验了");
       //拿到文件的类型和大小
-      const {type,size} = file;
-      const istype = type === "video/mp4"
-      const issize = size/1024/1024 < 1024*4   //乘号后面单位GB，当前是最大不超过4GB
+      const { type, size } = file;
+      const istype = type === "video/mp4";
+      const issize = size / 1024 / 1024 < 1024 * 4; //乘号后面单位GB，当前是最大不超过4GB
       if (!istype) {
-        this.$message.error('目前只支持MP4格式，请重新上传');
+        this.$message.error("目前只支持MP4格式，请重新上传");
       }
       if (!issize) {
-        this.$message.error('最大文件不能超过4GB，请重新上传');
+        this.$message.error("最大文件不能超过4GB，请重新上传");
       }
-      return istype&&issize
+      //如果有一条规则没有通过就加到校验失败数组中
+      if (!istype && !issize) {
+        this.errfile.push({
+          file,
+        });
+      }
+      return istype && issize;
     },
     //删除文件时也要更新列表
     async beforeremove(file, fileList) {
-      
-      const {name} = file
-      //删除OSS里的文件
-      const delfileres = await this.$API.delupload(`${this.temlurl}${name}`)
-      if (delfileres.res.status===204) {
-        this.$nextTick(() => {
-          this.fileList = fileList
-        })
+      console.log("检测到了删除文件");
+      //是否删除
+      let isdel = true
+      //拿到名字取删除已经上传的OSS文件，拿到uid去获取指定的分片id中断上传
+      const { name, uid } = file;
+      //判断当前的文件状态，如果是成功就去删除，还在上传就中断
+      if (file.status === "success") {
+        
+        //进行消息提示是否删除
+        await this.$confirm('此文件已上传成功，确定删除吗？','提示',{
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          isdel = true
+        }).catch(() => {
+          isdel = false
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          });          
+        });
+
+        //删除OSS里的文件
+        if (isdel) {
+          const delfileres = await this.$API.delupload(`${this.temlurl}${name}`);
+          if (delfileres.res.status === 204) {
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            });
+          }
+        }
+        
+      } else if (file.status === "ready") {
+        try {
+          //如果是没有校验通过的文件就直接return出去，不执行下面
+          //文件进行校验需要把文件的raw传过去，里面有文件类型
+          if (!this.beforeUpload(file.raw)) return;
+          //先find到哪个下标下的对象是保存当前上传的uploadId，获取他
+          const obj = this.filefpid.find((e, i) => {
+            return e.uid === uid;
+          });
+          const uploadId = obj.uploadId;
+          //中断分片上传
+          const reqzd = await this.$API.abortMultipartUpload(
+            `${this.temlurl}${name}`,
+            uploadId
+          );
+          if (reqzd.res.status === 204) {
+            this.$message({
+              showClose: true,
+              message: `已经中断${name}文件上传`,
+              type: "warning",
+            });
+          }
+        } catch (error) {
+          console.log(error);
+        }
       }
+      if (!isdel) return
+      this.fileList = this.fileList.filter((e) => {
+        return e.uid !== file.uid;
+      });
     },
     //文件列表发生更改时，更新fileList数组
     onchange(file, fileList) {
       this.$nextTick(() => {
-        this.fileList = fileList
-      })
+        this.fileList = fileList;
+      });
     },
-    submitUpload() {
-      this.$refs.upload.submit();
+    //删除文件
+    delflielist(file) {
+      this.beforeremove(file, this.fileList);
     },
     //分片上时的配置项
-    fhopiton(){
+    fhopiton() {
       const options = {
         // 获取分片上传进度、断点和返回值。
         progress: (p, cpt, res) => {
           //最后一个分片不执行
-          if (p!==1){
-            //下面这一段是，获取名字和分片初始化时的id，再添加到一个数据里面，方便后面中断操作，数组有做去重处理
-            const {name,uploadId} = cpt
-            const isexist = Boolean(this.filefpid.find((item,i)=>{
-              return item.name === name
-            }))
+          if (p !== 1) {
+            //下面这一段是，获取文件id和分片初始化时的id，再添加到一个数据里面，方便后面中断操作，数组有做去重处理
+            const { file, uploadId } = cpt;
+            //这里是做数组去重，重复的就不添加了
+            const isexist = Boolean(
+              this.filefpid.find((item, i) => {
+                return item.uid === file.uid;
+              })
+            );
             if (!isexist) {
-              this.filefpid.push({name:name,uploadId:uploadId})
+              this.filefpid.push({ uid: file.uid, uploadId: uploadId });
             }
+            //filelist加进度条
+            this.addjindu(cpt.file, p);
           }
         },
         // 设置并发上传的分片数量。
         // parallel: 4,
         // 设置分片大小。默认值为1 MB，最小值为100 KB。
         // partSize: 1024 * 1024,
-      }
-      return options
-    }
+      };
+      return options;
+    },
+    //给filelist加进度条
+    addjindu(file, p) {
+      this.fileList.forEach((e, i) => {
+        if (e.uid === file.uid) {
+          //进度条的具体实现
+          e.percentage = Math.floor(p * 100);
+        }
+      });
+    },
   },
-  computed:{
+  computed: {
     //拼接
-    temlurl(){
-      return `${this.userid}/${this.uploadTemUrl}`
-    }
-  }
+    temlurl() {
+      return `${this.userid}/${this.uploadTemUrl}`;
+    },
+  },
 };
 </script>
 
-<style lang="less">
+<style lang="less" scoped>
+.listdiv {
+  //这里记得删除
+  margin: 20px;
+  //
+
+  display: flex;
+  align-items: flex-start;
+  background-color: rgb(238, 238, 239);
+  border-radius: 7px;
+  padding: 10px;
+  min-width: 600px;
+}
 .upload-demo {
-    display: flex;
-    align-items: center;
-    height: 150px;
-    border: 1px solid black;
-    margin: 10px;
-    .el-upload{
-      flex: 2;
+  position: relative;
+  border: 1px dashed #d9d9d9;
+  cursor: pointer;
+  border-radius: 10px;
+  overflow: hidden;
+  background-color: white;
+  .avatar-uploader-icon {
+    font-size: 28px;
+    color: #8c939d;
+    width: 120px;
+    text-align: center;
+    height: 120px;
+    line-height: 100px;
+  }
+  .djsc {
+    color: #8c939d;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 30px;
+    //禁止换行
+    white-space: nowrap;
+  }
+}
+.upload-demo:hover {
+  border-color: #4afbc9;
+  background-color: #40ff9624;
+}
+
+//这是文件列表的样式
+.ullist {
+  flex: 1;
+  display: flex;
+  flex-wrap: wrap;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: auto;
+  max-height: 245px;
+  li {
+    position: relative;
+    flex: 1;
+    margin: 5px;
+    border: 1px rgba(0, 0, 0, 0.099) solid;
+    min-width: 150px;
+    height: 110px;
+    background-color: white;
+    border-radius: 10px;
+    padding: 10px;
+
+    //文字超出以省略号显示
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    .status {
+      position: absolute;
+      bottom: 5px;
+      right: 5px;
+      font-size: 20px;
+      color: green;
     }
-    .el-upload-list{
-      overflow: auto;
-      height: 100%;
-      flex: 8;
+    .del {
+      display: none;
+      position: absolute;
+      bottom: 5px;
+      right: 5px;
+      font-size: 20px;
+      cursor: pointer;
     }
+  }
+  //显示隐藏效果
+  li:hover .status {
+    display: none;
+  }
+  li:hover .del {
+    display: block;
+  }
 }
 </style>

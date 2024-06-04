@@ -5,7 +5,12 @@
 </template>
 
 <style lang="less">
-  body{
+  html,body{
     margin: 0;
+    height: 100%;
+    width: 100%;
+  }
+  *{
+    box-sizing: border-box;
   }
 </style>
