@@ -6,13 +6,14 @@
         action=""
         ref="upload"
         multiple
-        :limit="50"
+        :limit="limit"
         :file-list="fileList"
         :http-request="handleUploadFile"
         :before-upload="beforeUpload"
         :before-remove="beforeremove"
         :on-change="onchange"
         :show-file-list="false"
+        :on-exceed="handleExceed"
       >
         <i class="el-icon-plus avatar-uploader-icon"></i>
         <span class="djsc">点击上传</span>
@@ -49,6 +50,8 @@ export default {
       filefpid: [],
       //校验失败的文件们
       errfile: [],
+      //最大上传数量
+      limit:2
     };
   },
   methods: {
@@ -79,14 +82,14 @@ export default {
         }
       });
     },
-    //上传之前做校验
+    //上传之前做校验(返回false就会不让文件进行上传)
     beforeUpload(file) {
       //找当前文件是不是已经校验不通过了
       const ischckout = this.errfile.some((e) => {
         return e.file.uid === file.uid;
       });
       //确实校验不通过过，就return出去，不必重复执行
-      if (ischckout) return true;
+      if (ischckout) return false;
       console.log("我进行上传前校验了");
       //拿到文件的类型和大小
       const { type, size } = file;
@@ -98,8 +101,8 @@ export default {
       if (!issize) {
         this.$message.error("最大文件不能超过4GB，请重新上传");
       }
-      //如果有一条规则没有通过就加到校验失败数组中
-      if (!istype && !issize) {
+      //如果有任何一条规则没有通过就加到校验失败数组中
+      if (!istype || !issize) {
         this.errfile.push({
           file,
         });
@@ -143,7 +146,6 @@ export default {
         }
         
       } else if (file.status === "ready") {
-        try {
           //如果是没有校验通过的文件就直接return出去，不执行下面
           //文件进行校验需要把文件的raw传过去，里面有文件类型
           if (!this.beforeUpload(file.raw)) return;
@@ -152,6 +154,7 @@ export default {
             return e.uid === uid;
           });
           const uploadId = obj.uploadId;
+        try {
           //中断分片上传
           const reqzd = await this.$API.abortMultipartUpload(
             `${this.temlurl}${name}`,
@@ -168,6 +171,7 @@ export default {
           console.log(error);
         }
       }
+      console.log('run');
       if (!isdel) return
       this.fileList = this.fileList.filter((e) => {
         return e.uid !== file.uid;
@@ -182,6 +186,10 @@ export default {
     //删除文件
     delflielist(file) {
       this.beforeremove(file, this.fileList);
+    },
+    //超过最大数量限制的钩子
+    handleExceed(files, fileList){
+      this.$message.warning(`当前限制选择 ${this.limit} 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
     },
     //分片上时的配置项
     fhopiton() {
