@@ -1,39 +1,34 @@
 <template>
-  <div>
-    <div class="listdiv">
-      <el-upload
-        class="upload-demo"
-        action=""
-        ref="upload"
-        multiple
-        :limit="limit"
-        :file-list="fileList"
-        :http-request="handleUploadFile"
-        :before-upload="beforeUpload"
-        :before-remove="beforeremove"
-        :on-change="onchange"
-        :show-file-list="false"
-        :on-exceed="handleExceed"
-      >
-        <i class="el-icon-plus avatar-uploader-icon"></i>
-        <span class="djsc">点击上传</span>
-      </el-upload>
-      <!-- 文件列表 -->
-      <ul class="ullist">
-        <li v-for="(item, i) in fileList" :key="i">
-          <span>{{ item.name }}</span>
-          <!-- 显示当前的上传成没成功 -->
-          <i
-            v-if="item.status === 'success'"
-            class="el-icon-success status"
-          ></i>
-          <el-progress :percentage="item.percentage"></el-progress>
-
-          <i @click="delflielist(item)" class="el-icon-close del"></i>
-        </li>
-      </ul>
-    </div>
-    {{ fileList }}
+  <div class="listdiv">
+    <el-upload
+      class="upload-demo"
+      action=""
+      ref="upload"
+      multiple
+      :limit="limit"
+      :file-list="fileList"
+      :http-request="handleUploadFile"
+      :before-upload="beforeUpload"
+      :before-remove="beforeremove"
+      :on-change="onchange"
+      :show-file-list="false"
+      :on-exceed="handleExceed"
+      :on-success="upsuccess"
+    >
+      <i class="el-icon-plus avatar-uploader-icon"></i>
+      <span class="djsc">点击上传</span>
+    </el-upload>
+    <!-- 文件列表 -->
+    <ul class="ullist">
+      <li v-for="(item, i) in fileList" :key="i">
+        <span>{{ item.name }}</span>
+        <!-- 显示当前的上传成没成功 -->
+        <i v-if="item.status === 'success'" class="el-icon-success status"></i>
+        <el-progress :percentage="item.percentage"></el-progress>
+        <span class="serial">({{ item.serial }})</span>
+        <i @click="delflielist(item)" class="el-icon-close del"></i>
+      </li>
+    </ul>
   </div>
 </template>
 
@@ -45,18 +40,35 @@ export default {
       dada: {},
       fileList: [],
       userid: 10001,
-      uploadTemUrl: "temporary/",
+      uploadTemUrl: "temporary",
       //对象数组，{uid：00000,uploadId:000021awdaw} 方便后面做
       filefpid: [],
       //校验失败的文件们
       errfile: [],
       //最大上传数量
-      limit:2
+      limit: 30,
+      //给视频一个顺序编号
+      serial: 1,
     };
   },
   methods: {
+    //成功上传后的处理
+    upsuccess(response, file, fileList) {
+      console.log(response);
+      this.fileList.forEach((e, i) => {
+        if (e.uid === file.uid) {
+          //借口返回数据后，代表完全成功，进度置为100%
+          e.percentage = 100;
+          //添加视频编号
+          this.$set(this.fileList[i], "serial", this.serial++);
+          //重新排列编号
+          this.serialreload();
+        }
+      });
+    },
     //自定义上传
     handleUploadFile(filec) {
+      console.log("我开始上传了");
       //等下DOM再执行获取文件列表
       this.$nextTick(async () => {
         const { name } = filec.file;
@@ -68,17 +80,13 @@ export default {
             this.fhopiton()
           );
           //上传成功后的操作
-          if (uploadreturn.res.status===200){
+          if (uploadreturn.res.status === 200) {
             //执行这个函数可以给文件列表后面打钩
-            filec.onSuccess();
-            //借口返回数据后，代表完全成功，进度置为100%
-            this.fileList.forEach(e=>{
-              if (e.uid=== file.uid) e.percentage=100
-            })
+            filec.onSuccess(uploadreturn);
           }
-          
         } catch (error) {
-          //文件传输错误捕获
+          //文件传输错误
+          console.log('文件上传时出错'+error);
         }
       });
     },
@@ -97,8 +105,7 @@ export default {
       const issize = size / 1024 / 1024 < 1024 * 4; //乘号后面单位GB，当前是最大不超过4GB
       if (!istype) {
         this.$message.error("目前只支持MP4格式，请重新上传");
-      }
-      if (!issize) {
+      } else if (!issize) {
         this.$message.error("最大文件不能超过4GB，请重新上传");
       }
       //如果有任何一条规则没有通过就加到校验失败数组中
@@ -113,47 +120,50 @@ export default {
     async beforeremove(file, fileList) {
       console.log("检测到了删除文件");
       //是否删除
-      let isdel = true
+      let isdel = true;
       //拿到名字取删除已经上传的OSS文件，拿到uid去获取指定的分片id中断上传
       const { name, uid } = file;
       //判断当前的文件状态，如果是成功就去删除，还在上传就中断
       if (file.status === "success") {
-        
         //进行消息提示是否删除
-        await this.$confirm('此文件已上传成功，确定删除吗？','提示',{
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          isdel = true
-        }).catch(() => {
-          isdel = false
-          this.$message({
-            type: 'info',
-            message: '已取消删除'
-          });          
-        });
+        await this.$confirm("此文件已上传成功，确定删除吗？", "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning",
+        })
+          .then(() => {
+            isdel = true;
+          })
+          .catch(() => {
+            isdel = false;
+            this.$message({
+              type: "info",
+              message: "已取消删除",
+            });
+          });
 
         //删除OSS里的文件
         if (isdel) {
-          const delfileres = await this.$API.delupload(`${this.temlurl}${name}`);
+          const delfileres = await this.$API.delupload(
+            `${this.temlurl}${name}`
+          );
           if (delfileres.res.status === 204) {
             this.$message({
-              type: 'success',
-              message: '删除成功!'
+              type: "success",
+              message: "删除成功!",
             });
           }
         }
-        
       } else if (file.status === "ready") {
-          //如果是没有校验通过的文件就直接return出去，不执行下面
-          //文件进行校验需要把文件的raw传过去，里面有文件类型
-          if (!this.beforeUpload(file.raw)) return;
-          //先find到哪个下标下的对象是保存当前上传的uploadId，获取他
-          const obj = this.filefpid.find((e, i) => {
-            return e.uid === uid;
-          });
-          const uploadId = obj.uploadId;
+        //如果是没有校验通过的文件就直接return出去，不执行下面
+        //文件进行校验需要把文件的raw传过去，里面有文件类型
+        if (!this.beforeUpload(file.raw)) return;
+        console.log("我将要中断分片上传");
+        //先find到哪个下标下的对象是保存当前上传的uploadId，获取他
+        const obj = this.filefpid.find((e, i) => {
+          return e.uid === uid;
+        });
+        const uploadId = obj.uploadId;
         try {
           //中断分片上传
           const reqzd = await this.$API.abortMultipartUpload(
@@ -166,16 +176,20 @@ export default {
               message: `已经中断${name}文件上传`,
               type: "warning",
             });
+            console.log("中断成功了");
           }
         } catch (error) {
           console.log(error);
         }
       }
-      console.log('run');
-      if (!isdel) return
-      this.fileList = this.fileList.filter((e) => {
-        return e.uid !== file.uid;
-      });
+      if (!isdel) return;
+      //更新列表
+      this.fileList.splice(this.fileList.indexOf(file), 1);
+      // this.fileList = this.fileList.filter((e) => {
+      //   return e.uid !== file.uid;
+      // });
+      //重新排列编号
+      this.serialreload();
     },
     //文件列表发生更改时，更新fileList数组
     onchange(file, fileList) {
@@ -188,8 +202,24 @@ export default {
       this.beforeremove(file, this.fileList);
     },
     //超过最大数量限制的钩子
-    handleExceed(files, fileList){
-      this.$message.warning(`当前限制选择 ${this.limit} 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
+    handleExceed(files, fileList) {
+      this.$message.warning(
+        `当前限制选择 ${this.limit} 个文件，本次选择了 ${
+          files.length
+        } 个文件，共选择了 ${files.length + fileList.length} 个文件`
+      );
+    },
+    //重新排列编号
+    serialreload() {
+      this.fileList.forEach((e, i) => {
+        if (i !== 0) {
+          if (e.serial - 1 !== this.fileList[i - 1].serial) {
+            e.serial = this.fileList[i - 1].serial + 1;
+          }
+        } else {
+          this.fileList[0].serial = 1;
+        }
+      });
     },
     //分片上时的配置项
     fhopiton() {
@@ -233,7 +263,7 @@ export default {
   computed: {
     //拼接
     temlurl() {
-      return `${this.userid}/${this.uploadTemUrl}`;
+      return `${this.uploadTemUrl}/${this.userid}/`;
     },
   },
 };
@@ -241,10 +271,6 @@ export default {
 
 <style lang="less" scoped>
 .listdiv {
-  //这里记得删除
-  margin: 20px;
-  //
-
   display: flex;
   align-items: flex-start;
   background-color: rgb(238, 238, 239);
@@ -321,6 +347,13 @@ export default {
       right: 5px;
       font-size: 20px;
       cursor: pointer;
+    }
+    .serial {
+      position: absolute;
+      bottom: 8px;
+      left: 8px;
+      font-size: 15px;
+      color: green;
     }
   }
   //显示隐藏效果

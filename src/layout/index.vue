@@ -2,7 +2,7 @@
     <div class="home">
         <el-container>
             <!-- 侧边栏 -->
-            <el-aside width="auto">
+            <el-aside width="200px">
                 <Aside></Aside>
             </el-aside>
             <el-container>
@@ -11,7 +11,9 @@
                     <Header></Header>
                 </el-header>
                 <!-- 主体 -->
-                <router-view></router-view>
+                <div style="padding: 20px;">
+                    <router-view></router-view>
+                </div>
             </el-container>
         </el-container>
     </div>
@@ -32,21 +34,14 @@ export default {
 
 <style lang="less" scoped>
 .el-header {
-    background-color: #B3C0D1;
-    color: #333;
-    text-align: center;
-    line-height: 60px;
+    z-index: 10;
+    padding: 0;
 }
 
 .el-aside {
-    text-align: center;
-    
+    z-index: 11;
 }
 
-
-body>.el-container {
-    margin-bottom: 40px;
-}
 
 .home{
     // min-height: 500px;

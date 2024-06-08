@@ -9,6 +9,7 @@
     margin: 0;
     height: 100%;
     width: 100%;
+    background-color: rgb(250,250,250);
   }
   *{
     box-sizing: border-box;
