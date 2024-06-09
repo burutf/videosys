@@ -54,7 +54,6 @@ export default {
   methods: {
     //成功上传后的处理
     upsuccess(response, file, fileList) {
-      console.log(response);
       this.fileList.forEach((e, i) => {
         if (e.uid === file.uid) {
           //借口返回数据后，代表完全成功，进度置为100%
@@ -74,7 +73,7 @@ export default {
         const { name } = filec.file;
         const { file } = filec;
         try {
-          const uploadreturn = await this.$API.upload(
+          const uploadreturn = await this.$API.uploadapi.upload(
             `${this.temlurl}${name}`,
             file,
             this.fhopiton()
@@ -144,7 +143,7 @@ export default {
 
         //删除OSS里的文件
         if (isdel) {
-          const delfileres = await this.$API.delupload(
+          const delfileres = await this.$API.uploadapi.delupload(
             `${this.temlurl}${name}`
           );
           if (delfileres.res.status === 204) {
@@ -166,7 +165,7 @@ export default {
         const uploadId = obj.uploadId;
         try {
           //中断分片上传
-          const reqzd = await this.$API.abortMultipartUpload(
+          const reqzd = await this.$API.uploadapi.abortMultipartUpload(
             `${this.temlurl}${name}`,
             uploadId
           );

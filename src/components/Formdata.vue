@@ -1,10 +1,16 @@
 <template>
   <div>
-    <el-form ref="form" :rules="rules" :model="form" label-width="100px" label-position="left">
-      <el-form-item label="封面">
+    <el-form
+      ref="form"
+      :rules="rules"
+      :model="form"
+      label-width="100px"
+      label-position="left"
+    >
+      <el-form-item label="封面" prop="covername">
         <div class="cover">
           <!-- 这里是封面上传组件 -->
-          <UploadCover></UploadCover>
+          <UploadCover @covername="elcovername"></UploadCover>
           <!-- 这里比较空，不知道写什么 -->
           <!-- <div class="messages">
             <p>视频格式：mp4</p>
@@ -17,29 +23,43 @@
       </el-form-item>
 
       <el-form-item label="标题" prop="name">
-        <el-input v-model="form.name" placeholder="请输入标题" maxlength="50" show-word-limit></el-input>
+        <el-input
+          v-model="form.name"
+          placeholder="请输入标题"
+          maxlength="50"
+          show-word-limit
+          @blur="trim(form.name,'name')"
+          clearable
+        ></el-input>
       </el-form-item>
 
-      <el-form-item label="描述">
-        <el-input :autosize="{ minRows: 2, maxRows: 4}" type="textarea" v-model="form.desc" maxlength="500" show-word-limit></el-input>
+      <el-form-item label="简介">
+        <el-input
+          :autosize="{ minRows: 2, maxRows: 4 }"
+          type="textarea"
+          v-model="form.desc"
+          maxlength="500"
+          show-word-limit
+          placeholder="请简要描述"
+        ></el-input>
       </el-form-item>
 
       <el-form-item label="首播年月">
-          <el-date-picker v-model="form.date" type="month" placeholder="选择月">
-          </el-date-picker>
+        <el-date-picker v-model="form.soubdate" type="month" placeholder="选择月">
+        </el-date-picker>
       </el-form-item>
 
-      <el-form-item label="类型">
+      <el-form-item label="种类" prop="type">
         <el-radio-group v-model="form.type">
           <el-radio label="剧集"></el-radio>
           <el-radio label="电影"></el-radio>
         </el-radio-group>
       </el-form-item>
 
-      <el-form-item label="连播状态" v-show="form.type === '剧集'">
-        <el-radio-group v-model="form.status">
-          <el-radio label="连播中"></el-radio>
-          <el-radio label="已完结"></el-radio>
+      <el-form-item label="视频分类" prop="classify">
+        <el-radio-group v-model="form.classify">
+          <el-radio label="剧集"></el-radio>
+          <el-radio label="电影"></el-radio>
         </el-radio-group>
       </el-form-item>
 
@@ -69,6 +89,15 @@
         >
       </el-form-item>
 
+      <el-form-item label="连播状态" v-show="form.type === '剧集'">
+        <el-radio-group v-model="form.status">
+          <el-radio label="连播中"></el-radio>
+          <el-radio label="已完结"></el-radio>
+        </el-radio-group>
+      </el-form-item>
+
+      
+
       <el-form-item class="buttonaa">
         <el-button type="primary" @click="submitForm('ruleForm')"
           >提交</el-button
@@ -80,24 +109,47 @@
 </template>
 
 <script>
-import UploadCover from './UploadCover.vue';
+import UploadCover from "./UploadCover.vue";
 
 export default {
   name: "Formdata",
   data() {
     return {
       form: {
+        //封面
+        covername: "",
+        //标题
         name: "",
-        desc:'',
+        //简介
+        desc: "",
+        //种类
         type: "",
+        //分类
+        classify:'',
+        //状态
         status: "",
+        //标签
         dynamicTags: [],
-        date:''
+        //首播日期
+        soubdate: "",
+        //上传日期
+        nowdate:''
       },
-      rules:{
-        name:[
-          {required: true,message:'请输入标题',trigger: 'blur'}
-        ]
+      rules: {
+        name: [
+          {
+            required: true,
+            message: "请输入标题(两端不能留空哦)",
+            trigger: "blur",
+          },
+        ],
+        covername: [{ required: true, message: "请上传分面", trigger: "change" }],
+        type:[
+          {required: true,message: "这里不能不选", trigger: "change"}
+        ],
+        classify:[{
+          required: true,message: "这里不能不选", trigger: "change"
+        }]
       },
       inputValue: "",
       inputVisible: false,
@@ -123,6 +175,14 @@ export default {
         this.$refs.saveTagInput.$refs.input.focus();
       });
     },
+    //这是自定义事件，接收封面组件传来的值
+    elcovername(data) {
+      this.covername = data;
+    },
+    //去除两端空格
+    trim(conter,e){
+      this.form[e] = conter.trim()
+    }
   },
   watch: {
     "form.type": function (newq, oldq) {
@@ -131,9 +191,9 @@ export default {
       }
     },
   },
-  components:{
-    UploadCover
-  }
+  components: {
+    UploadCover,
+  },
 };
 </script>
 

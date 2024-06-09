@@ -24,9 +24,9 @@ export default {
       userid: 10001,
       uploadTemUrl: "temporary",
       //当前已经上传的文件
-      filecovername:'',
+      filecovername: "",
       //是否处于加载状态
-      loading:false
+      loading: false,
     };
   },
   methods: {
@@ -36,7 +36,7 @@ export default {
       const isLt2M = file.size / 1024 / 1024 < 5;
       if (!isJPG) {
         this.$message.error("上传头像图片只能是 JPG 格式!");
-      }else if (!isLt2M) {
+      } else if (!isLt2M) {
         this.$message.error("上传封面图片大小不能超过 5MB!");
       }
       return isJPG && isLt2M;
@@ -44,48 +44,48 @@ export default {
     //最后的上传
     async httpupload(filec) {
       //删除掉之前的文件,不走同步，继续执行下面
-      this.delcover(this.filecovername)
+      this.delcover(this.filecovername);
 
       const { name } = filec.file;
       const { file } = filec;
       try {
-        this.loading=true
-        const uploadreturn = await this.$API.uploadcover(
+        this.loading = true;
+        const uploadreturn = await this.$API.uploadapi.uploadcover(
           `${this.temlurl}${name}`,
           file,
           this.headers()
         );
-        
+
         //上传成功后的操作
         if (uploadreturn.res.status === 200) {
           //执行这个函数可以给文件列表后面打钩
           filec.onSuccess();
-          //获取临时访问url
-          const temporaryurl = await this.$API.gettemporaryurl(`${this.temlurl}${name}`)
-          console.log(temporaryurl);
           //替换src
-          this.imageUrl = temporaryurl
+          this.imageUrl = uploadreturn.url;
           //保存文件名字，方便后边需要更换封面
-          this.filecovername = uploadreturn.name
+          this.filecovername = uploadreturn.name;
+          //触发父组件的自定义事件，进行传值
+          this.$emit("covername", uploadreturn.name);
         }
       } catch (error) {
-        console.log(error);
+        //触发父组件的自定义事件，进行传值
+        this.$emit("covername", '#');
       }
-      this.loading=false
+      this.loading = false;
     },
     //删除文件
-    async delcover(filename){
-      if(!filename) return
-      const delseq = await this.$API.delupload(filename)
+    async delcover(filename) {
+      if (!filename) return;
+      const delseq = await this.$API.uploadapi.delupload(filename);
       console.log(filename);
     },
-    
+
     headers() {
       return {
         //封面上传时设为公共读权限
-        // headers: {
-        //   "x-oss-object-acl": "public-read",
-        // },
+        headers: {
+          "x-oss-object-acl": "public-read",
+        },
       };
     },
   },
