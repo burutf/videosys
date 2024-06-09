@@ -62,6 +62,8 @@ export default {
           this.$set(this.fileList[i], "serial", this.serial++);
           //重新排列编号
           this.serialreload();
+          //上传成功后进行传值
+          this.deliveryfl()
         }
       });
     },
@@ -189,6 +191,8 @@ export default {
       // });
       //重新排列编号
       this.serialreload();
+      //删除文件的时候也要传值
+      this.deliveryfl()
     },
     //文件列表发生更改时，更新fileList数组
     onchange(file, fileList) {
@@ -258,6 +262,10 @@ export default {
         }
       });
     },
+    //给父组件把filelist数组传过去
+    deliveryfl(){
+      this.$emit('filelistcd',this.fileList)
+    }
   },
   computed: {
     //拼接

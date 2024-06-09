@@ -28,12 +28,12 @@
           placeholder="请输入标题"
           maxlength="50"
           show-word-limit
-          @blur="trim(form.name,'name')"
+          @blur="trim(form.name, 'name')"
           clearable
         ></el-input>
       </el-form-item>
 
-      <el-form-item label="简介">
+      <el-form-item label="简介" prop="desc">
         <el-input
           :autosize="{ minRows: 2, maxRows: 4 }"
           type="textarea"
@@ -44,8 +44,13 @@
         ></el-input>
       </el-form-item>
 
-      <el-form-item label="首播年月">
-        <el-date-picker v-model="form.soubdate" type="month" placeholder="选择月">
+      <el-form-item label="首播年月" prop="soubdate">
+        <el-date-picker
+          v-model="form.soubdate"
+          type="month"
+          placeholder="选择年月"
+          :picker-options="pickerOptions"
+        >
         </el-date-picker>
       </el-form-item>
 
@@ -57,13 +62,25 @@
       </el-form-item>
 
       <el-form-item label="视频分类" prop="classify">
-        <el-radio-group v-model="form.classify">
-          <el-radio label="剧集"></el-radio>
-          <el-radio label="电影"></el-radio>
-        </el-radio-group>
+        <el-select
+          size="medium"
+          multiple
+          :multiple-limit="7"
+          v-model="form.classify"
+          filterable
+          placeholder="请选择1-7个分类"
+        >
+          <el-option
+            v-for="item in classifylist"
+            :key="item"
+            :label="item"
+            :value="item"
+          >
+          </el-option>
+        </el-select>
       </el-form-item>
 
-      <el-form-item label="标签">
+      <!-- <el-form-item label="标签">
         <el-tag
           :key="tag"
           v-for="tag in form.dynamicTags"
@@ -87,22 +104,22 @@
         <el-button v-else class="button-new-tag" size="small" @click="showInput"
           >+ 新标签</el-button
         >
-      </el-form-item>
+      </el-form-item> -->
 
-      <el-form-item label="连播状态" v-show="form.type === '剧集'">
+      <el-form-item
+        label="连播状态"
+        v-show="form.type === '剧集'"
+        prop="status"
+      >
         <el-radio-group v-model="form.status">
           <el-radio label="连播中"></el-radio>
           <el-radio label="已完结"></el-radio>
         </el-radio-group>
       </el-form-item>
 
-      
-
       <el-form-item class="buttonaa">
-        <el-button type="primary" @click="submitForm('ruleForm')"
-          >提交</el-button
-        >
-        <el-button @click="resetForm('ruleForm')">重置</el-button>
+        <el-button type="primary" @click="submitForm('form')">提交</el-button>
+        <el-button @click="resetForm('form')">重置</el-button>
       </el-form-item>
     </el-form>
   </div>
@@ -113,6 +130,9 @@ import UploadCover from "./UploadCover.vue";
 
 export default {
   name: "Formdata",
+  props:[
+    'filelist'
+  ],
   data() {
     return {
       form: {
@@ -125,15 +145,15 @@ export default {
         //种类
         type: "",
         //分类
-        classify:'',
+        classify: [],
         //状态
         status: "",
         //标签
-        dynamicTags: [],
+        // dynamicTags: [],
         //首播日期
         soubdate: "",
         //上传日期
-        nowdate:''
+        nowdate: "",
       },
       rules: {
         name: [
@@ -143,17 +163,49 @@ export default {
             trigger: "blur",
           },
         ],
-        covername: [{ required: true, message: "请上传分面", trigger: "change" }],
-        type:[
-          {required: true,message: "这里不能不选", trigger: "change"}
+        desc: [
+          {
+            required: false,
+          },
         ],
-        classify:[{
-          required: true,message: "这里不能不选", trigger: "change"
-        }]
+        covername: [
+          { required: true, message: "请上传封面", trigger: "change" },
+        ],
+        type: [{ required: true, message: "这里选一下", trigger: "change" }],
+        soubdate: [{ required: false }],
+        classify: [
+          {
+            required: true,
+            message: "最少要选一个",
+            trigger: "change",
+          },
+        ],
+        status: [
+          {
+            required: true,
+            message: "这里也要选",
+            trigger: "change",
+          },
+        ],
+      },
+      //日期选择禁用未来日期
+      pickerOptions: {
+        disabledDate(time) {
+          return time.getTime() > Date.now();
+        },
       },
       inputValue: "",
       inputVisible: false,
+      //视频分类列表
+      classifylist: [],
     };
+  },
+  //
+  async mounted() {
+    const { code, data } = await this.$API.extraapi.getclassifylist();
+    if (code === 200) {
+      this.classifylist = data;
+    }
   },
   methods: {
     //分类标签删除
@@ -177,12 +229,46 @@ export default {
     },
     //这是自定义事件，接收封面组件传来的值
     elcovername(data) {
-      this.covername = data;
+      this.form.covername = data;
     },
     //去除两端空格
-    trim(conter,e){
-      this.form[e] = conter.trim()
-    }
+    trim(conter, e) {
+      this.form[e] = conter.trim();
+    },
+    //表单上传
+    submitForm(formName) {
+      console.log(this.filelist);
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          alert("submit!");
+        } else {
+          this.$message.error('请检查表单，有问题哦');
+          return false;
+        }
+      });
+    },
+    //表单重置
+    resetForm(formName) {
+      this.$confirm("此操作将重置表单, 是否继续?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(() => {
+          this.$message({
+            type: "success",
+            message: "已经重置!",
+          });
+          this.$refs[formName].resetFields();
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消重置操作",
+          });
+        });
+      
+    },
   },
   watch: {
     "form.type": function (newq, oldq) {
