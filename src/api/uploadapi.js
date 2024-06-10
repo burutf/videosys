@@ -1,5 +1,6 @@
 import { configOss } from '@/utils/oss/configOss'
-
+//axios
+import http from '@/utils/axios'
 
 //上传过程中，删除文件
 export const delupload = async (FileName) => {
@@ -33,4 +34,16 @@ export const uploadcover = async (FileName, fileobj, options) => {
     //开始上传
     const uploadcover = await clientOSS.put(FileName, fileobj,  {...options} )
     return uploadcover
+}
+/////////////////////////////////////////////////////////////////
+
+
+///////////////////////////////////////////////////////////////
+//全部数据准备好了后把数据发送到服务器，进行数据校验保存
+export const fullupload = async (filelist,formdata)=>{
+    const fullupload = await http.post('/fullupload',{
+        'filelist':filelist,
+        'formdata':formdata
+    })
+    return fullupload
 }

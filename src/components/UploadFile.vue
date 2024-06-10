@@ -62,8 +62,6 @@ export default {
           this.$set(this.fileList[i], "serial", this.serial++);
           //重新排列编号
           this.serialreload();
-          //上传成功后进行传值
-          this.deliveryfl()
         }
       });
     },
@@ -119,10 +117,10 @@ export default {
     },
     //删除文件时也要更新列表
     async beforeremove(file, fileList) {
-      console.log("检测到了删除文件");
+      console.log("检测到了删除文件")
       //是否删除
       let isdel = true;
-      //拿到名字取删除已经上传的OSS文件，拿到uid去获取指定的分片id中断上传
+      //拿到名字去删除已经上传的OSS文件，拿到uid去获取指定的分片id中断上传
       const { name, uid } = file;
       //判断当前的文件状态，如果是成功就去删除，还在上传就中断
       if (file.status === "success") {
@@ -191,8 +189,6 @@ export default {
       // });
       //重新排列编号
       this.serialreload();
-      //删除文件的时候也要传值
-      this.deliveryfl()
     },
     //文件列表发生更改时，更新fileList数组
     onchange(file, fileList) {
@@ -272,7 +268,21 @@ export default {
     temlurl() {
       return `${this.uploadTemUrl}/${this.userid}/`;
     },
+    //精简filelist
+    filelisttidy(){
+      this.fileList.forEach(element => {
+        
+      });
+
+      return 
+    }
   },
+  watch:{
+    fileList:function(newdata,olddata){
+      //给父组件传值
+      this.deliveryfl()
+    }
+  }
 };
 </script>
 

@@ -33,7 +33,7 @@ export default {
     //上传前校验
     beforeAvatarUpload(file) {
       const isJPG = file.type === "image/jpeg";
-      const isLt2M = file.size / 1024 / 1024 < 5;
+      const isLt2M = file.size / 1024 / 1024 < 3;
       if (!isJPG) {
         this.$message.error("上传头像图片只能是 JPG 格式!");
       } else if (!isLt2M) {

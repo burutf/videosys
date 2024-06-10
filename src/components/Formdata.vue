@@ -6,6 +6,7 @@
       :model="form"
       label-width="100px"
       label-position="left"
+      :disabled="this.filelist.length===0"
     >
       <el-form-item label="封面" prop="covername">
         <div class="cover">
@@ -238,9 +239,15 @@ export default {
     //表单上传
     submitForm(formName) {
       console.log(this.filelist);
-      this.$refs[formName].validate((valid) => {
+      this.$refs[formName].validate(async (valid) => {
         if (valid) {
-          alert("submit!");
+          console.log('进行服务端上传了');
+          const fulluploadres = await this.$API.uploadapi.fullupload(this.filelist,this.form)
+          console.log(fulluploadres);
+
+
+
+
         } else {
           this.$message.error('请检查表单，有问题哦');
           return false;

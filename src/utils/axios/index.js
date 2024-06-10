@@ -23,8 +23,7 @@ http.interceptors.response.use((response) => {
     return response.data;
 }, (error) => {
     // 对响应错误做些什么
-
-
+    console.log('axios响应了错误');
     return Promise.reject(error.response.data);
 });
 
