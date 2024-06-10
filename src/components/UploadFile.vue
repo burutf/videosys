@@ -33,6 +33,8 @@
 </template>
 
 <script>
+import { debounce } from "lodash";
+
 export default {
   name: "UploadFile",
   data() {
@@ -54,6 +56,7 @@ export default {
   methods: {
     //成功上传后的处理
     upsuccess(response, file, fileList) {
+      console.log('run');
       this.fileList.forEach((e, i) => {
         if (e.uid === file.uid) {
           //借口返回数据后，代表完全成功，进度置为100%
@@ -85,17 +88,29 @@ export default {
           }
         } catch (error) {
           //文件传输错误
-          console.log('文件上传时出错'+error);
+          console.log("文件上传时出错" + error);
         }
       });
     },
+    // 防抖函数:重复名字文件名不上传
+    handlerepeat: debounce(function () {
+      this.$message({
+        message: "重复名字的文件不能上传",
+        type: "warning",
+      });
+    }, 0),
     //上传之前做校验(返回false就会不让文件进行上传)
     beforeUpload(file) {
+      //重复名字文件名不上传
+      if (this.repeatname(file)) {
+        this.handlerepeat();
+        return false;
+      }
       //找当前文件是不是已经校验不通过了
       const ischckout = this.errfile.some((e) => {
         return e.file.uid === file.uid;
       });
-      //确实校验不通过过，就return出去，不必重复执行
+      //确实校验不通过过，就return出去，不必重复执行，防抖
       if (ischckout) return false;
       console.log("我进行上传前校验了");
       //拿到文件的类型和大小
@@ -115,9 +130,16 @@ export default {
       }
       return istype && issize;
     },
+    //重复名字文件不上传
+    repeatname(file) {
+      return this.fileList.some((e) => {
+        return file.name === e.name;
+      });
+    },
     //删除文件时也要更新列表
     async beforeremove(file, fileList) {
-      console.log("检测到了删除文件")
+      console.log("检测到了删除文件");
+
       //是否删除
       let isdel = true;
       //拿到名字去删除已经上传的OSS文件，拿到uid去获取指定的分片id中断上传
@@ -259,9 +281,9 @@ export default {
       });
     },
     //给父组件把filelist数组传过去
-    deliveryfl(){
-      this.$emit('filelistcd',this.fileList)
-    }
+    deliveryfl() {
+      this.$emit("filelistcd", this.fileList);
+    },
   },
   computed: {
     //拼接
@@ -269,20 +291,18 @@ export default {
       return `${this.uploadTemUrl}/${this.userid}/`;
     },
     //精简filelist
-    filelisttidy(){
-      this.fileList.forEach(element => {
-        
-      });
+    filelisttidy() {
+      this.fileList.forEach((element) => {});
 
-      return 
-    }
+      return;
+    },
   },
-  watch:{
-    fileList:function(newdata,olddata){
+  watch: {
+    fileList: function (newdata, olddata) {
       //给父组件传值
-      this.deliveryfl()
-    }
-  }
+      this.deliveryfl();
+    },
+  },
 };
 </script>
 

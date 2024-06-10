@@ -3,7 +3,7 @@ import axios from "axios";
 
 const http = axios.create({
     //请求的超时
-    timeout: 10000,
+    timeout: 20000,
     //前缀
     baseURL: '/api'
 });

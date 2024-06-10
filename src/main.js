@@ -7,6 +7,7 @@ import store from './store'
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 
+
 //引入所有的api接口
 import * as api from '@/api'
 

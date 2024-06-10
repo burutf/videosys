@@ -6,9 +6,9 @@
       :model="form"
       label-width="100px"
       label-position="left"
-      :disabled="this.filelist.length===0"
+      :disabled="this.filelist.length === 0"
     >
-      <el-form-item label="封面" prop="covername">
+      <el-form-item label="封面" prop="cover">
         <div class="cover">
           <!-- 这里是封面上传组件 -->
           <UploadCover @covername="elcovername"></UploadCover>
@@ -23,13 +23,13 @@
         </div>
       </el-form-item>
 
-      <el-form-item label="标题" prop="name">
+      <el-form-item label="标题" prop="title">
         <el-input
-          v-model="form.name"
+          v-model="form.title"
           placeholder="请输入标题"
           maxlength="50"
           show-word-limit
-          @blur="trim(form.name, 'name')"
+          @blur="trim(form.title, 'title')"
           clearable
         ></el-input>
       </el-form-item>
@@ -131,16 +131,14 @@ import UploadCover from "./UploadCover.vue";
 
 export default {
   name: "Formdata",
-  props:[
-    'filelist'
-  ],
+  props: ["filelist"],
   data() {
     return {
       form: {
         //封面
-        covername: "",
+        cover: {},
         //标题
-        name: "",
+        title: "",
         //简介
         desc: "",
         //种类
@@ -153,11 +151,9 @@ export default {
         // dynamicTags: [],
         //首播日期
         soubdate: "",
-        //上传日期
-        nowdate: "",
       },
       rules: {
-        name: [
+        title: [
           {
             required: true,
             message: "请输入标题(两端不能留空哦)",
@@ -169,7 +165,7 @@ export default {
             required: false,
           },
         ],
-        covername: [
+        cover: [
           { required: true, message: "请上传封面", trigger: "change" },
         ],
         type: [{ required: true, message: "这里选一下", trigger: "change" }],
@@ -230,7 +226,7 @@ export default {
     },
     //这是自定义事件，接收封面组件传来的值
     elcovername(data) {
-      this.form.covername = data;
+      this.form.cover = data;
     },
     //去除两端空格
     trim(conter, e) {
@@ -238,18 +234,31 @@ export default {
     },
     //表单上传
     submitForm(formName) {
-      console.log(this.filelist);
+      
       this.$refs[formName].validate(async (valid) => {
         if (valid) {
-          console.log('进行服务端上传了');
-          const fulluploadres = await this.$API.uploadapi.fullupload(this.filelist,this.form)
-          console.log(fulluploadres);
+
+
+
+          
+          try {
+            console.log("进行服务端上传了");
+            const fulluploadres = await this.$API.uploadapi.fullupload(
+              //上传精简filelist数组
+              this.tidyfilelist(),
+              //表单
+              this.form
+            );
+            console.log(fulluploadres);
+          } catch (error) {
+            console.log(error);
+          }
 
 
 
 
         } else {
-          this.$message.error('请检查表单，有问题哦');
+          this.$message.error("请检查表单，有问题哦");
           return false;
         }
       });
@@ -274,8 +283,21 @@ export default {
             message: "已取消重置操作",
           });
         });
-      
     },
+    //精简filelist数组
+    tidyfilelist(){
+      return this.filelist.map(e=>{
+        return {
+          name:e.name,
+          urlname:e.response.name,
+          etag:e.response.etag,
+          serial:e.serial,
+          size:e.size,
+          type:e.raw.type,
+          status:e.status
+        }
+      })
+    }
   },
   watch: {
     "form.type": function (newq, oldq) {

@@ -3,8 +3,7 @@
     <el-upload
       v-loading="loading"
       class="avatar-uploader"
-      action="#"
-      limit:1
+      action=""
       :show-file-list="false"
       :before-upload="beforeAvatarUpload"
       :http-request="httpupload"
@@ -32,6 +31,7 @@ export default {
   methods: {
     //上传前校验
     beforeAvatarUpload(file) {
+      console.log('进行封面校验');
       const isJPG = file.type === "image/jpeg";
       const isLt2M = file.size / 1024 / 1024 < 3;
       if (!isJPG) {
@@ -43,6 +43,7 @@ export default {
     },
     //最后的上传
     async httpupload(filec) {
+      console.log('封面上传');
       //删除掉之前的文件,不走同步，继续执行下面
       this.delcover(this.filecovername);
 
@@ -58,14 +59,18 @@ export default {
 
         //上传成功后的操作
         if (uploadreturn.res.status === 200) {
-          //执行这个函数可以给文件列表后面打钩
-          filec.onSuccess();
           //替换src
           this.imageUrl = uploadreturn.url;
           //保存文件名字，方便后边需要更换封面
           this.filecovername = uploadreturn.name;
           //触发父组件的自定义事件，进行传值
-          this.$emit("covername", uploadreturn.name);
+          this.$emit("covername", {
+            name:filec.file.name,
+            urlname: uploadreturn.name,
+            size:filec.file.size,
+            type:filec.file.type
+          });
+          console.log(uploadreturn);
         }
       } catch (error) {
         //触发父组件的自定义事件，进行传值
@@ -76,10 +81,8 @@ export default {
     //删除文件
     async delcover(filename) {
       if (!filename) return;
-      const delseq = await this.$API.uploadapi.delupload(filename);
-      console.log(filename);
+      await this.$API.uploadapi.delupload(filename);
     },
-
     headers() {
       return {
         //封面上传时设为公共读权限
