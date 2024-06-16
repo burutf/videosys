@@ -81,32 +81,6 @@
         </el-select>
       </el-form-item>
 
-      <!-- <el-form-item label="标签">
-        <el-tag
-          :key="tag"
-          v-for="tag in form.dynamicTags"
-          closable
-          type="success"
-          @close="handleClose(tag)"
-          effect="plain"
-        >
-          {{ tag }}
-        </el-tag>
-        <el-input
-          class="input-new-tag"
-          v-if="inputVisible"
-          v-model="inputValue"
-          ref="saveTagInput"
-          size="small"
-          @keyup.enter.native="handleInputConfirm"
-          @blur="handleInputConfirm"
-        >
-        </el-input>
-        <el-button v-else class="button-new-tag" size="small" @click="showInput"
-          >+ 新标签</el-button
-        >
-      </el-form-item> -->
-
       <el-form-item
         label="连播状态"
         v-show="form.type === '剧集'"
@@ -165,9 +139,7 @@ export default {
             required: false,
           },
         ],
-        cover: [
-          { required: true, message: "请上传封面", trigger: "change" },
-        ],
+        cover: [{ required: true, message: "请上传封面", trigger: "change" }],
         type: [{ required: true, message: "这里选一下", trigger: "change" }],
         soubdate: [{ required: false }],
         classify: [
@@ -233,35 +205,57 @@ export default {
       this.form[e] = conter.trim();
     },
     //表单上传
-    submitForm(formName) {
-      
-      this.$refs[formName].validate(async (valid) => {
-        if (valid) {
+    async submitForm(formName) {
+      try {
+        await this.$confirm("确定上传吗?", "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning",
+        });
 
+        this.$refs[formName].validate(async (valid) => {
+          if (valid) {
+            //触发父元素的loading更改函数,展示加载
+            this.$emit('updataloading',true)
+            try {
+              console.log("进行服务端上传了");
+              const fulluploadres = await this.$API.uploadapi.fullupload(
+                //上传精简filelist数组
+                this.tidyfilelist(),
+                //表单
+                this.form
+              );
+              //触发父元素的loading更改函数,结束加载
+              this.$emit('updataloading',false)
+              this.$message({
+                type: "success",
+                message: "上传成功!",
+              });
+              //路由跳转到视频上传状态页面
+              this.$router.replace({path:'/video-upload/status',query:{videoid:fulluploadres.videoid}})
 
+            } catch (error) {
+              //触发父元素的loading更改函数,结束加载
+              this.$emit('updataloading',false)
+              this.$message({
+                type: "error",
+                message: "上传失败",
+              });
+            }
 
-          
-          try {
-            console.log("进行服务端上传了");
-            const fulluploadres = await this.$API.uploadapi.fullupload(
-              //上传精简filelist数组
-              this.tidyfilelist(),
-              //表单
-              this.form
-            );
-            console.log(fulluploadres);
-          } catch (error) {
-            console.log(error);
+          } else {
+            this.$message.error("请检查表单，有问题哦");
+            return false;
           }
+        });
 
-
-
-
-        } else {
-          this.$message.error("请检查表单，有问题哦");
-          return false;
-        }
-      });
+        
+      } catch (error) {
+        this.$message({
+          type: "info",
+          message: "已取消上传",
+        });
+      }
     },
     //表单重置
     resetForm(formName) {
@@ -285,19 +279,20 @@ export default {
         });
     },
     //精简filelist数组
-    tidyfilelist(){
-      return this.filelist.map(e=>{
+    tidyfilelist() {
+      return this.filelist.map((e) => {
         return {
-          name:e.name,
-          urlname:e.response.name,
-          etag:e.response.etag,
-          serial:e.serial,
-          size:e.size,
-          type:e.raw.type,
-          status:e.status
-        }
-      })
-    }
+          name: e.name,
+          urlname: e.response.name,
+          etag: e.response.etag,
+          serial: e.serial,
+          size: e.size,
+          type: e.raw.type,
+          status: e.status,
+        };
+      });
+    },
+    
   },
   watch: {
     "form.type": function (newq, oldq) {

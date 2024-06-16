@@ -14,7 +14,7 @@
       :router="true"
     >
       <!-- 这里是上传界面 -->
-      <router-link :to="{ path: 'video-upload' }">
+      <router-link :to="{ path: '/video-upload' }">
         <el-button
           class="buttonupload"
           :class="{ routejh: uploadrouterjh }"
@@ -24,7 +24,7 @@
         </el-button>
       </router-link>
 
-      <!-- 做一个块，看看有没有子路由，有的话就显示下面那个    目前还没有使用 -->
+      <!-- 动态渲染路由 -->
       <template v-for="(item, index) in navdata">
         <el-menu-item
           :key="index"
@@ -35,19 +35,20 @@
           <span slot="title">{{ item.name }}</span>
         </el-menu-item>
 
-        <el-submenu :key="index" v-if="!!item.children">
+        <!-- 这块是显示子路由的 暂未使用 还有问题 -->
+        <!-- <el-submenu :key="index" v-if="!!item.children">
           <template slot="title">
             <i class="el-icon-location"></i>
             <span slot="title">{{ item.name }}</span>
           </template>
-          <!-- 这里子路由的路由路径还有问题，需要获取父元素的path拼接上才行   先不做，目前用不到 -->
+           这里子路由的路由路径还有问题，需要获取父元素的path拼接上才行   先不做，目前用不到
           <el-menu-item
             v-for="(itemi, index) in item.children"
             :key="index"
             :index="'/' + itemi.path"
             >{{ itemi.name }}</el-menu-item
           >
-        </el-submenu>
+        </el-submenu> -->
       </template>
     </el-menu>
   </div>
@@ -73,10 +74,8 @@ export default {
     },
     //单独做了一个计算属性，来点亮上传按钮
     uploadrouterjh() {
-      return (
-        this.routeindex ===
-        "/" + this.$router.options.routes[0].children[0].path
-      );
+      const buttonpath = "/" + this.$router.options.routes[0].children[0].path
+      return this.routeindex.includes(buttonpath)
     },
   },
 };
