@@ -232,7 +232,7 @@ export default {
                 message: "上传成功!",
               });
               //路由跳转到视频上传状态页面
-              this.$router.replace({path:'/video-upload/status',query:{videoid:fulluploadres.videoid}})
+              this.$router.push({path:'/video-upload/status',query:{videoid:fulluploadres.videoid}})
 
             } catch (error) {
               //触发父元素的loading更改函数,结束加载

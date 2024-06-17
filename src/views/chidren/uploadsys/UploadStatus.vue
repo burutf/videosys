@@ -1,6 +1,10 @@
 <template>
   <div>
-    <h1>{{videoid}}</h1>
+    <el-result icon="success" title="上传成功" subTitle="继续添加请点击返回">
+      <template slot="extra">
+        <el-button @click="routergo" type="primary" size="medium">返回</el-button>
+      </template>
+    </el-result>
   </div>
 </template>
 
@@ -15,9 +19,8 @@ export default {
     mounted() {
       this.videoid = this.$route.query.videoid
     },
-    //设置路由钩子
+    // 设置路由钩子
     beforeRouteEnter(to, from, next){
-      console.log(from);
       //不能随便进入这个组件,只有从上传路由及其子路由可以
       if ((from.path).includes('video-upload')) {
         next()
@@ -26,7 +29,10 @@ export default {
       next('/')
     },
     methods: {
-      
+      routergo(){
+        //返回上一层
+        this.$router.go(-1)
+      }
     },
 }
 </script>

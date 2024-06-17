@@ -55,6 +55,9 @@
 </template>
 
 <script>
+import routes from '@/router/routes';
+
+
 export default {
   name: "Aside",
   data() {
@@ -65,7 +68,10 @@ export default {
   },
   mounted() {
     //拿到关于导航栏的路由数组
-    this.navdata = this.$router.options.routes[0].children;
+    //在路由数组中有设置meta，通过判断meta拿到导航栏渲染数组
+    this.navdata = routes.filter((e)=>{
+      return e.meta.aside
+    })[0].children
   },
   computed: {
     //获取当前的url，并点亮对应的导航

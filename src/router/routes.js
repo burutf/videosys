@@ -1,10 +1,8 @@
 
-
-
 export default [
     //这一块会动态渲染到侧边导航栏
     {
-        path: '/', redirect: 'videomanagement', name: 'layout', component: () => import('@/layout'),
+        path: '/', redirect: 'videomanagement', name: 'layout', meta: { aside: true }, component: () => import('@/layout'),
         children: [
             //上传的路由
             {
@@ -22,9 +20,10 @@ export default [
             }
         ]
     },
-
-
     {
-        path: '*', redirect: '/'
+        path:'/login',name:'登陆',meta: { aside: false },component:()=>import('@/views/Login')
+    },
+    {
+        path: '*', redirect: '/',meta: { aside: false }
     }
 ]
