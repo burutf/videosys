@@ -44,8 +44,8 @@ export default {
       next(false);
       return;
     }
-    //如果要跳转到视频上传结果页面就直接跳转
-    if (to.path==='/video-upload/status') {
+    //如果要跳转到视频上传结果页面就直接跳转,或者是登陆页面
+    if (to.path==='/video-upload/status' || to.path==='/login') {
       next();
       return
     }

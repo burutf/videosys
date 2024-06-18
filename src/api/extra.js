@@ -14,3 +14,8 @@ export const stsOSS = () => {
 export const gettime = ()=>{
     return http.get('/gettime')
 }
+
+//登陆接口
+export const login = (data)=>{
+    return http.post('/login',data)
+}

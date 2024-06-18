@@ -15,6 +15,8 @@
 </template>
   
 <script>
+import { mapActions } from 'vuex';
+
 export default {
   name: "Login",
   data() {
@@ -30,19 +32,25 @@ export default {
     };
   },
   methods: {
+    ...mapActions(['gettoken']),
     submitForm(formName) {
       this.$refs[formName].validate(async (valid) => {
         if (valid) {
           try {
             const res = await this.gettoken(this.form);
+            
             this.$message({
               message: "登录成功",
               type: "success",
             });
             //登录成功的操作
-            this.$router.push({ name: "layout" });
+            this.$router.push({ path:'/' });
           } catch (error) {
-            this.$message.error("用户名或者密码错误");
+            if (error.code===400) {
+              this.$message.error("用户名或者密码错误");
+            }else{
+              this.$message.error("服务器繁忙，请稍后再试");
+            }
           }
         } else {
           return false;
