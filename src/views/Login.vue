@@ -1,8 +1,8 @@
 <template>
   <div class="loginbox">
     <el-card class="box-card">
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="账号：" prop="username">
+      <el-form ref="form" :model="form" :rules="rules" label-width="80px" @keyup.enter.native="submitForm('form')">
+        <el-form-item label="账号：" prop="username" >
           <el-input v-model="form.username"></el-input>
         </el-form-item>
         <el-form-item label="密码：" prop="password">
@@ -63,20 +63,35 @@ export default {
   
 <style lang='less' scoped>
 .loginbox {
+  position:absolute;
+  left: 0;
+  top: 0;
   display: flex;
   align-items: center;
-  width: 100vw;
-  height: 100vh;
-  min-height: 200px;
-
+  height: 100%;
+  width: 100%;
+  min-width: 300px;
+  //css背景图
+  background:
+    radial-gradient(black 3px, transparent 4px),
+    radial-gradient(black 3px, transparent 4px),
+    linear-gradient(#fff 4px, transparent 0),
+    linear-gradient(45deg, transparent 74px, transparent 75px, #a4a4a4 75px, #a4a4a4 76px, transparent 77px, transparent 109px),
+    linear-gradient(-45deg, transparent 75px, transparent 76px, #a4a4a4 76px, #a4a4a4 77px, transparent 78px, transparent 109px),
+    #fff;
+    background-size: 109px 109px, 109px 109px,100% 6px, 109px 109px, 109px 109px;
+    background-position: 54px 55px, 0px 0px, 0px 0px, 0px 0px, 0px 0px;
   .el-form {
     display: flex;
     flex-direction: column;
     align-items: center;
+    
   }
 
   .box-card {
     margin: 0 auto;
+    background-color: #ffffffc5;
+    box-shadow: 1px 1px 10px 1px rgba(102, 102, 102, 0.627);
   }
 }
 </style>

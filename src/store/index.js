@@ -5,6 +5,10 @@ import router from '@/router'
 
 import { login } from '@/api/extra'
 
+//引入element-ui
+import { Message } from 'element-ui';
+import 'element-ui/lib/theme-chalk/index.css';
+
 Vue.use(Vuex)
 
 export default new Vuex.Store({
@@ -15,24 +19,27 @@ export default new Vuex.Store({
   getters: {
   },
   mutations: {
-    Gettoken(state,data){
+    Gettoken(state, data) {
       //仓库存token
       state.token = data.token
       //做本地存储，防止刷新丢失
-      localStorage.setItem('TaObKcEdN',state.token)
+      localStorage.setItem('TaObKcEdN', state.token)
     },
     //清除token
-    Clearlogin(state){
-      //清楚token
-      state.token = ''
-      //清除本地存储
-      localStorage.removeItem("TaObKcEdN");
-      //跳转到登录页
-      try {
-        router.push({path:'/login'})
-        
-      } catch (error) {
-        console.log(error);
+    Clearlogin(state) {
+      //如果token有值的话就执行清除
+      if (state.token) {
+        //清楚token
+        state.token = ''
+        //清除本地存储
+        localStorage.removeItem("TaObKcEdN");
+        //提示
+        Message({
+          message: "请重新登陆",
+          type: "error",
+        })
+        //跳转到登录页
+        router.push({ path: '/login' })
       }
     }
   },

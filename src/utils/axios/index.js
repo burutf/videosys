@@ -13,9 +13,9 @@ const http = axios.create({
 //请求拦截器
 http.interceptors.request.use((config) => {
     // 在请求发送之前做些什么
-    //拿到仓库中的token
-    // const token = store.state.token
-    // config.headers.Authorization = `Bearer ${token}`;
+    //拿到仓库中的token,并添加请求头
+    const token = store.state.token
+    config.headers.Authorization = `Bearer ${token}`;
 
     return config;
 }, (error) => {

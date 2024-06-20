@@ -44,7 +44,6 @@ export default {
 
 
 .home{
-    // min-height: 500px;
     min-width: 900px;
 }
 </style>
