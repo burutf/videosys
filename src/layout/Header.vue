@@ -10,15 +10,13 @@
 </template>
 
 <script>
-import Pageheader from '@/components/header/Pageheader'
+import Pageheader from "@/components/header/Pageheader";
 import User from "@/components/header/User";
 
 export default {
   name: "Header",
   data() {
-    return {
-      
-    };
+    return {};
   },
   components: {
     Pageheader,
@@ -38,6 +36,5 @@ export default {
   min-width: 900px;
   background-color: white;
   box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.05);
-  
 }
 </style>

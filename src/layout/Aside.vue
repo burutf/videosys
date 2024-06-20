@@ -25,11 +25,10 @@
       </router-link>
 
       <!-- 动态渲染路由 -->
-      <template v-for="(item, index) in navdata">
+      <template v-for="(item, index) in navdatatwo">
         <el-menu-item
           :key="index"
           :index="'/' + item.path"
-          v-if="!item.children && !item.meta"
         >
           <i :class="item.iconClass"></i>
           <span slot="title">{{ item.name }}</span>
@@ -56,13 +55,14 @@
 
 <script>
 import routes from '@/router/routes';
-
+import { mapState } from 'vuex';
 
 export default {
   name: "Aside",
   data() {
     return {
       isCollapse: false,
+      //初步筛选的路由数组
       navdata: [],
     };
   },
@@ -73,7 +73,12 @@ export default {
       return e.meta.aside
     })[0].children
   },
+  methods:{
+
+  },
   computed: {
+    //拿到用户信息
+    ...mapState(['userinfo']),
     //获取当前的url，并点亮对应的导航
     routeindex() {
       return this.$route.path;
@@ -83,6 +88,21 @@ export default {
       const buttonpath = "/" + this.$router.options.routes[0].children[0].path
       return this.routeindex.includes(buttonpath)
     },
+    // 对路由数组进行二次筛选
+    navdatatwo(){
+      const arrroutes = this.navdata.filter(e=>{
+        if (e.meta.shownav) {
+          //如果需要管理员才有权限的话，就判断当前用户是不是管理员
+          //不需要管理权限并且当前用户不是管理员的时候，也放行
+          if (e.meta.isadmin && this.userinfo.isadmin) {
+            return true
+          } else if(!e.meta.isadmin){
+            return true
+          }
+        }
+      })
+      return arrroutes
+    }
   },
 };
 </script>

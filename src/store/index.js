@@ -3,7 +3,7 @@ import Vuex from 'vuex'
 
 import router from '@/router'
 
-import { login } from '@/api/extra'
+import { login,getuserinfo } from '@/api/extra'
 
 //引入element-ui
 import { Message } from 'element-ui';
@@ -14,7 +14,8 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     //打开应用时先从本地存储中获取tooken，获取不到则为空字符串
-    token: localStorage.getItem('TaObKcEdN') || ''
+    token: localStorage.getItem('TaObKcEdN') || '',
+    userinfo:{}
   },
   getters: {
   },
@@ -24,6 +25,11 @@ export default new Vuex.Store({
       state.token = data.token
       //做本地存储，防止刷新丢失
       localStorage.setItem('TaObKcEdN', state.token)
+    },
+    Getuserinfodd(state,data){
+      //存在这里就行，不需要本地存储
+      state.userinfo = data
+      console.log(state.userinfo);
     },
     //清除token
     Clearlogin(state) {
@@ -44,13 +50,22 @@ export default new Vuex.Store({
     }
   },
   actions: {
+    //获取token
     async gettoken({ commit }, data) {
       try {
         const res = await login(data)
-        if (res.code === 200) {
-          commit('Gettoken', res)
-          return 'ok'
-        }
+        commit('Gettoken', res)
+        return 'ok'
+      } catch (error) {
+        return Promise.reject(error)
+      }
+    },
+    //获取用户信息
+    async getinfo({commit}){
+      try {
+        const res = await getuserinfo()
+        commit('Getuserinfodd',res.data)
+        return 'ok'
       } catch (error) {
         return Promise.reject(error)
       }

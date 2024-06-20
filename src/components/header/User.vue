@@ -1,6 +1,6 @@
 <template>
   <div class="login">
-    <span>{{ username }}</span>
+    <span>{{ userinfo.username }}</span>
     <el-dropdown @command="handleCommand">
       <el-avatar icon="el-icon-user-solid"></el-avatar>
       <el-dropdown-menu slot="dropdown">
@@ -11,34 +11,25 @@
 </template>
 
 <script>
-import { mapMutations } from 'vuex';
+import { mapMutations,mapState } from "vuex";
 
 export default {
   name: "user",
   data() {
-    return {
-      username: "user",
-    };
-  },
-  mounted() {
-    //开始就执行获取用户信息
-    this.userinfo();
+    return {};
   },
   methods: {
-    ...mapMutations(['Clearlogin']),
-    async userinfo() {
-      try {
-        const info = await this.$API.extraapi.getuserinfo();
-        this.username = info.username;
-      } catch (error) {
-        console.error(error);
-      }
-    },
+    ...mapMutations(["Clearlogin"]),
+
     //头像的下拉列表触发函数
-    handleCommand(e){
+    handleCommand(e) {
       this[e]();
-    }
+    },
   },
+  computed:{
+    //拿到用户信息
+    ...mapState(['userinfo'])
+  }
 };
 </script>
 
