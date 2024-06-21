@@ -29,9 +29,10 @@ http.interceptors.response.use((response) => {
 }, (error) => {
     // 对响应错误做些什么
     console.log('axios响应了错误');
+    console.log(error.response.data);
     //如果是令牌无效了就清除之前的，跳转到登录页
     const { code, message } = error.response.data
-    if (code === 401 && message === "无效的令牌") {
+    if (code === 401 && message === "未提供的令牌或失效") {
         store.commit('Clearlogin')
     }
 

@@ -11,19 +11,33 @@
 </template>
 
 <script>
-import { mapMutations,mapState } from "vuex";
+import { mapMutations,mapState,mapActions } from "vuex";
 
 export default {
   name: "user",
   data() {
     return {};
   },
+  mounted() {
+    //仓库没有存着用户信息的话就开始就执行获取用户信息
+    if (!this.userinfo.username) {
+      this.getuserinfo();
+    }
+  },
   methods: {
     ...mapMutations(["Clearlogin"]),
-
+    ...mapActions(["getinfo"]),
     //头像的下拉列表触发函数
     handleCommand(e) {
       this[e]();
+    },
+    //获取用户信息
+    async getuserinfo() {
+      try {
+        await this.getinfo();
+      } catch (error) {
+        console.error(error);
+      }
     },
   },
   computed:{

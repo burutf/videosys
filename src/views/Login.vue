@@ -8,7 +8,7 @@
         <el-form-item label="密码：" prop="password">
           <el-input type="password" v-model="form.password"></el-input>
         </el-form-item>
-        <el-button @click="submitForm('form')">登录</el-button>
+        <el-button :loading="loading" @click="submitForm('form')">登录</el-button>
       </el-form>
     </el-card>
   </div>
@@ -29,6 +29,7 @@ export default {
         username: [{ required: true, message: "请输入账号" }],
         password: [{ required: true, message: "请输入密码" }],
       },
+      loading:false
     };
   },
   methods: {
@@ -36,9 +37,10 @@ export default {
     submitForm(formName) {
       this.$refs[formName].validate(async (valid) => {
         if (valid) {
+          this.loading = true
           try {
             const res = await this.gettoken(this.form);
-            
+            this.loading = false
             this.$message({
               message: "登录成功",
               type: "success",
@@ -46,6 +48,7 @@ export default {
             //登录成功的操作
             this.$router.push({ path:'/' });
           } catch (error) {
+            this.loading = false
             if (error.code===400) {
               this.$message.error("用户名或者密码错误");
             }else{

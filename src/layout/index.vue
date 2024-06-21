@@ -22,29 +22,15 @@
 <script>
 import Aside from "@/layout/Aside";
 import Header from "@/layout/Header";
-import { mapActions } from "vuex";
 
 export default {
   name: "home",
   data() {
-    return {
-        
-    }
+    return {};
   },
-  mounted() {
-    //开始就执行获取用户信息
-    this.getuserinfo();
-  },
+  
   methods: {
-    ...mapActions(['getinfo']),
-    async getuserinfo() {
-      try {
-        const info = await this.getinfo();
-
-      } catch (error) {
-        console.error(error);
-      }
-    },
+    
   },
   components: {
     Aside,

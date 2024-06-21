@@ -16,18 +16,45 @@ const router = new VueRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  //这块是判断用户有没有获取token，没有则不能进入登录以外的路由
-  //如果有token，则判断为登陆了，登陆了还想二次登陆？
+
   const token = store.state.token
-  if (token || to.path === '/login') {
-    if (token && to.path === '/login') {
-      next(false)
-      return
+  //如果没有token的话，代表没有登陆
+  if (!token) {
+    //没有登陆要调到login界面直接进
+    if (to.path === '/login') {
+      next()
+    } else {
+      //没有登陆要跳到别的界面，给我去登录
+      next('login')
     }
-    next()
+    //如果有token的话，代表登录了
   } else {
-    next('/login')
+    //有token的话，不能进登陆页
+    if (to.path === '/login') {
+      next('/')
+    } else {
+      //进的别的界面不一定让进，得先鉴权，鉴权通过才可以进
+      //开始进行鉴权
+      const authentication = store.state.userinfo.isadmin
+      //判断路由是否需要权限
+      if (to.meta.isadmin) {
+        //路由需要鉴权的话，判断用户是不是有权限
+        if (authentication) {
+          //有权限直接放行
+          next()
+        } else {
+          //没有权限阻止跳转
+          next('/404')
+        }
+      } else {//不需要鉴权的路由直接放行
+        next()
+      }
+
+    }
   }
+
+
+
 })
 
 export default router
