@@ -18,7 +18,11 @@ Vue.config.productionTip = false;
 //这里提前获取用户信息,让全局路由守卫可以获取异步vuex中state中的数据
 (async () => {
   if (store.state.token) {
-    await store.dispatch('getinfo')
+    try {
+      await store.dispatch('getinfo')
+    } catch (error) {
+      router.push('/404')
+    }
   }
 
   new Vue({

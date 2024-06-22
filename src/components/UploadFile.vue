@@ -46,7 +46,7 @@ export default {
       //对象数组，{uid：00000,uploadId:000021awdaw} 方便后面做
       filefpid: [],
       //校验失败的文件们
-      errfile: [],
+      // errfile: [],
       //最大上传数量
       limit: 30,
       //给视频一个顺序编号
@@ -56,7 +56,7 @@ export default {
   methods: {
     //成功上传后的处理
     upsuccess(response, file, fileList) {
-      console.log('run');
+      console.log("run");
       this.fileList.forEach((e, i) => {
         if (e.uid === file.uid) {
           //借口返回数据后，代表完全成功，进度置为100%
@@ -107,11 +107,11 @@ export default {
         return false;
       }
       //找当前文件是不是已经校验不通过了
-      const ischckout = this.errfile.some((e) => {
-        return e.file.uid === file.uid;
-      });
+      // const ischckout = this.errfile.some((e) => {
+      //   return e.file.uid === file.uid;
+      // });
       //确实校验不通过过，就return出去，不必重复执行，防抖
-      if (ischckout) return false;
+      // if (ischckout) return false;
       console.log("我进行上传前校验了");
       //拿到文件的类型和大小
       const { type, size } = file;
@@ -123,11 +123,11 @@ export default {
         this.$message.error("最大文件不能超过4GB，请重新上传");
       }
       //如果有任何一条规则没有通过就加到校验失败数组中
-      if (!istype || !issize) {
-        this.errfile.push({
-          file,
-        });
-      }
+      // if (!istype || !issize) {
+      //   this.errfile.push({
+      //     file,
+      //   });
+      // }
       return istype && issize;
     },
     //重复名字文件不上传
@@ -139,7 +139,6 @@ export default {
     //删除文件时也要更新列表
     async beforeremove(file, fileList) {
       console.log("检测到了删除文件");
-
       //是否删除
       let isdel = true;
       //拿到名字去删除已经上传的OSS文件，拿到uid去获取指定的分片id中断上传
@@ -165,40 +164,49 @@ export default {
 
         //删除OSS里的文件
         if (isdel) {
-          const delfileres = await this.$API.uploadapi.delupload(
-            `${this.temlurl}${name}`
-          );
-          if (delfileres.res.status === 204) {
+          try {
+            const delfileres = await this.$API.uploadapi.delupload(
+              `${this.temlurl}${name}`
+            );
             this.$message({
               type: "success",
               message: "删除成功!",
             });
+          } catch (error) {
+            this.$message({
+              showClose: true,
+              message: `删除${name}文件失败`,
+              type: "error",
+            });
+            //有错误就先停止删除
+            return;
           }
         }
       } else if (file.status === "ready") {
-        //如果是没有校验通过的文件就直接return出去，不执行下面
-        //文件进行校验需要把文件的raw传过去，里面有文件类型
-        if (!this.beforeUpload(file.raw)) return;
-        console.log("我将要中断分片上传");
-        //先find到哪个下标下的对象是保存当前上传的uploadId，获取他
-        const obj = this.filefpid.find((e, i) => {
-          return e.uid === uid;
-        });
-        const uploadId = obj.uploadId;
+
+        //如果文件的进度为0，不需要中断，直接阻止上传
+        if (file.percentage===0) {
+          return
+        }
+
         try {
+          //先find到哪个下标下的对象是保存当前上传的uploadId，获取他
+          const obj = this.filefpid.find((e, i) => {
+            return e.uid === uid;
+          });
+          const uploadId = obj.uploadId;
+
           //中断分片上传
-          const reqzd = await this.$API.uploadapi.abortMultipartUpload(
+          await this.$API.uploadapi.abortMultipartUpload(
             `${this.temlurl}${name}`,
             uploadId
           );
-          if (reqzd.res.status === 204) {
-            this.$message({
-              showClose: true,
-              message: `已经中断${name}文件上传`,
-              type: "warning",
-            });
-            console.log("中断成功了");
-          }
+          this.$message({
+            showClose: true,
+            message: `已经中断${name}文件上传`,
+            type: "warning",
+          });
+          console.log("中断成功了");
         } catch (error) {
           console.log(error);
         }
