@@ -81,7 +81,7 @@ export default {
     //删除文件
     async delcover(filename) {
       if (!filename) return;
-      await this.$API.uploadapi.delupload(filename);
+      await this.$API.osssys.delupload(filename);
     },
     headers() {
       return {

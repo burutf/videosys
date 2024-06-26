@@ -1,11 +1,11 @@
 <template>
     <div>
-        这里是显示和管理已经上传完视频的地方
+        <videolistVue></videolistVue>
     </div>
 </template>
 
 <script>
-import UploadFile from "@/components/UploadFile.vue";
+import videolistVue from '@/components/videosys/videolist.vue'
 
 export default{
     name:'Videosys',
@@ -15,7 +15,7 @@ export default{
         }
     },
     components:{
-        UploadFile
+        videolistVue
     }
 }
 </script>

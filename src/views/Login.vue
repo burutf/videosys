@@ -1,7 +1,8 @@
 <template>
   <div class="loginbox">
     <el-card class="box-card">
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px" @keyup.enter.native="submitForm('form')">
+      <div class="loginimg"></div>
+      <el-form ref="form" :model="form" :rules="rules" label-width="auto" @keyup.enter.native="submitForm('form')">
         <el-form-item label="账号：" prop="username" >
           <el-input v-model="form.username"></el-input>
         </el-form-item>
@@ -29,7 +30,8 @@ export default {
         username: [{ required: true, message: "请输入账号" }],
         password: [{ required: true, message: "请输入密码" }],
       },
-      loading:false
+      loading:false,
+      url:'src/assets/logo.png'
     };
   },
   methods: {
@@ -95,6 +97,14 @@ export default {
     margin: 0 auto;
     background-color: #ffffffc5;
     box-shadow: 1px 1px 10px 1px rgba(102, 102, 102, 0.627);
+    border-radius: 50px 50px 50px 50px;
+    .loginimg{
+      background-image: url('~@/assets/logo.png');
+      width: 50px;
+      height: 50px;
+      background-size: cover;
+      margin: 0px auto 20px;
+    }
   }
 }
 </style>

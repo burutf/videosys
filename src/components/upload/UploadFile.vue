@@ -165,7 +165,7 @@ export default {
         //删除OSS里的文件
         if (isdel) {
           try {
-            const delfileres = await this.$API.uploadapi.delupload(
+            const delfileres = await this.$API.osssys.delupload(
               `${this.temlurl}${name}`
             );
             this.$message({
@@ -197,7 +197,7 @@ export default {
           const uploadId = obj.uploadId;
 
           //中断分片上传
-          await this.$API.uploadapi.abortMultipartUpload(
+          await this.$API.osssys.abortMultipartUpload(
             `${this.temlurl}${name}`,
             uploadId
           );

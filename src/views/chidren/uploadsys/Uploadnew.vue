@@ -19,9 +19,9 @@
 </template>
 
 <script>
-import UploadFile from "@/components/UploadFile.vue";
-import Formdata from "@/components/Formdata.vue";
-import UploadCover from "@/components/UploadCover.vue";
+import UploadFile from "@/components/upload/UploadFile.vue";
+import Formdata from "@/components/upload/Formdata.vue";
+import UploadCover from "@/components/upload/UploadCover.vue";
 
 export default {
   name: "Uploadnew",

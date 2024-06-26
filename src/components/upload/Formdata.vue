@@ -101,7 +101,7 @@
 </template>
 
 <script>
-import UploadCover from "./UploadCover.vue";
+import UploadCover from "@/components/upload/UploadCover.vue";
 
 export default {
   name: "Formdata",
