@@ -17,6 +17,12 @@
 <script>
 export default {
   name: "UploadCover",
+  props:{
+    propimgurl:{
+      type:String,
+      default:''
+    }
+  },
   data() {
     return {
       imageUrl: "",
@@ -28,10 +34,17 @@ export default {
       loading: false,
     };
   },
+  mounted() {
+
+    console.log(this.propimgurl);
+    if (this.propimgurl==='') return
+    //将传来的图片地址给img标签
+    this.imageUrl = this.propimgurl;
+  },
   methods: {
     //上传前校验
     beforeAvatarUpload(file) {
-      console.log('进行封面校验');
+      console.log("进行封面校验");
       const isJPG = file.type === "image/jpeg";
       const isLt2M = file.size / 1024 / 1024 < 3;
       if (!isJPG) {
@@ -43,7 +56,7 @@ export default {
     },
     //最后的上传
     async httpupload(filec) {
-      console.log('封面上传');
+      console.log("封面上传");
       //删除掉之前的文件,不走同步，继续执行下面
       this.delcover(this.filecovername);
 
@@ -65,16 +78,16 @@ export default {
           this.filecovername = uploadreturn.name;
           //触发父组件的自定义事件，进行传值
           this.$emit("covername", {
-            name:filec.file.name,
+            url: uploadreturn.url,
             urlname: uploadreturn.name,
-            size:filec.file.size,
-            type:filec.file.type
+            size: filec.file.size,
+            type: filec.file.type,
           });
           console.log(uploadreturn);
         }
       } catch (error) {
         //触发父组件的自定义事件，进行传值
-        this.$emit("covername", '#');
+        this.$emit("covername", "#");
       }
       this.loading = false;
     },

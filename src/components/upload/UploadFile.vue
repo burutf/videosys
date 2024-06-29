@@ -18,32 +18,54 @@
       <i class="el-icon-plus avatar-uploader-icon"></i>
       <span class="djsc">点击上传</span>
     </el-upload>
+
     <!-- 文件列表 -->
     <ul class="ullist">
-      <li v-for="(item, i) in fileList" :key="i">
-        <span>{{ item.name }}</span>
-        <!-- 显示当前的上传成没成功 -->
-        <i v-if="item.status === 'success'" class="el-icon-success status"></i>
-        <el-progress :percentage="item.percentage"></el-progress>
-        <span class="serial">({{ item.serial }})</span>
-        <i @click="delflielist(item)" class="el-icon-close del"></i>
-      </li>
+      <draggable v-model="fileList" @end="onEnd" animation="200" easing="cubic-bezier(1, 0, 0, 1)">
+        <transition-group>
+          <li v-for="(item, i) in fileList" :key="i">
+            <span>{{ item.name }}</span>
+            <!-- 显示当前的上传成没成功 -->
+            <i
+              v-if="item.status === 'success'"
+              class="el-icon-success status"
+            ></i>
+            <el-progress
+              v-if="!item.isbeforup"
+              :percentage="item.percentage"
+            ></el-progress>
+
+            <span class="serial">第{{ item.serial }}回</span>
+            <i @click="delflielist(item)" class="el-icon-close del"></i>
+          </li>
+        </transition-group>
+      </draggable>
     </ul>
   </div>
 </template>
 
 <script>
 import { debounce } from "lodash";
+//引入拖拽排序
+import draggable from "vuedraggable";
 
 export default {
   name: "UploadFile",
+  props: {
+    videoid: {
+      type: String,
+    },
+    proplist: {
+      type: Array,
+      default: () => [],
+    },
+  },
   data() {
     return {
       dada: {},
       fileList: [],
-      userid: 10001,
       uploadTemUrl: "temporary",
-      //对象数组，{uid：00000,uploadId:000021awdaw} 方便后面做
+      //对象数组，{uid：00000,uploadId:000021awdaw} 方便后面做分片的删除操作
       filefpid: [],
       //校验失败的文件们
       // errfile: [],
@@ -51,12 +73,17 @@ export default {
       limit: 30,
       //给视频一个顺序编号
       serial: 1,
+      //之前已经成功上传的文件列表，通过这个列表来进行删除（不直接删除了，等用户做完所有操作后再删除）
+      delvideolist: [],
     };
+  },
+  mounted() {
+    this.fileList = this.chuliproplist;
   },
   methods: {
     //成功上传后的处理
     upsuccess(response, file, fileList) {
-      console.log("run");
+      console.log("成功上传了");
       this.fileList.forEach((e, i) => {
         if (e.uid === file.uid) {
           //借口返回数据后，代表完全成功，进度置为100%
@@ -165,9 +192,16 @@ export default {
         //删除OSS里的文件
         if (isdel) {
           try {
-            const delfileres = await this.$API.osssys.delupload(
-              `${this.temlurl}${name}`
-            );
+            //判断是不是之前已经上传的文件
+            if (file.isbeforup) {
+              //如果是之前已经上传的文件，就push到删除数组中
+              this.delvideolist.push(file.response.name);
+            } else {
+              const delfileres = await this.$API.osssys.delupload(
+                `${this.temlurl}${name}`
+              );
+            }
+
             this.$message({
               type: "success",
               message: "删除成功!",
@@ -183,10 +217,9 @@ export default {
           }
         }
       } else if (file.status === "ready") {
-
         //如果文件的进度为0，不需要中断，直接阻止上传
-        if (file.percentage===0) {
-          return
+        if (file.percentage === 0) {
+          return;
         }
 
         try {
@@ -222,6 +255,8 @@ export default {
     },
     //文件列表发生更改时，更新fileList数组
     onchange(file, fileList) {
+      console.log("文件列表发生改变了");
+      console.log(this.fileList);
       this.$nextTick(() => {
         this.fileList = fileList;
       });
@@ -289,20 +324,45 @@ export default {
       });
     },
     //给父组件把filelist数组传过去
+    //还有之前上传但是这次更改要删除的数组
     deliveryfl() {
-      this.$emit("filelistcd", this.fileList);
+      this.$emit("filelistcd", this.fileList, this.delvideolist);
     },
+    //拖拽排序后进行的操作
+    onEnd(){
+      console.log(this.fileList);
+      this.serialreload()
+    }
   },
   computed: {
     //拼接
     temlurl() {
       return `${this.uploadTemUrl}/${this.userid}/`;
     },
-    //精简filelist
-    filelisttidy() {
-      this.fileList.forEach((element) => {});
-
-      return;
+    //处理传来的proplist
+    chuliproplist() {
+      //如果没有传来proplist就返回空对象
+      if (this.proplist.length === 0) return [];
+      const arr = this.proplist.map((e) => {
+        //因为是固定格式，直接切割字符串得到数组，下标3的即为文件名字
+        const name = e.name.split("/")[3];
+        return {
+          name,
+          percentage: 100,
+          serial: e.serial,
+          status: e.status,
+          isbeforup: true,
+          response: {
+            name: e.name,
+            etag: e.etag,
+          },
+        };
+      });
+      return arr;
+    },
+    //拿到uuid
+    userid() {
+      return this.$store.state.userinfo.uuid;
     },
   },
   watch: {
@@ -310,6 +370,16 @@ export default {
       //给父组件传值
       this.deliveryfl();
     },
+    //检测到传过来的列表更改时，自动更新这里的列表
+    proplist: function (newdata, olddata) {
+      this.fileList = this.chuliproplist;
+      //并且清空delvideolist
+      this.delvideolist = [];
+    },
+  },
+  components: {
+    //拖拽排序组件
+    draggable,
   },
 };
 </script>
@@ -328,7 +398,6 @@ export default {
   border: 1px dashed #d9d9d9;
   cursor: pointer;
   border-radius: 10px;
-  overflow: hidden;
   background-color: white;
   .avatar-uploader-icon {
     font-size: 28px;
@@ -355,14 +424,21 @@ export default {
 
 //这是文件列表的样式
 .ullist {
-  flex: 1;
-  display: flex;
-  flex-wrap: wrap;
-  list-style-type: none;
   margin: 0;
   padding: 0;
-  overflow: auto;
-  max-height: 245px;
+  width: 100%;
+  > div {
+    > span {
+      flex: 1;
+      display: flex;
+      flex-wrap: wrap;
+      list-style-type: none;
+      overflow: auto;
+      max-height: 245px;
+      width: 100%;
+    }
+  }
+
   li {
     position: relative;
     flex: 1;
@@ -373,7 +449,7 @@ export default {
     background-color: white;
     border-radius: 10px;
     padding: 10px;
-
+    user-select: none;
     //文字超出以省略号显示
     overflow: hidden;
     white-space: nowrap;

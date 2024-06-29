@@ -6,20 +6,14 @@
       :model="form"
       label-width="100px"
       label-position="left"
-      :disabled="this.filelist.length === 0"
     >
       <el-form-item label="封面" prop="cover">
         <div class="cover">
           <!-- 这里是封面上传组件 -->
-          <UploadCover @covername="elcovername"></UploadCover>
-          <!-- 这里比较空，不知道写什么 -->
-          <!-- <div class="messages">
-            <p>视频格式：mp4</p>
-            <p>封面格式：jpg</p>
-            <p>awdwa</p>
-            <p>awdwa</p>
-            <p>awdwa</p>
-          </div> -->
+          <UploadCover
+            @covername="elcovername"
+            :propimgurl="propimgurl"
+          ></UploadCover>
         </div>
       </el-form-item>
 
@@ -105,7 +99,21 @@ import UploadCover from "@/components/upload/UploadCover.vue";
 
 export default {
   name: "Formdata",
-  props: ["filelist"],
+  //传入视频列表和之前成功上传这次要删除的列表
+  props: {
+    propformdata: {
+      type: Object,
+      default: () => ({}),
+    },
+    filelist: {
+      type: Array,
+      default: () => [],
+    },
+    delvideolist: {
+      type: Array,
+      default: () => [],
+    },
+  },
   data() {
     return {
       form: {
@@ -175,6 +183,8 @@ export default {
     if (code === 200) {
       this.classifylist = data;
     }
+    //接收传来的propformdata，并填入表单中
+    this.formtt();
   },
   methods: {
     //分类标签删除
@@ -216,7 +226,7 @@ export default {
         this.$refs[formName].validate(async (valid) => {
           if (valid) {
             //触发父元素的loading更改函数,展示加载
-            this.$emit('updataloading',true)
+            this.$emit("updataloading", true);
             try {
               console.log("进行服务端上传了");
               const fulluploadres = await this.$API.uploadapi.fullupload(
@@ -226,30 +236,30 @@ export default {
                 this.form
               );
               //触发父元素的loading更改函数,结束加载
-              this.$emit('updataloading',false)
+              this.$emit("updataloading", false);
               this.$message({
                 type: "success",
                 message: "上传成功!",
               });
               //路由跳转到视频上传状态页面
-              this.$router.push({path:'/video-upload/status',query:{videoid:fulluploadres.videoid}})
-
+              this.$router.push({
+                path: "/video-upload/status",
+                query: { videoid: fulluploadres.videoid },
+              });
             } catch (error) {
               //触发父元素的loading更改函数,结束加载
-              this.$emit('updataloading',false)
+              this.$emit("updataloading", false);
               this.$message({
                 type: "error",
                 message: "上传失败",
               });
+              console.log(error);
             }
-
           } else {
             this.$message.error("请检查表单，有问题哦");
             return false;
           }
         });
-
-        
       } catch (error) {
         this.$message({
           type: "info",
@@ -287,12 +297,38 @@ export default {
           etag: e.response.etag,
           serial: e.serial,
           size: e.size,
-          type: e.raw.type,
+          type: e.type,
           status: e.status,
+          isbeforup: e.isbeforup,
         };
       });
     },
-    
+    //填入表单中
+    formtt() {
+      if (!this.propformdata.title) return;
+      const { classify, desc, soubdate, status, title, type, cover } =
+        this.propformdata;
+      this.form.classify = classify;
+      this.form.desc = desc;
+      this.form.soubdate = soubdate;
+      this.form.status = status;
+      this.form.title = title;
+      this.form.type = type;
+      this.form.cover = {
+        url: cover.url,
+        urlname: cover.name,
+        size: cover.size,
+        type: cover.type,
+      };
+      console.log(this.form);
+    },
+  },
+  computed: {
+    //将封面url地址传给子组件，当没有接收到封面url时，给子组件传空值
+    propimgurl() {
+      if (!this.propformdata.cover) return "";
+      return this.propformdata.cover.url;
+    },
   },
   watch: {
     "form.type": function (newq, oldq) {

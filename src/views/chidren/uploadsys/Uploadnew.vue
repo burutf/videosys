@@ -21,7 +21,6 @@
 <script>
 import UploadFile from "@/components/upload/UploadFile.vue";
 import Formdata from "@/components/upload/Formdata.vue";
-import UploadCover from "@/components/upload/UploadCover.vue";
 
 export default {
   name: "Uploadnew",
@@ -84,7 +83,6 @@ export default {
   components: {
     UploadFile,
     Formdata,
-    UploadCover,
   },
 };
 </script>

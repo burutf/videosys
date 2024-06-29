@@ -13,3 +13,11 @@ export const dellist = async (videoid)=>{
     const ress = await http.delete('/dellist',{params:{videoid}})
     return ress
 }
+
+//更改列表中的一条
+export const updatalist = async (videoid,setdata)=>{
+    const ress = await http.post('/updatalist',{
+        videoid,
+        setdata
+    })
+}
