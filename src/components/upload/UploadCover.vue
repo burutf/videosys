@@ -35,8 +35,6 @@ export default {
     };
   },
   mounted() {
-
-    console.log(this.propimgurl);
     if (this.propimgurl==='') return
     //将传来的图片地址给img标签
     this.imageUrl = this.propimgurl;

@@ -133,6 +133,8 @@ export default {
         // dynamicTags: [],
         //首播日期
         soubdate: "",
+        //视频id
+        videoid:''
       },
       rules: {
         title: [
@@ -185,6 +187,7 @@ export default {
     }
     //接收传来的propformdata，并填入表单中
     this.formtt();
+    this.videoid = this.propformdata.videoid
   },
   methods: {
     //分类标签删除
@@ -233,10 +236,15 @@ export default {
                 //上传精简filelist数组
                 this.tidyfilelist(),
                 //表单
-                this.form
+                this.form,
+                //视频id
+                this.videoid,
+                //要删除的之前上传过的视频
+                this.delvideolist
               );
               //触发父元素的loading更改函数,结束加载
               this.$emit("updataloading", false);
+              this.$emit('endeve')
               this.$message({
                 type: "success",
                 message: "上传成功!",
@@ -316,11 +324,10 @@ export default {
       this.form.type = type;
       this.form.cover = {
         url: cover.url,
-        urlname: cover.name,
+        urlname: cover.urlname,
         size: cover.size,
         type: cover.type,
       };
-      console.log(this.form);
     },
   },
   computed: {

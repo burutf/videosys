@@ -345,16 +345,16 @@ export default {
       if (this.proplist.length === 0) return [];
       const arr = this.proplist.map((e) => {
         //因为是固定格式，直接切割字符串得到数组，下标3的即为文件名字
-        const name = e.name.split("/")[3];
+        const name = e.name;
         return {
           name,
           percentage: 100,
           serial: e.serial,
           status: e.status,
           isbeforup: true,
+          size:e.size,
           response: {
-            name: e.name,
-            etag: e.etag,
+            name: e.urlname,
           },
         };
       });

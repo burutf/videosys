@@ -22,7 +22,8 @@
     </el-table>
     <!-- 抽屉栏 -->
     <el-drawer
-      title="编辑视频信息"
+      :v-loading="loading"
+      :title='"编辑视频信息("+rawdata.videoid+")"'
       :visible.sync="drawer"
       direction="ltr"
       :before-close="handleClose"
@@ -32,7 +33,7 @@
       <!-- 视频上传组件 -->
       <UploadFile @filelistcd="filelistcd" :videoid="rawdata.videoid" :proplist="rawdata.videolist"></UploadFile>
       <!-- 表单提交模块 -->
-      <Formdata @updataloading="updataloading" :propformdata="rawdata" :filelist="filelist" :delvideolist="delvideolist"></Formdata>
+      <Formdata @updataloading="updataloading" @endeve="endeve" :propformdata="rawdata" :filelist="filelist" :delvideolist="delvideolist"></Formdata>
     </el-drawer>
   </div>
 </template>
@@ -64,7 +65,6 @@ export default {
       drawer: false,
       //要编辑的行数据
       rawdata: {},
-      loading:true,
       //上传组件传来的视频列表
       filelist:[],
       //已经上传完这次要删除的列表
@@ -95,7 +95,8 @@ export default {
     async dellist(data) {
       try {
         const ress = await this.$API.videosys.dellist(data.videoid);
-        console.log(ress);
+        //重新获取视频列表
+        this.getvideolist();
       } catch (error) {
         console.log(error);
       }
@@ -105,7 +106,8 @@ export default {
       this.$confirm("确认关闭？")
         .then((_) => {
           done();
-          
+          //重新获取视频列表
+          this.getvideolist();
         })
         .catch((_) => {});
     },
@@ -113,11 +115,18 @@ export default {
     updataloading(status){
       this.loading = status
     },
+    //表单上传结束操作
+    endeve(){
+      //关闭抽屉
+      this.drawer = false
+      //重新获取视频列表
+      this.getvideolist();
+    },
     //接收UploadFile子组件的文件列表和已经上传完这次要删除的列表
     filelistcd(filelist,delvideolist){
       this.filelist = filelist
       this.delvideolist = delvideolist
-    }
+    },
   },
   computed: {
     //将分页属性组合成对象
