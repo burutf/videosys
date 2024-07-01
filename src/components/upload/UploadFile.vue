@@ -28,7 +28,11 @@
             <!-- 显示当前的上传成没成功 -->
             <i
               v-if="item.status === 'success'"
-              class="el-icon-success status"
+              class="el-icon-success success"
+            ></i>
+            <i
+              v-if="item.status === 'fail'"
+              class="el-icon-error error"
             ></i>
             <el-progress
               v-if="!item.isbeforup"
@@ -344,14 +348,13 @@ export default {
       //如果没有传来proplist就返回空对象
       if (this.proplist.length === 0) return [];
       const arr = this.proplist.map((e) => {
-        //因为是固定格式，直接切割字符串得到数组，下标3的即为文件名字
         const name = e.name;
         return {
           name,
           percentage: 100,
           serial: e.serial,
           status: e.status,
-          isbeforup: true,
+          isbeforup: e.isbeforup,
           size:e.size,
           response: {
             name: e.urlname,
@@ -454,12 +457,19 @@ export default {
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
-    .status {
+    .success {
       position: absolute;
       bottom: 5px;
       right: 5px;
       font-size: 20px;
       color: green;
+    }
+    .error{
+      position: absolute;
+      bottom: 5px;
+      right: 5px;
+      font-size: 20px;
+      color: red;
     }
     .del {
       display: none;
@@ -478,7 +488,10 @@ export default {
     }
   }
   //显示隐藏效果
-  li:hover .status {
+  li:hover .success {
+    display: none;
+  }
+  li:hover .error {
     display: none;
   }
   li:hover .del {

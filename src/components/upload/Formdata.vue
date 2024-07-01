@@ -322,12 +322,7 @@ export default {
       this.form.status = status;
       this.form.title = title;
       this.form.type = type;
-      this.form.cover = {
-        url: cover.url,
-        urlname: cover.urlname,
-        size: cover.size,
-        type: cover.type,
-      };
+      this.form.cover = cover;
     },
   },
   computed: {

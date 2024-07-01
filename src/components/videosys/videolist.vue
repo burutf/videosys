@@ -84,7 +84,10 @@ export default {
         this.tableData = res.data.arrlist;
         //总共有多少条
         this.sumpage = res.data.sumpage;
-      } catch (error) {}
+      } catch (error) {
+        this.tableData = [];
+        this.sumpage = 0;
+      }
     },
     //编辑列表中一条
     redacklist(data) {
