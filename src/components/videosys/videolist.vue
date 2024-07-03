@@ -1,7 +1,18 @@
 <template>
   <div>
-    <el-table :data="tableData" style="width: 100%">
-      <el-table-column prop="lastupdate" label="上传日期" width="160px">
+    <el-table
+      :data="tableData"
+      style="width: 100%"
+      :default-sort="{ prop: 'lastupdate', order: 'descending' }"
+      @sort-change="sorttable"
+    >
+      <el-table-column
+        prop="lastupdate"
+        label="更新日期"
+        width="160px"
+        sortable="custom"
+        :sort-orders="['ascending', 'descending']"
+      >
       </el-table-column>
       <el-table-column prop="title" label="标题"> </el-table-column>
       <el-table-column prop="type" label="类型"> </el-table-column>
@@ -9,21 +20,34 @@
       <el-table-column label="标签">
         <template slot-scope="scope">
           <template v-for="(item, i) in scope.row.classify">
-            <el-tag size="mini" :key="i">{{ item }}</el-tag>
+            <el-tag size="mini" :key="i" disable-transitions>{{ item }}</el-tag>
           </template>
         </template>
       </el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
-          <el-button @click="redacklist(scope.row)" type="text">编辑</el-button>
-          <el-button @click="dellist(scope.row)" type="text">删除</el-button>
+          <el-button
+            style="margin-right: 10px"
+            @click="redacklist(scope.row)"
+            type="text"
+            >编辑</el-button
+          >
+          <el-popconfirm
+            title="将不可找回，确定删除吗？"
+            confirm-button-type="danger"
+            @confirm="dellist(scope.row)"
+          >
+            <el-button slot="reference" type="text" style="color: red"
+              >删除</el-button
+            >
+          </el-popconfirm>
         </template>
       </el-table-column>
     </el-table>
     <!-- 抽屉栏 -->
     <el-drawer
       :v-loading="loading"
-      :title='"编辑视频信息("+rawdata.videoid+")"'
+      :title="'编辑视频信息(' + rawdata.videoid + ')'"
       :visible.sync="drawer"
       direction="ltr"
       :before-close="handleClose"
@@ -31,10 +55,22 @@
       :destroyOnClose="true"
     >
       <!-- 视频上传组件 -->
-      <UploadFile @filelistcd="filelistcd" :videoid="rawdata.videoid" :proplist="rawdata.videolist"></UploadFile>
+      <UploadFile
+        @filelistcd="filelistcd"
+        :videoid="rawdata.videoid"
+        :proplist="rawdata.videolist"
+      ></UploadFile>
       <!-- 表单提交模块 -->
-      <Formdata @updataloading="updataloading" @endeve="endeve" :propformdata="rawdata" :filelist="filelist" :delvideolist="delvideolist"></Formdata>
+      <Formdata
+        @updataloading="updataloading"
+        @endeve="endeve"
+        :propformdata="rawdata"
+        :filelist="filelist"
+        :delvideolist="delvideolist"
+      ></Formdata>
     </el-drawer>
+
+    <Pagination ref="pagech":sumpage="sumpage" @regetlsit='regetlsit'></Pagination>
   </div>
 </template>
 
@@ -43,11 +79,13 @@
 import moment from "moment";
 
 //引入视频上传和表单组件
-import UploadFile from "../upload/UploadFile.vue";
-import Formdata from "../upload/Formdata.vue";
+import UploadFile from "@/components/upload/UploadFile.vue";
+import Formdata from "@/components/upload/Formdata.vue";
+//引入分页
+import Pagination from "@/components/videosys/Pagination.vue";
 
 export default {
-  name: "videolist",
+  name: "Videolist",
   data() {
     return {
       //视频列表
@@ -55,10 +93,6 @@ export default {
       //加载状态
       loading: false,
       //分页
-      //第几页
-      page: 1,
-      //每页条数
-      pagesize: 10,
       //总条数
       sumpage: 0,
       //抽屉是否打开
@@ -66,9 +100,13 @@ export default {
       //要编辑的行数据
       rawdata: {},
       //上传组件传来的视频列表
-      filelist:[],
+      filelist: [],
       //已经上传完这次要删除的列表
-      delvideolist:[],
+      delvideolist: [],
+      //排序
+      sortobj: {
+        lastupdate: -1,
+      },
     };
   },
   mounted() {
@@ -76,10 +114,24 @@ export default {
     this.getvideolist();
   },
   methods: {
+    //排序
+    sorttable(data) {
+      const { order, prop } = data;
+      this.sortobj[prop] = order === "descending" ? -1 : 1;
+      console.log(this.sortobj[prop]);
+      //重新获取视频列表
+      this.getvideolist();
+    },
     //获取视频列表
     async getvideolist() {
+      //拿到分页组件（子组件）中的当前页和每页条数
+      const {currentpage,pagesize} = this.$refs.pagech
       try {
-        const res = await this.$API.videosys.getvideolist(this.options);
+        const res = await this.$API.videosys.getvideolist({
+          page:currentpage,
+          pagesize:pagesize,
+          sortobj:this.sortobj
+        });
         //视频列表
         this.tableData = res.data.arrlist;
         //总共有多少条
@@ -115,30 +167,26 @@ export default {
         .catch((_) => {});
     },
     //接收Formdata子组件的上传状态，设置加载的值
-    updataloading(status){
-      this.loading = status
+    updataloading(status) {
+      this.loading = status;
     },
     //表单上传结束操作
-    endeve(){
+    endeve() {
       //关闭抽屉
-      this.drawer = false
+      this.drawer = false;
       //重新获取视频列表
       this.getvideolist();
     },
     //接收UploadFile子组件的文件列表和已经上传完这次要删除的列表
-    filelistcd(filelist,delvideolist){
-      this.filelist = filelist
-      this.delvideolist = delvideolist
+    filelistcd(filelist, delvideolist) {
+      this.filelist = filelist;
+      this.delvideolist = delvideolist;
     },
-  },
-  computed: {
-    //将分页属性组合成对象
-    options() {
-      return {
-        page: this.page,
-        pagesize: this.pagesize,
-      };
-    },
+    //分页组件触发的函数，重新获取列表
+    regetlsit(){
+      //重新获取视频列表
+      this.getvideolist();
+    }
   },
   watch: {
     //只要检测到列表改变了，就进行格式化日期
@@ -150,7 +198,8 @@ export default {
   },
   components: {
     UploadFile,
-    Formdata
+    Formdata,
+    Pagination
   },
 };
 </script>
@@ -159,6 +208,14 @@ export default {
 .cell {
   .el-tag {
     margin: 10px 10px 0 0;
+  }
+}
+.el-table {
+  overflow:visible;
+  /deep/.el-table__header-wrapper {
+    position: sticky;
+    top: 60px;
+    z-index: 10;
   }
 }
 </style>

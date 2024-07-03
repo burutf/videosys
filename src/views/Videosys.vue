@@ -1,11 +1,11 @@
 <template>
     <div>
-        <videolistVue></videolistVue>
+        <Videolist></Videolist>
     </div>
 </template>
 
 <script>
-import videolistVue from '@/components/videosys/videolist.vue'
+import Videolist from '@/components/videosys/Videolist.vue';
 
 export default{
     name:'Videosys',
@@ -15,7 +15,7 @@ export default{
         }
     },
     components:{
-        videolistVue
+        Videolist
     }
 }
 </script>

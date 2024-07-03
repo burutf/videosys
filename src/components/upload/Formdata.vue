@@ -6,8 +6,9 @@
       :model="form"
       label-width="100px"
       label-position="left"
+      :disabled="isdisabled"
     >
-      <el-form-item label="封面" prop="cover">
+      <el-form-item label="封面" prop="cover.urlname">
         <div class="cover">
           <!-- 这里是封面上传组件 -->
           <UploadCover
@@ -64,6 +65,8 @@
           v-model="form.classify"
           filterable
           placeholder="请选择1-7个分类"
+          :loading="selectloading"
+          @focus="getclassifylist"
         >
           <el-option
             v-for="item in classifylist"
@@ -149,7 +152,7 @@ export default {
             required: false,
           },
         ],
-        cover: [{ required: true, message: "请上传封面", trigger: "change" }],
+        "cover.urlname": [{ required: true, message: "请上传封面", trigger: "change" }],
         type: [{ required: true, message: "这里选一下", trigger: "change" }],
         soubdate: [{ required: false }],
         classify: [
@@ -175,21 +178,33 @@ export default {
       },
       inputValue: "",
       inputVisible: false,
-      //视频分类列表
+      //视频分类条目列表
       classifylist: [],
+      //分类条目的加载状态
+      selectloading:false,
+      //是否禁用表单元素
+      isdisabled:false
     };
   },
   //
-  async mounted() {
-    const { code, data } = await this.$API.extraapi.getclassifylist();
-    if (code === 200) {
-      this.classifylist = data;
-    }
+  mounted() {
     //接收传来的propformdata，并填入表单中
     this.formtt();
     this.videoid = this.propformdata.videoid
   },
   methods: {
+    //获取分类条目
+    async getclassifylist(){
+      if (this.classifylist.length>0) return
+      try {
+        this.selectloading = true
+        const {data} = await this.$API.extraapi.getclassifylist();
+        this.classifylist = data
+        this.selectloading = false
+      } catch (error) {
+        this.selectloading = false
+      }
+    },
     //分类标签删除
     handleClose(tag) {
       this.form.dynamicTags.splice(this.form.dynamicTags.indexOf(tag), 1);
@@ -338,6 +353,15 @@ export default {
         this.form.status = "已完结";
       }
     },
+    filelist:function(newdata){
+      //如果filelist视频列表没有东西，就禁用表单
+      //如果有东西，判断当前列表是不是被禁用了，被禁用的话就解除禁用
+      if(newdata.length===0){
+        this.isdisabled = true
+      }else if(this.isdisabled){
+        this.isdisabled = false
+      }
+    }
   },
   components: {
     UploadCover,

@@ -41,12 +41,12 @@ export default {
 
 <style lang="less" scoped>
 .el-header {
-  z-index: 10;
+  z-index: 999;
   padding: 0;
 }
 
 .el-aside {
-  z-index: 11;
+  z-index: 1000;
 }
 
 .home {
