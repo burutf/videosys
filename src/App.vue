@@ -6,18 +6,22 @@
 
 <script>
 export default {
-  name:'app',
-  
+  name: 'app',
+
 }
 </script>
 
 
 <style lang="less">
-  html,body{
-    margin: 0;
-    background-color: rgb(250,250,250);
-  }
-  *{
-    box-sizing: border-box;
-  }
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background-color: rgb(250, 250, 250);
+  // scrollbar-gutter: stable;
+}
+
+* {
+  box-sizing: border-box;
+}
 </style>

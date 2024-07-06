@@ -32,7 +32,7 @@ export default {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
+  width: 100vw;
   min-width: 900px;
   background-color: white;
   box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.05);

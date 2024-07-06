@@ -11,7 +11,7 @@
           <Header></Header>
         </el-header>
         <!-- 主体 -->
-        <div style="padding: 20px">
+        <div style="padding: 20px;position: relative;">
           <router-view></router-view>
         </div>
       </el-container>
@@ -44,7 +44,6 @@ export default {
   z-index: 999;
   padding: 0;
 }
-
 .el-aside {
   z-index: 1000;
 }

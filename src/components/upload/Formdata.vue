@@ -90,7 +90,7 @@
       </el-form-item>
 
       <el-form-item class="buttonaa">
-        <el-button type="primary" @click="submitForm('form')">提交</el-button>
+        <el-button :loading="loading" type="primary" @click="submitForm('form')">提交</el-button>
         <el-button @click="resetForm('form')">重置</el-button>
       </el-form-item>
     </el-form>
@@ -183,7 +183,9 @@ export default {
       //分类条目的加载状态
       selectloading:false,
       //是否禁用表单元素
-      isdisabled:false
+      isdisabled:false,
+      //上传状态
+      loading:false
     };
   },
   //
@@ -245,6 +247,7 @@ export default {
           if (valid) {
             //触发父元素的loading更改函数,展示加载
             this.$emit("updataloading", true);
+            this.loading = true
             try {
               console.log("进行服务端上传了");
               const fulluploadres = await this.$API.uploadapi.fullupload(
@@ -259,6 +262,7 @@ export default {
               );
               //触发父元素的loading更改函数,结束加载
               this.$emit("updataloading", false);
+              this.loading = false
               this.$emit('endeve')
               this.$message({
                 type: "success",
@@ -272,6 +276,7 @@ export default {
             } catch (error) {
               //触发父元素的loading更改函数,结束加载
               this.$emit("updataloading", false);
+              this.loading = false
               this.$message({
                 type: "error",
                 message: "上传失败",

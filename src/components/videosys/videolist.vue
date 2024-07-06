@@ -5,6 +5,7 @@
       style="width: 100%"
       :default-sort="{ prop: 'lastupdate', order: 'descending' }"
       @sort-change="sorttable"
+      v-loading="loading"
     >
       <el-table-column
         prop="lastupdate"
@@ -124,6 +125,7 @@ export default {
     },
     //获取视频列表
     async getvideolist() {
+      this.loading = true
       //拿到分页组件（子组件）中的当前页和每页条数
       const {currentpage,pagesize} = this.$refs.pagech
       try {
@@ -132,11 +134,13 @@ export default {
           pagesize:pagesize,
           sortobj:this.sortobj
         });
+        this.loading = false
         //视频列表
         this.tableData = res.data.arrlist;
         //总共有多少条
         this.sumpage = res.data.sumpage;
       } catch (error) {
+        this.loading = false
         this.tableData = [];
         this.sumpage = 0;
       }
@@ -212,10 +216,21 @@ export default {
 }
 .el-table {
   overflow:visible;
+  border-radius: 10px;
+  padding-top: 10px;
+  box-shadow: 1px 1px 4px #d2d2d2;
+  margin-bottom: 55px;
+  /deep/tr{
+    background: none;
+  }
+  /deep/th{
+    background: none;
+  }
   /deep/.el-table__header-wrapper {
     position: sticky;
-    top: 60px;
+    top: 55px;
     z-index: 10;
+    background:linear-gradient(#fff 80%,rgba(255, 255, 255, 0.8) 100%);
   }
 }
 </style>
