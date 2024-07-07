@@ -260,7 +260,6 @@ export default {
     //文件列表发生更改时，更新fileList数组
     onchange(file, fileList) {
       console.log("文件列表发生改变了");
-      console.log(this.fileList);
       this.$nextTick(() => {
         this.fileList = fileList;
       });

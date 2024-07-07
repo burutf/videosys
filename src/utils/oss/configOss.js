@@ -1,4 +1,4 @@
-import { stsOSS,gettime } from '@/api/extra'
+import { stsOSS,gettimenow } from '@/api/extra'
 import OSS from 'ali-oss'
 
 let token = null;
@@ -11,7 +11,7 @@ const isCredentialsExpired = async (tokend) => {
     //拿到ststoken的出产时间
     const expireDate = new Date(tokend.Expiration);
     //拿到现在的时间戳
-    const now = await gettime();
+    const now = await gettimenow();
     // 对比，如果有效期不足一分钟，视为过期。
     return expireDate.getTime() - now.time <= 60000;
 }
@@ -57,7 +57,7 @@ export const configOss = async () => {
         })
         return client
     } catch (error) {
-        return "sts出错:" + error
+        throw new Error("sts出错:" + error)
     }
 }
 

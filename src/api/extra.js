@@ -11,7 +11,7 @@ export const stsOSS = () => {
 }
 
 //获取服务器时间
-export const gettime = ()=>{
+export const gettimenow = ()=>{
     return http.get('/gettime')
 }
 

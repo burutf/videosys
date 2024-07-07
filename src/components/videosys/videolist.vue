@@ -1,19 +1,18 @@
 <template>
   <div>
-    <el-table
-      :data="tableData"
-      style="width: 100%"
-      :default-sort="{ prop: 'lastupdate', order: 'descending' }"
-      @sort-change="sorttable"
-      v-loading="loading"
-    >
-      <el-table-column
-        prop="lastupdate"
-        label="更新日期"
-        width="160px"
-        sortable="custom"
-        :sort-orders="['ascending', 'descending']"
-      >
+    <Searchfn ref="searchfn" @datesearchfn="datesearchfn" @titsearchfn="titsearchfn"></Searchfn>
+    <div class="buttoncl">
+      <el-button size="small" @click="clearfiliter">清空筛选</el-button>
+      <el-button type="danger" icon="el-icon-delete" @click="delbatch" size="small"
+        :disabled="arrbatchsel.length === 0">批量删除</el-button>
+      <span v-show="arrbatchsel.length !== 0">{{ arrbatchsel.length }}条</span>
+    </div>
+    <el-table :data="tableData" style="width: 100%" :default-sort="{ prop: 'lastupdate', order: 'descending' }"
+      @sort-change="sorttable" v-loading="loading" highlight-selection-row @selection-change="handleSelectionChange">
+      <el-table-column type="selection">
+      </el-table-column>
+      <el-table-column prop="lastupdate" label="更新日期" width="160px" sortable="custom"
+        :sort-orders="['ascending', 'descending']">
       </el-table-column>
       <el-table-column prop="title" label="标题"> </el-table-column>
       <el-table-column prop="type" label="类型"> </el-table-column>
@@ -27,51 +26,24 @@
       </el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
-          <el-button
-            style="margin-right: 10px"
-            @click="redacklist(scope.row)"
-            type="text"
-            >编辑</el-button
-          >
-          <el-popconfirm
-            title="将不可找回，确定删除吗？"
-            confirm-button-type="danger"
-            @confirm="dellist(scope.row)"
-          >
-            <el-button slot="reference" type="text" style="color: red"
-              >删除</el-button
-            >
+          <el-button style="margin-right: 10px" @click="redacklist(scope.row)" type="text">编辑</el-button>
+          <el-popconfirm title="将不可找回，确定删除吗？" confirm-button-type="danger" @confirm="dellist(scope.row)">
+            <el-button slot="reference" type="text" style="color: red">删除</el-button>
           </el-popconfirm>
         </template>
       </el-table-column>
     </el-table>
     <!-- 抽屉栏 -->
-    <el-drawer
-      :v-loading="loading"
-      :title="'编辑视频信息(' + rawdata.videoid + ')'"
-      :visible.sync="drawer"
-      direction="ltr"
-      :before-close="handleClose"
-      size="auto"
-      :destroyOnClose="true"
-    >
+    <el-drawer :v-loading="loading" :title="'编辑视频信息(' + rawdata.videoid + ')'" :visible.sync="drawer" direction="ltr"
+      :before-close="handleClose" size="auto" :destroyOnClose="true">
       <!-- 视频上传组件 -->
-      <UploadFile
-        @filelistcd="filelistcd"
-        :videoid="rawdata.videoid"
-        :proplist="rawdata.videolist"
-      ></UploadFile>
+      <UploadFile @filelistcd="filelistcd" :videoid="rawdata.videoid" :proplist="rawdata.videolist"></UploadFile>
       <!-- 表单提交模块 -->
-      <Formdata
-        @updataloading="updataloading"
-        @endeve="endeve"
-        :propformdata="rawdata"
-        :filelist="filelist"
-        :delvideolist="delvideolist"
-      ></Formdata>
+      <Formdata @updataloading="updataloading" @endeve="endeve" :propformdata="rawdata" :filelist="filelist"
+        :delvideolist="delvideolist"></Formdata>
     </el-drawer>
 
-    <Pagination ref="pagech":sumpage="sumpage" @regetlsit='regetlsit'></Pagination>
+    <Pagination ref="pagech" :sumpage="sumpage" @regetlsit='regetlsit'></Pagination>
   </div>
 </template>
 
@@ -84,6 +56,8 @@ import UploadFile from "@/components/upload/UploadFile.vue";
 import Formdata from "@/components/upload/Formdata.vue";
 //引入分页
 import Pagination from "@/components/videosys/Pagination.vue";
+//引入搜索功能
+import Searchfn from "@/components/videosys/Searchfn.vue";
 
 export default {
   name: "Videolist",
@@ -108,6 +82,12 @@ export default {
       sortobj: {
         lastupdate: -1,
       },
+      //筛选日期范围
+      datefiltle: [],
+      //要搜索的标题关键字
+      titlesearch: '',
+      //批量选择的数组
+      arrbatchsel: []
     };
   },
   mounted() {
@@ -119,7 +99,6 @@ export default {
     sorttable(data) {
       const { order, prop } = data;
       this.sortobj[prop] = order === "descending" ? -1 : 1;
-      console.log(this.sortobj[prop]);
       //重新获取视频列表
       this.getvideolist();
     },
@@ -127,12 +106,14 @@ export default {
     async getvideolist() {
       this.loading = true
       //拿到分页组件（子组件）中的当前页和每页条数
-      const {currentpage,pagesize} = this.$refs.pagech
+      const { currentpage, pagesize } = this.$refs.pagech
       try {
         const res = await this.$API.videosys.getvideolist({
-          page:currentpage,
-          pagesize:pagesize,
-          sortobj:this.sortobj
+          page: currentpage,
+          pagesize: pagesize,
+          sortobj: this.sortobj,
+          datefiltle: this.datefiltle,
+          titlesearch: this.titlesearch
         });
         this.loading = false
         //视频列表
@@ -168,7 +149,7 @@ export default {
           //重新获取视频列表
           this.getvideolist();
         })
-        .catch((_) => {});
+        .catch((_) => { });
     },
     //接收Formdata子组件的上传状态，设置加载的值
     updataloading(status) {
@@ -187,9 +168,63 @@ export default {
       this.delvideolist = delvideolist;
     },
     //分页组件触发的函数，重新获取列表
-    regetlsit(){
+    regetlsit() {
       //重新获取视频列表
       this.getvideolist();
+    },
+    //子组件Searchfn触发的方法，筛选日期范围
+    datesearchfn(data) {
+      this.datefiltle = data
+      //重新获取视频列表
+      this.getvideolist();
+    },
+    //子组件Searchfn触发的方法，搜索标题
+    titsearchfn(data) {
+      this.titlesearch = data
+      //重新获取视频列表
+      this.getvideolist();
+    },
+    //拿到批量选择的数组
+    handleSelectionChange(data) {
+      this.arrbatchsel = data
+    },
+    //清空筛选
+    clearfiliter() {
+      this.$refs.searchfn.clearfiliter()
+      //重新获取视频列表
+      this.getvideolist();
+    },
+    //批量删除
+    async delbatch() {
+      const arr = this.arrbatchsel.map(e => {
+        return e.videoid
+      })
+      try {
+        //提示框
+        await this.$confirm('此操作将永久删除这些文件, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        })
+        //进行批量删除
+        try {
+          const ress = await this.$API.videosys.dellistbatch(arr);
+          //重新获取视频列表
+          this.getvideolist();
+          this.$message({
+            type: 'success',
+            message: '删除成功!'
+          });
+        } catch (error) {
+          console.log(error);
+        }
+      } catch (error) {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        });
+      }
+
     }
   },
   watch: {
@@ -203,7 +238,8 @@ export default {
   components: {
     UploadFile,
     Formdata,
-    Pagination
+    Pagination,
+    Searchfn
   },
 };
 </script>
@@ -214,23 +250,37 @@ export default {
     margin: 10px 10px 0 0;
   }
 }
+
+.buttoncl {
+  margin-bottom: 10px;
+
+  span {
+    font-size: 0.8em;
+    color: #4b4b4b;
+    margin-left: 5px;
+  }
+}
+
 .el-table {
-  overflow:visible;
+  overflow: visible;
   border-radius: 10px;
   padding-top: 10px;
   box-shadow: 1px 1px 4px #d2d2d2;
   margin-bottom: 55px;
-  /deep/tr{
+
+  /deep/tr {
     background: none;
   }
-  /deep/th{
+
+  /deep/th {
     background: none;
   }
+
   /deep/.el-table__header-wrapper {
     position: sticky;
     top: 55px;
     z-index: 10;
-    background:linear-gradient(#fff 80%,rgba(255, 255, 255, 0.8) 100%);
+    background: linear-gradient(#fff 80%, rgba(255, 255, 255, 0.8) 100%);
   }
 }
 </style>

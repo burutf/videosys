@@ -62,11 +62,13 @@ export default {
       const { file } = filec;
       try {
         this.loading = true;
+
         const uploadreturn = await this.$API.uploadapi.uploadcover(
           `${this.temlurl}${name}`,
           file,
           this.headers()
         );
+        
 
         //上传成功后的操作
         if (uploadreturn.res.status === 200) {
@@ -81,9 +83,9 @@ export default {
             size: filec.file.size,
             type: filec.file.type,
           });
-          console.log(uploadreturn);
         }
       } catch (error) {
+        console.error(error);
         //触发父组件的自定义事件，进行传值
         this.$emit("covername", "#");
       }

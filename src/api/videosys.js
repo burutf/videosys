@@ -13,6 +13,11 @@ export const dellist = async (videoid)=>{
     const ress = await http.delete('/dellist',{params:{videoid}})
     return ress
 }
+//批量删除列表
+export const dellistbatch = async(videoidlist)=>{
+    const ress = await http.delete('/dellistbatch',{params:{videoidlist}})
+    return ress
+}
 
 //更改列表中的一条
 export const updatalist = async (videoid,setdata)=>{
