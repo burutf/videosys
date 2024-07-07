@@ -1,22 +1,46 @@
 <template>
   <div>
-    <Searchfn ref="searchfn" @datesearchfn="datesearchfn" @titsearchfn="titsearchfn"></Searchfn>
-    <div class="buttoncl">
-      <el-button size="small" @click="clearfiliter">清空筛选</el-button>
-      <el-button type="danger" icon="el-icon-delete" @click="delbatch" size="small"
-        :disabled="arrbatchsel.length === 0">批量删除</el-button>
-      <span v-show="arrbatchsel.length !== 0">{{ arrbatchsel.length }}条</span>
-    </div>
-    <el-table :data="tableData" style="width: 100%" :default-sort="{ prop: 'lastupdate', order: 'descending' }"
-      @sort-change="sorttable" v-loading="loading" highlight-selection-row @selection-change="handleSelectionChange">
-      <el-table-column type="selection">
-      </el-table-column>
-      <el-table-column prop="lastupdate" label="更新日期" width="160px" sortable="custom"
-        :sort-orders="['ascending', 'descending']">
+    <Searchfn
+      ref="searchfn"
+      @datesearchfn="datesearchfn"
+      @titsearchfn="titsearchfn"
+    ></Searchfn>
+    <Buttoncl
+      :filiterdisabled="filiterdisabled"
+      :batchisdnum="batchisdnum"
+      @clearfiliters="clearfiliters"
+      @delbatch="delbatch"
+    ></Buttoncl>
+    <el-table
+      ref="filterTable"
+      :data="tableData"
+      style="width: 100%"
+      :default-sort="{ prop: 'lastupdate', order: 'descending' }"
+      @sort-change="sorttable"
+      v-loading="loading"
+      highlight-selection-row
+      @selection-change="handleSelectionChange"
+      @filter-change="filterchange"
+    >
+      <el-table-column type="selection"> </el-table-column>
+      <el-table-column
+        prop="lastupdate"
+        label="更新日期"
+        width="160px"
+        sortable="custom"
+        :sort-orders="['ascending', 'descending']"
+      >
       </el-table-column>
       <el-table-column prop="title" label="标题"> </el-table-column>
       <el-table-column prop="type" label="类型"> </el-table-column>
-      <el-table-column prop="status" label="状态"> </el-table-column>
+      <el-table-column
+        prop="status"
+        label="状态"
+        :filters="statusfilters"
+        :filter-multiple="false"
+        column-key="status"
+      >
+      </el-table-column>
       <el-table-column label="标签">
         <template slot-scope="scope">
           <template v-for="(item, i) in scope.row.classify">
@@ -26,24 +50,55 @@
       </el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
-          <el-button style="margin-right: 10px" @click="redacklist(scope.row)" type="text">编辑</el-button>
-          <el-popconfirm title="将不可找回，确定删除吗？" confirm-button-type="danger" @confirm="dellist(scope.row)">
-            <el-button slot="reference" type="text" style="color: red">删除</el-button>
+          <el-button
+            style="margin-right: 10px"
+            @click="redacklist(scope.row)"
+            type="text"
+            >编辑</el-button
+          >
+          <el-popconfirm
+            title="将不可找回，确定删除吗？"
+            confirm-button-type="danger"
+            @confirm="dellist(scope.row)"
+          >
+            <el-button slot="reference" type="text" style="color: red"
+              >删除</el-button
+            >
           </el-popconfirm>
         </template>
       </el-table-column>
     </el-table>
     <!-- 抽屉栏 -->
-    <el-drawer :v-loading="loading" :title="'编辑视频信息(' + rawdata.videoid + ')'" :visible.sync="drawer" direction="ltr"
-      :before-close="handleClose" size="auto" :destroyOnClose="true">
+    <el-drawer
+      :v-loading="loading"
+      :title="'编辑视频信息(' + rawdata.videoid + ')'"
+      :visible.sync="drawer"
+      direction="ltr"
+      :before-close="handleClose"
+      size="auto"
+      :destroyOnClose="true"
+    >
       <!-- 视频上传组件 -->
-      <UploadFile @filelistcd="filelistcd" :videoid="rawdata.videoid" :proplist="rawdata.videolist"></UploadFile>
+      <UploadFile
+        @filelistcd="filelistcd"
+        :videoid="rawdata.videoid"
+        :proplist="rawdata.videolist"
+      ></UploadFile>
       <!-- 表单提交模块 -->
-      <Formdata @updataloading="updataloading" @endeve="endeve" :propformdata="rawdata" :filelist="filelist"
-        :delvideolist="delvideolist"></Formdata>
+      <Formdata
+        @updataloading="updataloading"
+        @endeve="endeve"
+        :propformdata="rawdata"
+        :filelist="filelist"
+        :delvideolist="delvideolist"
+      ></Formdata>
     </el-drawer>
 
-    <Pagination ref="pagech" :sumpage="sumpage" @regetlsit='regetlsit'></Pagination>
+    <Pagination
+      ref="pagech"
+      :sumpage="sumpage"
+      @regetlsit="regetlsit"
+    ></Pagination>
   </div>
 </template>
 
@@ -58,6 +113,8 @@ import Formdata from "@/components/upload/Formdata.vue";
 import Pagination from "@/components/videosys/Pagination.vue";
 //引入搜索功能
 import Searchfn from "@/components/videosys/Searchfn.vue";
+//引入按钮组件
+import Buttoncl from "@/components/videosys/Buttoncl.vue";
 
 export default {
   name: "Videolist",
@@ -85,9 +142,16 @@ export default {
       //筛选日期范围
       datefiltle: [],
       //要搜索的标题关键字
-      titlesearch: '',
+      titlesearch: "",
       //批量选择的数组
-      arrbatchsel: []
+      arrbatchsel: [],
+      //状态的筛选
+      statusfilters: [
+        { text: "连播中", value: "连播中" },
+        { text: "已完结", value: "已完结" },
+      ],
+      //状态列筛选的字段
+      statusff: "",
     };
   },
   mounted() {
@@ -104,24 +168,25 @@ export default {
     },
     //获取视频列表
     async getvideolist() {
-      this.loading = true
+      this.loading = true;
       //拿到分页组件（子组件）中的当前页和每页条数
-      const { currentpage, pagesize } = this.$refs.pagech
+      const { currentpage, pagesize } = this.$refs.pagech;
       try {
         const res = await this.$API.videosys.getvideolist({
           page: currentpage,
           pagesize: pagesize,
           sortobj: this.sortobj,
           datefiltle: this.datefiltle,
-          titlesearch: this.titlesearch
+          titlesearch: this.titlesearch,
+          statusff: this.statusff,
         });
-        this.loading = false
+        this.loading = false;
         //视频列表
         this.tableData = res.data.arrlist;
         //总共有多少条
         this.sumpage = res.data.sumpage;
       } catch (error) {
-        this.loading = false
+        this.loading = false;
         this.tableData = [];
         this.sumpage = 0;
       }
@@ -149,7 +214,7 @@ export default {
           //重新获取视频列表
           this.getvideolist();
         })
-        .catch((_) => { });
+        .catch((_) => {});
     },
     //接收Formdata子组件的上传状态，设置加载的值
     updataloading(status) {
@@ -174,58 +239,70 @@ export default {
     },
     //子组件Searchfn触发的方法，筛选日期范围
     datesearchfn(data) {
-      this.datefiltle = data
+      this.datefiltle = data;
       //重新获取视频列表
       this.getvideolist();
     },
     //子组件Searchfn触发的方法，搜索标题
     titsearchfn(data) {
-      this.titlesearch = data
+      this.titlesearch = data;
       //重新获取视频列表
       this.getvideolist();
     },
     //拿到批量选择的数组
     handleSelectionChange(data) {
-      this.arrbatchsel = data
+      this.arrbatchsel = data;
     },
     //清空筛选
-    clearfiliter() {
-      this.$refs.searchfn.clearfiliter()
+    clearfiliters() {
+      //清除搜索的筛选
+      this.$refs.searchfn.chclearfiliter();
+      this.datefiltle = [];
+      this.titlesearch = "";
+      //清除表头的筛选
+      this.statusff = "";
+      this.$refs.filterTable.clearFilter();
       //重新获取视频列表
       this.getvideolist();
     },
     //批量删除
     async delbatch() {
-      const arr = this.arrbatchsel.map(e => {
-        return e.videoid
-      })
+      const arr = this.arrbatchsel.map((e) => {
+        return e.videoid;
+      });
       try {
         //提示框
-        await this.$confirm('此操作将永久删除这些文件, 是否继续?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        })
+        await this.$confirm("此操作将永久删除这些文件, 是否继续?", "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning",
+        });
         //进行批量删除
         try {
           const ress = await this.$API.videosys.dellistbatch(arr);
           //重新获取视频列表
           this.getvideolist();
           this.$message({
-            type: 'success',
-            message: '删除成功!'
+            type: "success",
+            message: "删除成功!",
           });
         } catch (error) {
           console.log(error);
         }
       } catch (error) {
         this.$message({
-          type: 'info',
-          message: '已取消删除'
+          type: "info",
+          message: "已取消删除",
         });
       }
-
-    }
+    },
+    //筛选
+    filterchange(data) {
+      //状态列筛选的字段
+      this.statusff = data.status[0];
+      //重新获取视频列表
+      this.getvideolist();
+    },
   },
   watch: {
     //只要检测到列表改变了，就进行格式化日期
@@ -235,11 +312,28 @@ export default {
       });
     },
   },
+  computed: {
+    //有筛选的属性时再解开禁用
+    filiterdisabled() {
+      if (
+        this.datefiltle.length === 0 &&
+        this.titlesearch === "" &&
+        !this.statusff
+      )
+        return true;
+      return false;
+    },
+    //批量选择的条数
+    batchisdnum() {
+      return this.arrbatchsel.length;
+    },
+  },
   components: {
     UploadFile,
     Formdata,
     Pagination,
-    Searchfn
+    Searchfn,
+    Buttoncl,
   },
 };
 </script>
@@ -248,16 +342,6 @@ export default {
 .cell {
   .el-tag {
     margin: 10px 10px 0 0;
-  }
-}
-
-.buttoncl {
-  margin-bottom: 10px;
-
-  span {
-    font-size: 0.8em;
-    color: #4b4b4b;
-    margin-left: 5px;
   }
 }
 

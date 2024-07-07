@@ -40,11 +40,9 @@ export default {
             this.$emit('titsearchfn', this.titledata)
         },
         //清空筛选
-        clearfiliter() {
+        chclearfiliter() {
             this.datascope = []
             this.titledata = ''
-            this.searchdata()
-            this.titsearch()
         }
     },
 }
