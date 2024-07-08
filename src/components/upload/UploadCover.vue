@@ -15,6 +15,9 @@
 </template>
 
 <script>
+//引入仓库中的userinfo
+import { mapState } from "vuex";
+
 export default {
   name: "UploadCover",
   props:{
@@ -106,9 +109,10 @@ export default {
     },
   },
   computed: {
+    ...mapState(['userinfo']),
     //拼接
     temlurl() {
-      return `${this.uploadTemUrl}/${this.userid}/`;
+      return `${this.uploadTemUrl}/${this.userid}/${this.userinfo.iat}/`;
     },
   },
 };

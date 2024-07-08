@@ -52,6 +52,8 @@
 import { debounce } from "lodash";
 //引入拖拽排序
 import draggable from "vuedraggable";
+//引入仓库中的userinfo
+import { mapState } from "vuex";
 
 export default {
   name: "UploadFile",
@@ -98,6 +100,7 @@ export default {
           this.serialreload();
         }
       });
+      console.log(this.fileList);
     },
     //自定义上传
     handleUploadFile(filec) {
@@ -338,9 +341,10 @@ export default {
     }
   },
   computed: {
+    ...mapState(['userinfo']),
     //拼接
     temlurl() {
-      return `${this.uploadTemUrl}/${this.userid}/`;
+      return `${this.uploadTemUrl}/${this.userid}/${this.userinfo.iat}/`;
     },
     //处理传来的proplist
     chuliproplist() {
