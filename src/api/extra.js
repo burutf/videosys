@@ -14,13 +14,3 @@ export const stsOSS = () => {
 export const gettimenow = ()=>{
     return http.get('/gettime')
 }
-
-//登陆接口
-export const login = (data)=>{
-    return http.post('/login',data)
-}
-
-//获取用户信息
-export const getuserinfo = ()=>{
-    return http.get('/getuserinfo')
-}

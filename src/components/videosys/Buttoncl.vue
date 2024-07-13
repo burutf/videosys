@@ -11,7 +11,7 @@
       :disabled="batchisdnum===0"
       >批量删除</el-button
     >
-    <span v-show="batchisdnum !== 0">{{ batchisdnum }}条</span>
+    <span v-show="batchisdnum !== 0">已选择<span style="margin: 0;color: teal;">{{ batchisdnum }}</span>条</span>
   </div>
 </template>
 

@@ -8,12 +8,14 @@ import * as extraapi from '@/api/extra'
 import * as osssys from '@/api/osssys'
 //视频管理页面的接口
 import * as videosys from '@/api/videosys'
-
+//用户相关的接口
+import * as userapi from '@/api/user'
 
 
 export {
     uploadapi,
     extraapi,
     osssys,
-    videosys
+    videosys,
+    userapi
 }

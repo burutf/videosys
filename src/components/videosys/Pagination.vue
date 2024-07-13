@@ -1,7 +1,7 @@
 <template>
   <div class="block">
     <span style="width: 200px;height: 0;"></span>
-    <el-pagination layout="prev, pager, next" :total="sumpage" :page-size="pagesize" :current-page="currentpage"
+    <el-pagination layout="total,prev, pager, next" :total="sumpage" :page-size="pagesize" :current-page="currentpage"
       @current-change="changepage" v-show="isshow">
     </el-pagination>
   </div>

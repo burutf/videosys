@@ -3,7 +3,7 @@ import Vuex from 'vuex'
 
 import router from '@/router'
 
-import { login, getuserinfo } from '@/api/extra'
+import { login, getuserinfo } from '@/api/user'
 
 //引入element-ui
 import { Message } from 'element-ui';

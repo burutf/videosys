@@ -92,11 +92,9 @@ export default {
     navdatatwo(){
       const arrroutes = this.navdata.filter(e=>{
         if (e.meta.shownav) {
-          //如果需要管理员才有权限的话，就判断当前用户是不是管理员
-          //不需要管理权限并且当前用户不是管理员的时候，也放行
-          if (e.meta.isadmin && this.userinfo.isadmin) {
-            return true
-          } else if(!e.meta.isadmin){
+          //auth 表示权限级别 数字越大越牛
+          //看当前用户属于哪个级别，级别够就可以访问
+          if (this.userinfo.auth>=e.meta.auth) {
             return true
           }
         }
