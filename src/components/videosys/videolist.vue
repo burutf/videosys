@@ -173,8 +173,8 @@ export default {
       const { currentpage, pagesize } = this.$refs.pagech;
       try {
         const res = await this.$API.videosys.getvideolist({
-          page: currentpage,
-          pagesize: pagesize,
+          currentpage,
+          pagesize,
           sortobj: this.sortobj,
           datefiltle: this.datefiltle,
           titlesearch: this.titlesearch,
@@ -239,12 +239,16 @@ export default {
     },
     //子组件Searchfn触发的方法，筛选日期范围
     datesearchfn(data) {
+      //将页数变为1
+      this.$refs.pagech.setpageone()
       this.datefiltle = data;
       //重新获取视频列表
       this.getvideolist();
     },
     //子组件Searchfn触发的方法，搜索标题
     titsearchfn(data) {
+      //将页数变为1
+      this.$refs.pagech.setpageone()
       this.titlesearch = data;
       //重新获取视频列表
       this.getvideolist();

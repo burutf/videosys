@@ -3,25 +3,22 @@ import http from '@/utils/axios'
 
 
 //获取视频列表
-export const getvideolist = async (options)=>{
-    const list = await http.get('/getvideolist',{params:{options}})
-    return list
+export const getvideolist = (options)=>{
+    return http.get('/getvideolist',{params:{options}})
 }
 
 //删除列表中的一条
-export const dellist = async (videoid)=>{
-    const ress = await http.delete('/dellist',{params:{videoid}})
-    return ress
+export const dellist = (videoid)=>{
+    return http.delete('/dellist',{params:{videoid}})
 }
 //批量删除列表
-export const dellistbatch = async(videoidlist)=>{
-    const ress = await http.delete('/dellistbatch',{params:{videoidlist}})
-    return ress
+export const dellistbatch = (videoidlist)=>{
+    return http.delete('/dellistbatch',{params:{videoidlist}})
 }
 
 //更改列表中的一条
-export const updatalist = async (videoid,setdata)=>{
-    const ress = await http.post('/updatalist',{
+export const updatalist = (videoid,setdata)=>{
+    return http.post('/updatalist',{
         videoid,
         setdata
     })

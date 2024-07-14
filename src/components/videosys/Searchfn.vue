@@ -7,7 +7,7 @@
             </el-date-picker>
         </div>
         <div class="titelse">
-            <el-input placeholder="按Enter搜索标题" prefix-icon="el-icon-search" v-model="titledata" @change="titsearch"
+            <el-input placeholder="按Enter搜索" prefix-icon="el-icon-search" v-model="titledata" @change="titsearch"
                 clearable>
             </el-input>
         </div>
@@ -34,7 +34,8 @@ export default {
     methods: {
         //给父组件传递选择的日期
         searchdata() {
-            this.$emit('datesearchfn', this.datascope)
+            //如果直接点击日期选择的×号会让datascope变成null会报错，所以当出错时替换为[]
+            this.$emit('datesearchfn', this.datascope || [])
         },
         titsearch() {
             this.$emit('titsearchfn', this.titledata)

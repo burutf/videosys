@@ -18,13 +18,16 @@ export default {
       pagesize: 10,
       //当前页数
       currentpage: 1,
-
     }
   },
   methods: {
     changepage(i) {
       this.currentpage = i
       this.$emit('regetlsit')
+    },
+    //页数变为1
+    setpageone(){
+      this.currentpage = 1
     }
   },
   computed: {

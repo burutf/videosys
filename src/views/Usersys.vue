@@ -1,10 +1,34 @@
 <template>
   <div>
+    <Searchfn
+      ref="searchfn"
+      @datesearchfn="datesearchfn"
+      @titsearchfn="titsearchfn"
+    ></Searchfn>
     <Adduser @adduserup="adduserup" :authlists="authlists"></Adduser>
-    <el-table :data="tableData" style="width: 100%" v-loading="loading">
-      <el-table-column prop="create_date" label="创建日期"> </el-table-column>
+    <el-table
+      :data="tableData"
+      style="width: 100%"
+      v-loading="loading"
+      @filter-change="filterchange"
+      :default-sort="{ prop: 'create_date', order: 'descending' }"
+      @sort-change="sorttable"
+    >
+      <el-table-column
+        prop="create_date"
+        label="创建日期"
+        sortable="custom"
+        :sort-orders="['ascending', 'descending']"
+      >
+      </el-table-column>
       <el-table-column prop="username" label="用户名"> </el-table-column>
-      <el-table-column prop="auth" label="权限等级">
+      <el-table-column
+        prop="auth"
+        label="权限等级"
+        :filters="tableauthlists"
+        :filter-multiple="false"
+        column-key="auth"
+      >
         <!-- 转换权限等级为可读性好的名称 -->
         <template slot-scope="scope">
           {{ nameauth(scope.row.auth) }}
@@ -85,8 +109,20 @@ export default {
       uptype: "",
       //权限列表
       authlists: [],
+      //表格筛选使用的权限列表
+      tableauthlists: [],
       //总页数
-      sumpage: 1,
+      sumpage: 0,
+      //筛选日期范围
+      datefiltle: [],
+      //要搜索的用户名关键字
+      titlesearch: "",
+      //权限状态的筛选
+      authfil: "",
+      //排序
+      sortobj: {
+        create_date: -1,
+      },
     };
   },
   provide() {
@@ -97,8 +133,6 @@ export default {
   mounted() {
     //获取用户列表和权限列表
     this.getlist();
-    //获取用户分页总条数
-    this.pagesum();
   },
   methods: {
     async getlist() {
@@ -107,26 +141,28 @@ export default {
       const { currentpage, pagesize } = this.$refs.pagech;
       try {
         //获取用户列表
-        const ress = await this.$API.userapi.getmongodbusers();
+        const { data } = await this.$API.userapi.getmongodbusers({
+          currentpage,
+          pagesize,
+          datefiltle: this.datefiltle,
+          titlesearch: this.titlesearch,
+          authfil: this.authfil,
+          sortobj:this.sortobj
+        });
         if (this.authlists.length === 0) {
           //获取权限列表
           const ress2 = await this.$API.userapi.getauthlist();
           this.authlists = ress2.data;
         }
-        this.tableData = ress.data;
+        //用户列表
+        this.tableData = data.arrlist;
+        //用户分页总条数
+        this.sumpage = data.sumpage;
         this.loading = false;
       } catch (error) {
-        console.log(error);
         this.loading = false;
-      }
-    },
-    //获取用户分页总条数
-    async pagesum() {
-      try {
-        const { sum } = await this.$API.userapi.getusersum();
-        this.sumpage = sum;
-      } catch (error) {
-        console.log(error);
+        this.tableData = [];
+        this.sumpage = 0;
       }
     },
     //更改下拉列表点击事件
@@ -190,6 +226,39 @@ export default {
       //获取用户列表
       this.getlist();
     },
+    //子组件Searchfn触发的方法，筛选日期范围
+    datesearchfn(data) {
+      //将页数变为1
+      this.$refs.pagech.setpageone();
+      this.datefiltle = data;
+      //获取用户列表
+      this.getlist();
+    },
+    //子组件Searchfn触发的方法，搜索标题
+    titsearchfn(data) {
+      //将页数变为1
+      this.$refs.pagech.setpageone();
+      this.titlesearch = data;
+      //获取用户列表
+      this.getlist();
+    },
+    //筛选
+    filterchange(data) {
+      //将页数变为1
+      this.$refs.pagech.setpageone();
+      //状态列筛选的字段
+      this.authfil = data.auth[0];
+      //重新获取视频列表
+      this.getlist();
+    },
+    //排序
+    sorttable(data) {
+      console.log(data);
+      const { order, prop } = data;
+      this.sortobj[prop] = order === "descending" ? -1 : 1;
+      //重新获取视频列表
+      this.getlist();
+    },
   },
   watch: {
     //只要检测到列表改变了，就进行格式化日期
@@ -197,6 +266,16 @@ export default {
       this.tableData.forEach((e) => {
         e.create_date = moment(e.create_date).format("YYYY/MM/DD HH:mm");
       });
+    },
+    //监测权限列表，获取到数据了，就更新一个能让表格筛选使用的权限列表
+    authlists: function () {
+      const arr = this.authlists.map((e) => {
+        return {
+          text: e.label,
+          value: e.value,
+        };
+      });
+      this.tableauthlists = arr;
     },
   },
   components: {

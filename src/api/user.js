@@ -11,8 +11,10 @@ export const getuserinfo = () => {
 };
 
 //获取所有用户列表
-export const getmongodbusers = () => {
-  return http.get("/getmongodbusers");
+export const getmongodbusers = (options) => {
+  return http.get("/getmongodbusers",{
+    params:{options}
+  });
 };
 
 //新增用户
