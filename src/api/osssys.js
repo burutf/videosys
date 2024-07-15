@@ -1,5 +1,5 @@
 //axios
-import http from '@/utils/axios'
+import http from '@/config/axios'
 
 //oss的操作api
 

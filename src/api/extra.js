@@ -1,4 +1,4 @@
-import http from '@/utils/axios'
+import http from '@/config/axios'
 
 //获取番剧类型列表
 export const getclassifylist = () => {

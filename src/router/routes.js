@@ -6,7 +6,7 @@
 export default [
     //这一块会动态渲染到侧边导航栏
     {
-        path: '/', redirect: 'videomanagement', name: 'layout', meta: { aside: true }, component: () => import('@/layout'),
+        path: '/', redirect: 'overview', name: 'layout', meta: { aside: true }, component: () => import('@/layout'),
         children: [
             //上传的路由
             {
@@ -15,6 +15,9 @@ export default [
                     { path: 'upload', name: '视频上传', pathname: '视频上传', component: () => import('@/views/chidren/uploadsys//Uploadnew') },
                     { path: 'status', name: '上传状态', pathname: '上传状态', component: () => import('@/views/chidren/uploadsys/UploadStatus') }
                 ]
+            },
+            {
+                path: 'overview', name: '总览', pathname: '总览', iconClass: 'el-icon-s-data', meta: { shownav: true, auth: 1 }, component: () => import('@/views/Overview')
             },
             {
                 path: 'videomanagement', name: '视频管理', pathname: '视频管理', iconClass: 'el-icon-video-camera-solid', meta: { shownav: true, auth: 1 }, component: () => import('@/views/Videosys')

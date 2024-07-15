@@ -1,6 +1,6 @@
-import { configOss } from '@/utils/oss/configOss'
+import { configOss } from '@/config/oss/configOss'
 //axios
-import http from '@/utils/axios'
+import http from '@/config/axios'
 
 
 /////////////

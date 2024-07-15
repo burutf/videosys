@@ -7,6 +7,8 @@ import store from './store';
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 
+//引入echats
+import echarts from '@/config/echarts/index'
 
 //引入所有的api接口
 import * as api from '@/api';
@@ -31,6 +33,7 @@ Vue.config.productionTip = false;
     render: h => h(App),
     beforeCreate() {
       Vue.prototype.$API = api
+      Vue.prototype.$echarts = echarts
     }
   }).$mount('#app');
 })()

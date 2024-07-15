@@ -1,4 +1,4 @@
-import http from "@/utils/axios";
+import http from "@/config/axios";
 
 //登陆接口
 export const login = (data) => {
