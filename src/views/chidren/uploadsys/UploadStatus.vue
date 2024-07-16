@@ -26,7 +26,11 @@ export default {
         next()
         return
       }
-      next('/')
+      if (!from.name) {
+        next("/")
+      }else{
+        next(to.query.path)
+      }
     },
     methods: {
       routergo(){

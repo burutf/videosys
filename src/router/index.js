@@ -14,9 +14,9 @@ const router = new VueRouter({
   mode: 'history',
   routes
 })
-
+//全局前置守卫
 router.beforeEach((to, from, next) => {
-
+  //进行token登陆校验
   const token = store.state.token
   //如果没有token的话，代表没有登陆
   if (!token) {
@@ -52,9 +52,13 @@ router.beforeEach((to, from, next) => {
 
     }
   }
+})
 
-
-
+//全局后置钩子（进行标题更换）
+router.afterEach((to, from)=>{
+  //拿到标题
+  const {meta:{title}} = to
+  document.title = title+" | 视频后台"
 })
 
 export default router

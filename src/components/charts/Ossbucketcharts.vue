@@ -32,8 +32,7 @@ export default {
             // adjust the start and end angle
             startAngle: 180,
             endAngle: 360,
-            data: [
-            ],
+            data: [],
             label: {
               show: true, // 显示标签
               formatter: "{b}:{d}%", // 标签内容格式
@@ -61,7 +60,7 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.ossbucketcharts{
-    grid-area:2 / 1 / 2 / 3;
+.ossbucketcharts {
+  grid-area: 2 / 1 / 2 / 3;
 }
 </style>

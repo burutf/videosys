@@ -1,10 +1,30 @@
 <template>
   <div class="aside">
     <!-- 这里是控制显示隐藏的 -->
-    <!-- <el-radio-group v-model="isCollapse" style="margin-bottom: 20px;">
-            <el-radio-button :label="false">展开</el-radio-button>
-            <el-radio-button :label="true">收起</el-radio-button>
-        </el-radio-group> -->
+    <!-- <el-radio-group v-model="isCollapse" style="margin-bottom: 20px">
+      <el-radio-button :label="false">展开</el-radio-button>
+      <el-radio-button :label="true">收起</el-radio-button>
+    </el-radio-group> -->
+
+    <a href=""
+      ><h1 class="logoh1">
+        视频
+        <img
+          src="../assets/logo.png"
+          style="width: 40px; height: 40px;"
+        />后台
+      </h1></a
+    >
+    <!-- 这里是上传界面 -->
+    <router-link :to="{ path: '/video-upload' }">
+      <el-button
+        class="buttonupload"
+        :class="{ routejh: uploadrouterjh }"
+        type="primary"
+      >
+        <i class="el-icon-upload el-icon--right">上传</i>
+      </el-button>
+    </router-link>
 
     <!-- 把路由数组渲染出来 -->
     <el-menu
@@ -13,23 +33,9 @@
       :collapse="isCollapse"
       :router="true"
     >
-      <!-- 这里是上传界面 -->
-      <router-link :to="{ path: '/video-upload' }">
-        <el-button
-          class="buttonupload"
-          :class="{ routejh: uploadrouterjh }"
-          type="primary"
-        >
-          <i class="el-icon-upload el-icon--right">上传</i>
-        </el-button>
-      </router-link>
-
       <!-- 动态渲染路由 -->
       <template v-for="(item, index) in navdatatwo">
-        <el-menu-item
-          :key="index"
-          :index="'/' + item.path"
-        >
+        <el-menu-item :key="index" :index="'/' + item.path">
           <i :class="item.iconClass"></i>
           <span slot="title">{{ item.name }}</span>
         </el-menu-item>
@@ -54,8 +60,8 @@
 </template>
 
 <script>
-import routes from '@/router/routes';
-import { mapState } from 'vuex';
+import routes from "@/router/routes";
+import { mapState } from "vuex";
 
 export default {
   name: "Aside",
@@ -69,38 +75,36 @@ export default {
   mounted() {
     //拿到关于导航栏的路由数组
     //在路由数组中有设置meta，通过判断meta拿到导航栏渲染数组
-    this.navdata = routes.filter((e)=>{
-      return e.meta.aside
-    })[0].children
+    this.navdata = routes.filter((e) => {
+      return e.meta.aside;
+    })[0].children;
   },
-  methods:{
-
-  },
+  methods: {},
   computed: {
     //拿到用户信息
-    ...mapState(['userinfo']),
+    ...mapState(["userinfo"]),
     //获取当前的url，并点亮对应的导航
     routeindex() {
       return this.$route.path;
     },
     //单独做了一个计算属性，来点亮上传按钮
     uploadrouterjh() {
-      const buttonpath = "/" + this.$router.options.routes[0].children[0].path
-      return this.routeindex.includes(buttonpath)
+      const buttonpath = "/" + this.$router.options.routes[0].children[0].path;
+      return this.routeindex.includes(buttonpath);
     },
     // 对路由数组进行二次筛选
-    navdatatwo(){
-      const arrroutes = this.navdata.filter(e=>{
+    navdatatwo() {
+      const arrroutes = this.navdata.filter((e) => {
         if (e.meta.shownav) {
           //auth 表示权限级别 数字越大越牛
           //看当前用户属于哪个级别，级别够就可以访问
-          if (this.userinfo.auth>=e.meta.auth) {
-            return true
+          if (this.userinfo.auth >= e.meta.auth) {
+            return true;
           }
         }
-      })
-      return arrroutes
-    }
+      });
+      return arrroutes;
+    },
   },
 };
 </script>
@@ -110,12 +114,14 @@ export default {
   position: fixed;
   top: 0;
   left: 0;
-  width: 200px;
   height: 100vh;
+  width: 200px;
   text-align: center;
   box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.05);
-  
+  background-color: #ffffff;
+  padding-top: 10px;
 }
+
 .el-menu-vertical-demo:not(.el-menu--collapse) {
   width: 100%;
   height: 100%;
@@ -125,10 +131,17 @@ export default {
   border: 0;
 }
 .buttonupload {
-  margin: 20px 0;
+  margin: 25px 0 15px;
 }
 //上传按钮被点亮时的样式
 .routejh {
   color: rgb(250, 209, 4);
+}
+
+.logoh1{
+  display: flex;
+  color: #00a29a;
+  align-items: center;
+  justify-content: center;
 }
 </style>

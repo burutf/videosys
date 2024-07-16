@@ -206,7 +206,6 @@ export default {
       }
       //获取用户列表和分页
       this.getlist();
-      this.pagesum();
     },
     //将权限等级变成名称
     nameauth(index) {
@@ -219,7 +218,6 @@ export default {
     adduserup() {
       //获取用户列表和分页
       this.getlist();
-      this.pagesum();
     },
     //分页组件触发函数
     regetlsit() {

@@ -12,18 +12,18 @@ export default [
             {
                 path: 'video-upload', name: '上传', redirect: 'video-upload/upload', name: 'video-upload', meta: { shownav: false, auth: 1 }, component: () => import('@/views/Uploadsys'),
                 children: [
-                    { path: 'upload', name: '视频上传', pathname: '视频上传', component: () => import('@/views/chidren/uploadsys//Uploadnew') },
-                    { path: 'status', name: '上传状态', pathname: '上传状态', component: () => import('@/views/chidren/uploadsys/UploadStatus') }
+                    { path: 'upload', name: '视频上传',meta:{title: '视频上传'},  component: () => import('@/views/chidren/uploadsys//Uploadnew') },
+                    { path: 'status', name: '上传状态',meta:{title: '上传状态'},  component: () => import('@/views/chidren/uploadsys/UploadStatus') }
                 ]
             },
             {
-                path: 'overview', name: '总览', pathname: '总览', iconClass: 'el-icon-s-data', meta: { shownav: true, auth: 1 }, component: () => import('@/views/Overview')
+                path: 'overview', name: '总览',  iconClass: 'el-icon-s-data', meta: { title: '总览',shownav: true, auth: 1 }, component: () => import('@/views/Overview')
             },
             {
-                path: 'videomanagement', name: '视频管理', pathname: '视频管理', iconClass: 'el-icon-video-camera-solid', meta: { shownav: true, auth: 1 }, component: () => import('@/views/Videosys')
+                path: 'videomanagement', name: '视频管理',  iconClass: 'el-icon-video-camera-solid', meta: { title: '视频管理',shownav: true, auth: 1 }, component: () => import('@/views/Videosys')
             },
             {
-                path: 'usersys', name: '人员管理', pathname: '人员管理', iconClass: 'el-icon-user', meta: { shownav: true, auth: 9 }, component: () => import('@/views/Usersys')
+                path: 'usersys', name: '人员管理',  iconClass: 'el-icon-user', meta: { title: '人员管理',shownav: true, auth: 9 }, component: () => import('@/views/Usersys')
             }
         ]
     },

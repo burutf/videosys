@@ -271,7 +271,7 @@ export default {
               //路由跳转到视频上传状态页面
               this.$router.push({
                 path: "/video-upload/status",
-                query: { videoid: fulluploadres.videoid },
+                query: { videoid: fulluploadres.videoid,path:this.$route.path},
               });
             } catch (error) {
               //触发父元素的loading更改函数,结束加载
