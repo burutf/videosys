@@ -17,6 +17,9 @@ export default {
           text: "视频状态",
           left: "center",
         },
+        tooltip: {
+          trigger: "item",
+        },
         xAxis: {
           type: "category",
           data: ["总条数", "今日新增", "今日修改"],
@@ -60,7 +63,7 @@ export default {
 
 <style lang="less" scoped>
 .videostatistics {
-  height: 200px;
-  min-width: 300px;
+  // height: 200px;
+  // min-width: 300px;
 }
 </style>

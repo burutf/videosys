@@ -13,3 +13,8 @@ export const getvideostatus = ()=>{
 export const getuserauthsum=()=>{
     return http.get('/getuserauthsum')
 }
+
+//获取oss的存储状态
+export const getossbucketcharts=()=>{
+    return http.get('/getossbucketcharts')
+}

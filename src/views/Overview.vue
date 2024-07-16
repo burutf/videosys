@@ -4,22 +4,29 @@
       <!-- ref的值可以随便写 -->
 
       <!-- 视频统计图表 -->
-      <Videostatistics ref="videostatistics"></Videostatistics>
+      <Videocharts ref="videostatistics"></Videocharts>
 
       <!-- 用户状态图表 -->
-      <Usersstatistics v-if="userinfo.auth>=10" ref="Usersstatistics"></Usersstatistics>
+      <Userscharts v-if="userinfo.auth >= 10" ref="Userscharts"></Userscharts>
 
+      <!-- oss存储状态图表 -->
+      <Ossbucketcharts
+        v-if="userinfo.auth >= 10"
+        ref="Ossbucketcharts"
+      ></Ossbucketcharts>
     </div>
   </div>
 </template>
 
 <script>
 //视频统计图表
-import Videostatistics from "@/components/charts/Videostatistics";
+import Videocharts from "@/components/charts/Videocharts";
 //用户状态图表
-import Usersstatistics from "@/components/charts/Usersstatistics";
+import Userscharts from "@/components/charts/Userscharts";
+//oss存储状态图表
+import Ossbucketcharts from "@/components/charts/Ossbucketcharts.vue";
 
-import { mapState } from "vuex"
+import { mapState } from "vuex";
 
 export default {
   name: "Overview",
@@ -61,8 +68,9 @@ export default {
   },
 
   components: {
-    Videostatistics,
-    Usersstatistics,
+    Videocharts,
+    Userscharts,
+    Ossbucketcharts,
   },
 };
 </script>
@@ -70,8 +78,9 @@ export default {
 <style lang="less" scoped>
 .chartsdiv {
   display: grid;
-  //   height: 500px;
-  grid-template-columns: repeat(2, 1fr);
+  // height: 500px;
+  grid-template-columns: repeat(2, 2fr);
+  grid-template-rows: repeat(2, 260px);
   //行列间距
   grid-gap: 20px;
   /deep/.el-card__body {

@@ -21,25 +21,31 @@
 
     <!-- 文件列表 -->
     <ul class="ullist">
-      <draggable v-model="fileList" @end="onEnd" animation="200" easing="cubic-bezier(1, 0, 0, 1)">
+      <draggable
+        v-model="fileList"
+        @end="onEnd"
+        animation="200"
+        easing="cubic-bezier(1, 0, 0, 1)"
+      >
         <transition-group>
           <li v-for="(item, i) in fileList" :key="i">
-            <span>{{ item.name }}</span>
+            <span :class="{ errclass: item.status === 'fail' }">{{
+              item.name
+            }}</span>
             <!-- 显示当前的上传成没成功 -->
             <i
               v-if="item.status === 'success'"
               class="el-icon-success success"
             ></i>
-            <i
-              v-if="item.status === 'fail'"
-              class="el-icon-error error"
-            ></i>
+            <i v-if="item.status === 'fail'" class="el-icon-error error"></i>
             <el-progress
-              v-if="!item.isbeforup"
+              v-if="!item.isbeforup && item.status !== 'fail'"
               :percentage="item.percentage"
             ></el-progress>
 
-            <span class="serial">第{{ item.serial }}回</span>
+            <span class="serial" v-show="item.serial"
+              >第{{ item.serial }}回</span
+            >
             <i @click="delflielist(item)" class="el-icon-close del"></i>
           </li>
         </transition-group>
@@ -49,6 +55,7 @@
 </template>
 
 <script>
+import { color } from "echarts";
 import { debounce } from "lodash";
 //引入拖拽排序
 import draggable from "vuedraggable";
@@ -122,7 +129,17 @@ export default {
           }
         } catch (error) {
           //文件传输错误
-          console.log("文件上传时出错" + error);
+          this.$message.error("文件上传时出错");
+          //将错误上传的文件标记为错误文件
+          this.errorfile(name);
+        }
+      });
+    },
+    //错误文件标记
+    errorfile(name) {
+      this.fileList.forEach((e) => {
+        if (e.name === name) {
+          e.status = "fail";
         }
       });
     },
@@ -140,28 +157,18 @@ export default {
         this.handlerepeat();
         return false;
       }
-      //找当前文件是不是已经校验不通过了
-      // const ischckout = this.errfile.some((e) => {
-      //   return e.file.uid === file.uid;
-      // });
-      //确实校验不通过过，就return出去，不必重复执行，防抖
-      // if (ischckout) return false;
+
       console.log("我进行上传前校验了");
       //拿到文件的类型和大小
       const { type, size } = file;
       const istype = type === "video/mp4";
-      const issize = size / 1024 / 1024 < 1024 * 4; //乘号后面单位GB，当前是最大不超过4GB
+      const issize = size / 1024 / 1024 < 1024 * 1; //乘号后面单位GB，当前是最大不超过4GB
       if (!istype) {
         this.$message.error("目前只支持MP4格式，请重新上传");
       } else if (!issize) {
         this.$message.error("最大文件不能超过4GB，请重新上传");
       }
-      //如果有任何一条规则没有通过就加到校验失败数组中
-      // if (!istype || !issize) {
-      //   this.errfile.push({
-      //     file,
-      //   });
-      // }
+
       return istype && issize;
     },
     //重复名字文件不上传
@@ -213,6 +220,10 @@ export default {
               type: "success",
               message: "删除成功!",
             });
+            //更新列表
+            this.fileList.splice(this.fileList.indexOf(file), 1);
+            //重新排列编号
+            this.serialreload();
           } catch (error) {
             this.$message({
               showClose: true,
@@ -224,10 +235,8 @@ export default {
           }
         }
       } else if (file.status === "ready") {
-        //如果文件的进度为0，不需要中断，直接阻止上传
-        if (file.percentage === 0) {
-          return;
-        }
+        //如果文件的进度为0,一般是文件上传开始时出错，直接return就好，不需要做处理
+        if (file.percentage === 0) return;
 
         try {
           //先find到哪个下标下的对象是保存当前上传的uploadId，获取他
@@ -246,19 +255,20 @@ export default {
             message: `已经中断${name}文件上传`,
             type: "warning",
           });
-          console.log("中断成功了");
+          //更新列表
+          this.fileList.splice(this.fileList.indexOf(file), 1);
+          //重新排列编号
+          this.serialreload();
         } catch (error) {
-          console.log(error);
+          this.$message.error("中断文件上传失败");
         }
+      } else {
+        //这里处理被打上错误标签的项
+        //更新列表
+        this.fileList.splice(this.fileList.indexOf(file), 1);
+        //重新排列编号
+        this.serialreload();
       }
-      if (!isdel) return;
-      //更新列表
-      this.fileList.splice(this.fileList.indexOf(file), 1);
-      // this.fileList = this.fileList.filter((e) => {
-      //   return e.uid !== file.uid;
-      // });
-      //重新排列编号
-      this.serialreload();
     },
     //文件列表发生更改时，更新fileList数组
     onchange(file, fileList) {
@@ -335,13 +345,13 @@ export default {
       this.$emit("filelistcd", this.fileList, this.delvideolist);
     },
     //拖拽排序后进行的操作
-    onEnd(){
+    onEnd() {
       console.log(this.fileList);
-      this.serialreload()
-    }
+      this.serialreload();
+    },
   },
   computed: {
-    ...mapState(['userinfo']),
+    ...mapState(["userinfo"]),
     //拼接
     temlurl() {
       return `${this.uploadTemUrl}/${this.userid}/${this.userinfo.iat}/`;
@@ -358,7 +368,7 @@ export default {
           serial: e.serial,
           status: e.status,
           isbeforup: e.isbeforup,
-          size:e.size,
+          size: e.size,
           response: {
             name: e.urlname,
           },
@@ -467,7 +477,10 @@ export default {
       font-size: 20px;
       color: green;
     }
-    .error{
+    .errclass {
+      color: red;
+    }
+    .error {
       position: absolute;
       bottom: 5px;
       right: 5px;

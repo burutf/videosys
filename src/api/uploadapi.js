@@ -11,6 +11,7 @@ import http from '@/config/axios'
 //上传文件（分片上传）
 export const upload = async (FileName, fileobj, options) => {
     try {
+
         const clientOSS = await configOss()
         //开始上传
         const putdata = await clientOSS.multipartUpload(FileName, fileobj, { ...options })

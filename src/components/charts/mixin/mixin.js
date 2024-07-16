@@ -5,6 +5,8 @@ export default {
     return {
       //初始化后的echarts对象
       echartsinit:{},
+      //配置项
+      option: {}
     }
   },
   mounted() {

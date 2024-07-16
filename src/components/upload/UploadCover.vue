@@ -29,7 +29,6 @@ export default {
   data() {
     return {
       imageUrl: "",
-      userid: 10001,
       uploadTemUrl: "temporary",
       //当前已经上传的文件
       filecovername: "",
@@ -112,7 +111,7 @@ export default {
     ...mapState(['userinfo']),
     //拼接
     temlurl() {
-      return `${this.uploadTemUrl}/${this.userid}/${this.userinfo.iat}/`;
+      return `${this.uploadTemUrl}/${this.userinfo.uuid}/${this.userinfo.iat}/`;
     },
   },
 };
