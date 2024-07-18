@@ -1,5 +1,6 @@
 <template>
-  <div class="login">
+  <div class="user">
+    <div class="boxshadow"></div>
     <span>{{ userinfo.username }}</span>
     <el-dropdown @command="handleCommand">
       <el-avatar icon="el-icon-user-solid"></el-avatar>
@@ -11,7 +12,7 @@
 </template>
 
 <script>
-import { mapMutations,mapState,mapActions } from "vuex";
+import { mapMutations, mapState, mapActions } from "vuex";
 
 export default {
   name: "user",
@@ -40,20 +41,44 @@ export default {
       }
     },
   },
-  computed:{
+  computed: {
     //拿到用户信息
-    ...mapState(['userinfo'])
-  }
+    ...mapState(["userinfo"]),
+  },
 };
 </script>
 
 <style lang="less" scoped>
-.login {
+
+
+.user {
+  max-width: 150px;
+  background-color: #fff;
   display: flex;
-  margin-right: 20px;
   align-items: center;
-  span:first-child {
+  height: 60px;
+
+  .boxshadow {
+    height: 30px;
+    width: 10px;
+  }
+  > span {
     margin-right: 10px;
+    line-height: 60px;
+    //文字超出以省略号显示
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  .el-dropdown {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+@media (max-width: 560px) {
+  .user {
+    box-shadow: -20px 0px 13px -22px rgba(95, 95, 95, 0.664);
   }
 }
 </style>

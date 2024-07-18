@@ -1,6 +1,6 @@
 <template>
   <div class="block">
-    <span style="width: 200px;height: 0;"></span>
+    <span class="placeholdercl"></span>
     <el-pagination layout="total,prev, pager, next" :total="sumpage" :page-size="pagesize" :current-page="currentpage"
       @current-change="changepage" v-show="isshow">
     </el-pagination>
@@ -8,6 +8,9 @@
 </template>
 
 <script>
+//引入占位符媒体查询
+import '@/mediacss/placeholdercl.css'
+
 export default {
   name: 'pagination',
   //总条数
@@ -45,7 +48,6 @@ export default {
   bottom: 35px;
   left: 0;
   width: 100vw;
-  min-width: 900px;
   display: flex;
 
   //分页功能条样式

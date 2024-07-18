@@ -13,7 +13,7 @@ import * as userapi from '@/api/user'
 //echarts图表相关的api
 import * as echartsapi from '@/api/echartsapi'
 
-export {
+export default {
     uploadapi,
     extraapi,
     osssys,

@@ -1,5 +1,5 @@
 <template>
-  <div class="aside">
+  <div>
     <!-- 这里是控制显示隐藏的 -->
     <!-- <el-radio-group v-model="isCollapse" style="margin-bottom: 20px">
       <el-radio-button :label="false">展开</el-radio-button>
@@ -8,21 +8,21 @@
 
     <a href=""
       ><h1 class="logoh1">
-        视频
-        <img
-          src="../assets/logo.png"
-          style="width: 40px; height: 40px;"
-        />后台
+        <span>视频</span>
+        <img src="../assets/logo.png" style="width: 40px; height: 40px" /><span
+          >后台</span
+        >
       </h1></a
     >
     <!-- 这里是上传界面 -->
     <router-link :to="{ path: '/video-upload' }">
       <el-button
-        class="buttonupload"
+        class="buttonupload upbutton"
         :class="{ routejh: uploadrouterjh }"
         type="primary"
-      >
-        <i class="el-icon-upload el-icon--right">上传</i>
+      > <div class="flexbox">
+        <i class="el-icon-upload el-icon--right"><span>上传</span></i>
+      </div>
       </el-button>
     </router-link>
 
@@ -60,7 +60,8 @@
 </template>
 
 <script>
-import routes from "@/router/routes";
+import {navroutes} from '@/router/routes'
+
 import { mapState } from "vuex";
 
 export default {
@@ -68,16 +69,12 @@ export default {
   data() {
     return {
       isCollapse: false,
-      //初步筛选的路由数组
+      //路由数组
       navdata: [],
     };
   },
   mounted() {
-    //拿到关于导航栏的路由数组
-    //在路由数组中有设置meta，通过判断meta拿到导航栏渲染数组
-    this.navdata = routes.filter((e) => {
-      return e.meta.aside;
-    })[0].children;
+    this.navdata = navroutes
   },
   methods: {},
   computed: {
@@ -95,6 +92,7 @@ export default {
     // 对路由数组进行二次筛选
     navdatatwo() {
       const arrroutes = this.navdata.filter((e) => {
+        //判断是不是需要渲染
         if (e.meta.shownav) {
           //auth 表示权限级别 数字越大越牛
           //看当前用户属于哪个级别，级别够就可以访问
@@ -110,21 +108,13 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.aside {
-  position: fixed;
-  top: 0;
-  left: 0;
-  height: 100vh;
-  width: 200px;
-  text-align: center;
-  box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.05);
-  background-color: #ffffff;
-  padding-top: 10px;
-}
 
-.el-menu-vertical-demo:not(.el-menu--collapse) {
-  width: 100%;
-  height: 100%;
+//当屏幕比较小的时候显示这个上传按钮
+
+.el-menu-item {
+  span {
+    font-weight: 500;
+  }
 }
 //删掉右边边框
 .el-menu {
@@ -135,13 +125,36 @@ export default {
 }
 //上传按钮被点亮时的样式
 .routejh {
-  color: rgb(250, 209, 4);
+  color: rgb(242, 239, 27);
 }
-
-.logoh1{
+.logoh1 {
   display: flex;
   color: #00a29a;
   align-items: center;
   justify-content: center;
+}
+
+
+
+
+@media (max-width: 1025px) {
+  .el-menu-item {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    line-height: normal;
+    height: auto;
+    padding-top: 12px;
+    padding-bottom: 12px;
+    i {
+      margin-right: 0;
+      margin-bottom: 5px;
+    }
+  }
+  .logoh1 {
+    span {
+      display: none;
+    }
+  }
 }
 </style>

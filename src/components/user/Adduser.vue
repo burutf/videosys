@@ -1,6 +1,6 @@
 <template>
   <div style="margin-bottom: 10px;">
-    <el-button @click="adduser">新增用户</el-button>
+    <el-button size="small" @click="adduser">新增用户</el-button>
     <Adddialog @adduserup="adduserup" @close="close" :dialogFormVisible="dialogFormVisible"></Adddialog>
   </div>
 </template>

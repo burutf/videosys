@@ -22,14 +22,14 @@ export default {
         },
         legend: {
           orient: "vertical",
-          left: "right",
+          bottom: "bottom",
         },
         series: [
           {
             name: "权限级别",
             type: "pie",
             radius: "50%",
-            center: ["50%", "60%"],
+            center: ["50%", "50%"],
             data: [],
             emphasis: {
               itemStyle: {

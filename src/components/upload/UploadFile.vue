@@ -401,13 +401,19 @@ export default {
 </script>
 
 <style lang="less" scoped>
+@media (max-width: 560px) {
+  //当窗口过小时，视频上传列表的处理
+  .listdiv {
+    flex-direction: column-reverse;
+  }
+}
+
 .listdiv {
   display: flex;
   align-items: flex-start;
   background-color: rgb(238, 238, 239);
   border-radius: 7px;
   padding: 10px;
-  min-width: 600px;
 }
 .upload-demo {
   position: relative;
@@ -460,7 +466,7 @@ export default {
     flex: 1;
     margin: 5px;
     border: 1px rgba(0, 0, 0, 0.099) solid;
-    min-width: 150px;
+    min-width: 130px;
     height: 110px;
     background-color: white;
     border-radius: 10px;

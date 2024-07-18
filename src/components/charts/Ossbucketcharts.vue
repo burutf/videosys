@@ -61,6 +61,6 @@ export default {
 
 <style lang="less" scoped>
 .ossbucketcharts {
-  grid-area: 2 / 1 / 2 / 3;
+  
 }
 </style>

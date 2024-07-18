@@ -14,7 +14,7 @@
     <el-table
       ref="filterTable"
       :data="tableData"
-      style="width: 100%"
+      style="width: 100%;"
       :default-sort="{ prop: 'lastupdate', order: 'descending' }"
       @sort-change="sorttable"
       v-loading="loading"
@@ -26,7 +26,7 @@
       <el-table-column
         prop="lastupdate"
         label="更新日期"
-        width="160px"
+        min-width="100px"
         sortable="custom"
         :sort-orders="['ascending', 'descending']"
       >
@@ -41,7 +41,7 @@
         column-key="status"
       >
       </el-table-column>
-      <el-table-column label="标签">
+      <el-table-column label="标签" >
         <template slot-scope="scope">
           <template v-for="(item, i) in scope.row.classify">
             <el-tag size="mini" :key="i" disable-transitions>{{ item }}</el-tag>
@@ -351,17 +351,20 @@ export default {
 
 .el-table {
   overflow: visible;
-  border-radius: 10px;
-  padding-top: 10px;
+  border-radius: 20px;
+  
   box-shadow: 1px 1px 4px #d2d2d2;
   margin-bottom: 55px;
 
   /deep/tr {
     background: none;
+    background-color: #fff
   }
 
   /deep/th {
     background: none;
+    background-color: #fff;
+    padding-top: 20px;
   }
 
   /deep/.el-table__header-wrapper {
@@ -370,5 +373,11 @@ export default {
     z-index: 10;
     background: linear-gradient(#fff 80%, rgba(255, 255, 255, 0.8) 100%);
   }
+}
+.opcl{
+  z-index: 999;
+}
+/deep/.el-table__empty-block{
+  min-height: 400px;
 }
 </style>

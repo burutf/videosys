@@ -93,4 +93,9 @@ export default {
 };
 </script>
 
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+
+/deep/.el-table__empty-block{
+  min-height: 400px;
+}
+</style>

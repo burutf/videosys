@@ -17,6 +17,7 @@
       <el-table-column
         prop="create_date"
         label="创建日期"
+        min-width="100px"
         sortable="custom"
         :sort-orders="['ascending', 'descending']"
       >
@@ -25,6 +26,7 @@
       <el-table-column
         prop="auth"
         label="权限等级"
+        min-width="90px"
         :filters="tableauthlists"
         :filter-multiple="false"
         column-key="auth"

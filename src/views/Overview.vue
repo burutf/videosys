@@ -76,13 +76,24 @@ export default {
 </script>
 
 <style lang="less" scoped>
+@media (max-width: 1025px) {
+  .chartsdiv{
+    grid-template-columns: repeat(1, 1fr);
+  }
+}
+@media (min-width: 1025px) {
+  .chartsdiv{
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
 .chartsdiv {
   display: grid;
-  // height: 500px;
-  grid-template-columns: repeat(2, 2fr);
-  grid-template-rows: repeat(2, 260px);
   //行列间距
   grid-gap: 20px;
+  .el-card{
+    height: 260px;
+  }
   /deep/.el-card__body {
     padding: 15px;
     height: 100%;

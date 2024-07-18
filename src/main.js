@@ -11,7 +11,7 @@ import 'element-ui/lib/theme-chalk/index.css';
 import echarts from '@/config/echarts/index'
 
 //引入所有的api接口
-import * as api from '@/api';
+import api from '@/api';
 
 Vue.use(ElementUI);
 
