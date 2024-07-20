@@ -14,7 +14,7 @@
     <el-table
       ref="filterTable"
       :data="tableData"
-      style="width: 100%;"
+      style="width: 100%"
       :default-sort="{ prop: 'lastupdate', order: 'descending' }"
       @sort-change="sorttable"
       v-loading="loading"
@@ -41,7 +41,7 @@
         column-key="status"
       >
       </el-table-column>
-      <el-table-column label="标签" >
+      <el-table-column label="标签">
         <template slot-scope="scope">
           <template v-for="(item, i) in scope.row.classify">
             <el-tag size="mini" :key="i" disable-transitions>{{ item }}</el-tag>
@@ -49,22 +49,26 @@
         </template>
       </el-table-column>
       <el-table-column label="操作">
-        <template slot-scope="scope">
-          <el-button
-            style="margin-right: 10px"
-            @click="redacklist(scope.row)"
-            type="text"
-            >编辑</el-button
-          >
-          <el-popconfirm
-            title="将不可找回，确定删除吗？"
-            confirm-button-type="danger"
-            @confirm="dellist(scope.row)"
-          >
-            <el-button slot="reference" type="text" style="color: red"
-              >删除</el-button
+        <template v-slot="scope">
+          <!-- 这里可以使用插槽来替换 -->
+          <slot :scope="scope">
+            <!-- 这是默认内容 -->
+            <el-button
+              style="margin-right: 10px"
+              @click="redacklist(scope.row)"
+              type="text"
+              >编辑</el-button
             >
-          </el-popconfirm>
+            <el-popconfirm
+              title="将不可找回，确定删除吗？"
+              confirm-button-type="danger"
+              @confirm="dellist(scope.row)"
+            >
+              <el-button slot="reference" type="text" style="color: red"
+                >删除</el-button
+              >
+            </el-popconfirm>
+          </slot>
         </template>
       </el-table-column>
     </el-table>
@@ -240,7 +244,7 @@ export default {
     //子组件Searchfn触发的方法，筛选日期范围
     datesearchfn(data) {
       //将页数变为1
-      this.$refs.pagech.setpageone()
+      this.$refs.pagech.setpageone();
       this.datefiltle = data;
       //重新获取视频列表
       this.getvideolist();
@@ -248,7 +252,7 @@ export default {
     //子组件Searchfn触发的方法，搜索标题
     titsearchfn(data) {
       //将页数变为1
-      this.$refs.pagech.setpageone()
+      this.$refs.pagech.setpageone();
       this.titlesearch = data;
       //重新获取视频列表
       this.getvideolist();
@@ -352,13 +356,13 @@ export default {
 .el-table {
   overflow: visible;
   border-radius: 20px;
-  
+
   box-shadow: 1px 1px 4px #d2d2d2;
   margin-bottom: 55px;
 
   /deep/tr {
     background: none;
-    background-color: #fff
+    background-color: #fff;
   }
 
   /deep/th {
@@ -374,10 +378,10 @@ export default {
     background: linear-gradient(#fff 80%, rgba(255, 255, 255, 0.8) 100%);
   }
 }
-.opcl{
+.opcl {
   z-index: 999;
 }
-/deep/.el-table__empty-block{
+/deep/.el-table__empty-block {
   min-height: 400px;
 }
 </style>

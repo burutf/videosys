@@ -20,6 +20,9 @@ export const navroutes = [
         path: 'videomanagement', name: '视频管理',  iconClass: 'el-icon-video-camera-solid', meta: { title: '视频管理',shownav: true, auth: 1 ,id:'videomanagement'}, component: () => import('@/views/Videosys')
     },
     {
+        path: 'slideshow', name: '轮播图',  iconClass: 'el-icon-picture-outline-round', meta: { title: '轮播图',shownav: true, auth: 9 ,id:'slideshow'}, component: () => import('@/views/Slideshow')
+    },
+    {
         path: 'usersys', name: '人员管理',  iconClass: 'el-icon-user', meta: { title: '人员管理',shownav: true, auth: 9 ,id:'usersys'}, component: () => import('@/views/Usersys')
     }
 ]

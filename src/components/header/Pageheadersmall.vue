@@ -42,7 +42,6 @@ export default {
   methods: {
     //开始时拿到当前的路由，根据路由激活现在的导航
     navactrouter() {
-      console.log(this.$route.meta.id);
       this.$nextTick(() => {
         const ever = document.getElementById(this.$route.meta.id);
         this.actlong = ever.clientWidth * 0.8;

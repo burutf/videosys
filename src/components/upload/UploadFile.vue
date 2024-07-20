@@ -55,7 +55,6 @@
 </template>
 
 <script>
-import { color } from "echarts";
 import { debounce } from "lodash";
 //引入拖拽排序
 import draggable from "vuedraggable";
