@@ -1,17 +1,16 @@
 <template>
-  <div>
-    <el-upload
-      v-loading="loading"
-      class="avatar-uploader"
-      action=""
-      :show-file-list="false"
-      :before-upload="beforeAvatarUpload"
-      :http-request="httpupload"
-    >
+  <el-upload
+    v-loading="loading"
+    action=""
+    :show-file-list="false"
+    :before-upload="beforeAvatarUpload"
+    :http-request="httpupload"
+  >
+    <slot>
       <img v-if="imageUrl" :src="imageUrl" class="avatar" />
       <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-    </el-upload>
-  </div>
+    </slot>
+  </el-upload>
 </template>
 
 <script>
@@ -20,11 +19,11 @@ import { mapState } from "vuex";
 
 export default {
   name: "UploadCover",
-  props:{
-    propimgurl:{
-      type:String,
-      default:''
-    }
+  props: {
+    propimgurl: {
+      type: String,
+      default: "",
+    },
   },
   data() {
     return {
@@ -37,7 +36,7 @@ export default {
     };
   },
   mounted() {
-    if (this.propimgurl==='') return
+    if (this.propimgurl === "") return;
     //将传来的图片地址给img标签
     this.imageUrl = this.propimgurl;
   },
@@ -48,9 +47,9 @@ export default {
       const isJPG = file.type === "image/jpeg";
       const isLt2M = file.size / 1024 / 1024 < 3;
       if (!isJPG) {
-        this.$message.error("上传头像图片只能是 JPG 格式!");
+        this.$message.error("上传图片只能是 JPG 格式!");
       } else if (!isLt2M) {
-        this.$message.error("上传封面图片大小不能超过 5MB!");
+        this.$message.error("上传图片大小不能超过 5MB!");
       }
       return isJPG && isLt2M;
     },
@@ -65,12 +64,13 @@ export default {
       try {
         this.loading = true;
 
+        let path = `${this.temlurl}${name}`
+
         const uploadreturn = await this.$API.uploadapi.uploadcover(
-          `${this.temlurl}${name}`,
+          path,
           file,
           this.headers()
         );
-        
 
         //上传成功后的操作
         if (uploadreturn.res.status === 200) {
@@ -108,7 +108,7 @@ export default {
     },
   },
   computed: {
-    ...mapState(['userinfo']),
+    ...mapState(["userinfo"]),
     //拼接
     temlurl() {
       return `${this.uploadTemUrl}/${this.userinfo.uuid}/${this.userinfo.iat}/`;
@@ -117,33 +117,4 @@ export default {
 };
 </script>
 
-<style lang="less" scoped>
-.avatar-uploader {
-  border: 1px dashed #d6c5c5;
-  border-radius: 6px;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-  width: 160px;
-  height: 214px;
-}
-
-.avatar-uploader .el-upload:hover {
-  border-color: #409eff;
-}
-
-.avatar-uploader-icon {
-  font-size: 28px;
-  color: #8c939d;
-  width: 160px;
-  height: 214px;
-  line-height: 214px;
-  text-align: center;
-}
-
-.avatar {
-  display: block;
-  width: 160px;
-  height: 214px;
-}
-</style>
+<style lang="less" scoped></style>

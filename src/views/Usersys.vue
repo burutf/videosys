@@ -6,64 +6,43 @@
       @titsearchfn="titsearchfn"
     ></Searchfn>
     <Adduser @adduserup="adduserup" :authlists="authlists"></Adduser>
-    <el-table
-      :data="tableData"
-      style="width: 100%"
-      v-loading="loading"
-      @filter-change="filterchange"
-      :default-sort="{ prop: 'create_date', order: 'descending' }"
-      @sort-change="sorttable"
-    >
-      <el-table-column
-        prop="create_date"
-        label="创建日期"
-        min-width="100px"
-        sortable="custom"
-        :sort-orders="['ascending', 'descending']"
-      >
-      </el-table-column>
-      <el-table-column prop="username" label="用户名"> </el-table-column>
-      <el-table-column
-        prop="auth"
-        label="权限等级"
-        min-width="90px"
-        :filters="tableauthlists"
-        :filter-multiple="false"
-        column-key="auth"
-      >
-        <!-- 转换权限等级为可读性好的名称 -->
-        <template slot-scope="scope">
-          {{ nameauth(scope.row.auth) }}
-        </template>
-      </el-table-column>
-      <el-table-column label="操作">
-        <template slot-scope="scope">
-          <el-dropdown trigger="click" @command="clickdropdown">
-            <span class="el-dropdown-link">
-              更改<i class="el-icon-arrow-down el-icon--right"></i>
-            </span>
-            <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item :command="{ item: 'authitem', row: scope.row }"
-                >权限</el-dropdown-item
-              >
-              <el-dropdown-item :command="{ item: 'passitem', row: scope.row }"
-                >密码</el-dropdown-item
-              >
-            </el-dropdown-menu>
-          </el-dropdown>
 
-          <el-popconfirm
-            title="将不可找回，确定删除吗？"
-            confirm-button-type="danger"
-            @confirm="dellist(scope.row)"
-          >
-            <el-button slot="reference" type="text" style="color: red">
-              删除
-            </el-button>
-          </el-popconfirm>
-        </template>
-      </el-table-column>
-    </el-table>
+    <Userlist
+      v-loading="loading"
+      :tableauthlists="tableauthlists"
+      :tableData="tableData"
+      :authlists="authlists"
+      @filterchange="filterchange"
+      @sorttable="sorttable"
+    >
+      <!-- 插槽（操作） -->
+      <template v-slot="{ scope }">
+        <el-dropdown trigger="click" @command="clickdropdown">
+          <span class="el-dropdown-link">
+            更改<i class="el-icon-arrow-down el-icon--right"></i>
+          </span>
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item :command="{ item: 'authitem', row: scope.row }"
+              >权限</el-dropdown-item
+            >
+            <el-dropdown-item :command="{ item: 'passitem', row: scope.row }"
+              >密码</el-dropdown-item
+            >
+          </el-dropdown-menu>
+        </el-dropdown>
+
+        <el-popconfirm
+          title="将不可找回，确定删除吗？"
+          confirm-button-type="danger"
+          @confirm="dellist(scope.row)"
+        >
+          <el-button slot="reference" type="text" style="color: red">
+            删除
+          </el-button>
+        </el-popconfirm>
+      </template>
+    </Userlist>
+
     <!-- 修改的弹出框 -->
     <Updatedialog
       :dialogFormVisible="dialogFormVisible"
@@ -94,6 +73,8 @@ import Pagination from "@/components/videosys/Pagination.vue";
 import Searchfn from "@/components/videosys/Searchfn.vue";
 //引入按钮组件
 import Buttoncl from "@/components/videosys/Buttoncl.vue";
+//引入用户列表组件
+import Userlist from "@/components/user/Userlist.vue";
 
 export default {
   name: "Usersys",
@@ -149,7 +130,7 @@ export default {
           datefiltle: this.datefiltle,
           titlesearch: this.titlesearch,
           authfil: this.authfil,
-          sortobj:this.sortobj
+          sortobj: this.sortobj,
         });
         if (this.authlists.length === 0) {
           //获取权限列表
@@ -209,13 +190,7 @@ export default {
       //获取用户列表和分页
       this.getlist();
     },
-    //将权限等级变成名称
-    nameauth(index) {
-      const obj = this.authlists.find((item) => {
-        return item.value === index;
-      });
-      return obj.label;
-    },
+
     //新增用户完成刷新列表
     adduserup() {
       //获取用户列表和分页
@@ -253,7 +228,6 @@ export default {
     },
     //排序
     sorttable(data) {
-      console.log(data);
       const { order, prop } = data;
       this.sortobj[prop] = order === "descending" ? -1 : 1;
       //重新获取视频列表
@@ -284,6 +258,7 @@ export default {
     Pagination,
     Searchfn,
     Buttoncl,
+    Userlist,
   },
 };
 </script>
@@ -297,28 +272,5 @@ export default {
 .el-icon-arrow-down {
   font-size: 12px;
   margin: 0;
-}
-
-.el-table {
-  overflow: visible;
-  border-radius: 10px;
-  padding-top: 10px;
-  box-shadow: 1px 1px 4px #d2d2d2;
-  margin-bottom: 55px;
-
-  /deep/tr {
-    background: none;
-  }
-
-  /deep/th {
-    background: none;
-  }
-
-  /deep/.el-table__header-wrapper {
-    position: sticky;
-    top: 55px;
-    z-index: 10;
-    background: linear-gradient(#fff 80%, rgba(255, 255, 255, 0.8) 100%);
-  }
 }
 </style>

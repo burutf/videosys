@@ -12,6 +12,7 @@
         <div class="cover">
           <!-- 这里是封面上传组件 -->
           <UploadCover
+          class="avatar-uploader"
             @covername="elcovername"
             :propimgurl="propimgurl"
           ></UploadCover>
@@ -378,6 +379,8 @@ export default {
 .cover {
   display: flex;
   align-items: center;
+  width: 160px;
+  height: 214px;
   .messages {
     flex: 1;
     color: rgba(138, 138, 138, 0.757);
@@ -423,4 +426,41 @@ export default {
   display: flex;
   flex-direction: row-reverse;
 }
+
+//封面
+.avatar-uploader {
+  border: 1px dashed #d6c5c5;
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+}
+
+.avatar-uploader:hover {
+  border-color: #409eff;
+}
+
+/deep/.el-upload {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/deep/.avatar-uploader-icon {
+  font-size: 28px;
+  color: #8c939d;
+  text-align: center;
+}
+
+/deep/.avatar {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+
 </style>

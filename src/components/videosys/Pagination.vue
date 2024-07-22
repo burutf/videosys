@@ -49,7 +49,7 @@ export default {
   left: 0;
   width: 100vw;
   display: flex;
-
+  pointer-events: none;
   //分页功能条样式
   .el-pagination {
     flex: 1;
@@ -57,11 +57,12 @@ export default {
     justify-content: center;
     z-index: 300;
     padding: 0;
-
+    //会挡住下面，设置个鼠标穿透
+    pointer-events: none;
     //左边的箭头
     .btn-prev {
       background: none;
-
+      pointer-events: auto;
       .el-icon-arrow-left:before {
         content: '\e792';
         font-size: 1.3em;
@@ -81,7 +82,7 @@ export default {
         min-width: auto;
         line-height: 30px;
         transition: all 0.2s;
-
+        pointer-events: auto;
         //激活的按钮
         &.active {
           box-shadow: 0px 0px 3px rgb(192, 192, 192);
@@ -92,7 +93,7 @@ export default {
     //右边的箭头
     .btn-next {
       background: none;
-
+      pointer-events: auto;
       .el-icon-arrow-right:before {
         content: '\e791';
         font-size: 1.3em;
