@@ -44,7 +44,7 @@ export const configOss = async () => {
             // 填写Bucket名称。
             bucket: process.env.VUE_APP_BUCKET,
             //响应超时时间
-            timeout:20000,
+            timeout:1000 * 120,
             // 刷新临时访问凭证，过期时会自动刷新
             refreshSTSToken: async () => {
                 const {data} = await stsOSS();

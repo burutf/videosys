@@ -6,16 +6,14 @@
 
 <script>
 export default {
-  name: 'app',
-
-}
+  name: "app",
+};
 </script>
-
 
 <style lang="less">
 @media (max-width: 560px) {
   //当窗口过小时，message的处理
-  .el-message-box{
+  .el-message-box {
     width: 80vw !important;
   }
 }
@@ -33,15 +31,20 @@ body {
   padding: 0;
 }
 
-h1,h2,h3,h4,h5,h6{
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   margin: 0;
 }
 
-ul li{
-  list-style:none
+ul li {
+  list-style: none;
 }
 
-a{
+a {
   text-decoration: none;
 }
 </style>

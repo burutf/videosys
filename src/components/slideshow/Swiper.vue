@@ -146,6 +146,14 @@ export default {
       }
     },
   },
+  watch:{
+    //传来的值发生改变时就初始化swiper
+    list:{
+      handler(){
+        this.reinit()
+      }
+    }
+  },
   components: { UploadCover },
 };
 </script>

@@ -1,56 +1,63 @@
 <template>
-  <div class="listdiv">
-    <el-upload
-      class="upload-demo"
-      action=""
-      ref="upload"
-      multiple
-      :limit="limit"
-      :file-list="fileList"
-      :http-request="handleUploadFile"
-      :before-upload="beforeUpload"
-      :before-remove="beforeremove"
-      :on-change="onchange"
-      :show-file-list="false"
-      :on-exceed="handleExceed"
-      :on-success="upsuccess"
-    >
-      <i class="el-icon-plus avatar-uploader-icon"></i>
-      <span class="djsc">点击上传</span>
-    </el-upload>
-
-    <!-- 文件列表 -->
-    <ul class="ullist">
-      <draggable
-        v-model="fileList"
-        @end="onEnd"
-        animation="200"
-        easing="cubic-bezier(1, 0, 0, 1)"
+  <div>
+    <div class="listdiv">
+      <el-upload
+        class="upload-demo"
+        action=""
+        accept=".mp4"
+        ref="upload"
+        multiple
+        :limit="limit"
+        :file-list="fileList"
+        :http-request="handleUploadFile"
+        :before-upload="beforeUpload"
+        :before-remove="beforeremove"
+        :on-change="onchange"
+        :show-file-list="false"
+        :on-exceed="handleExceed"
+        :on-success="upsuccess"
       >
-        <transition-group>
-          <li v-for="(item, i) in fileList" :key="i">
-            <span :class="{ errclass: item.status === 'fail' }">{{
-              item.name
-            }}</span>
-            <!-- 显示当前的上传成没成功 -->
-            <i
-              v-if="item.status === 'success'"
-              class="el-icon-success success"
-            ></i>
-            <i v-if="item.status === 'fail'" class="el-icon-error error"></i>
-            <el-progress
-              v-if="!item.isbeforup && item.status !== 'fail'"
-              :percentage="item.percentage"
-            ></el-progress>
+        <i class="el-icon-plus avatar-uploader-icon"></i>
+        <span class="djsc">点击上传</span>
+      </el-upload>
 
-            <span class="serial" v-show="item.serial"
-              >第{{ item.serial }}回</span
-            >
-            <i @click="delflielist(item)" class="el-icon-close del"></i>
-          </li>
-        </transition-group>
-      </draggable>
-    </ul>
+      <!-- 文件列表 -->
+      <ul class="ullist">
+        <draggable
+          v-model="fileList"
+          @end="onEnd"
+          animation="200"
+          easing="cubic-bezier(1, 0, 0, 1)"
+        >
+          <transition-group>
+            <li v-for="(item, i) in fileList" :key="i">
+              <span :class="{ errclass: item.status === 'fail' }">{{
+                item.name
+              }}</span>
+              <!-- 显示当前的上传成没成功 -->
+              <i
+                v-if="item.status === 'success'"
+                class="el-icon-success success"
+              ></i>
+              <i v-if="item.status === 'fail'" class="el-icon-error error"></i>
+              <el-progress
+                v-if="!item.isbeforup && item.status !== 'fail'"
+                :percentage="item.percentage"
+              ></el-progress>
+
+              <span class="serial" v-show="item.serial"
+                >第{{ item.serial }}回</span
+              >
+              <i @click="delflielist(item)" class="el-icon-close del"></i>
+            </li>
+          </transition-group>
+        </draggable>
+      </ul>
+    </div>
+    <!-- 功能按钮 -->
+    <el-button v-show="fileList.length>0" @click="sortindex(false)" class="sortbutton">升序排序</el-button>
+    <el-button v-show="fileList.length>0" @click="sortindex(true)" class="sortbutton">降序排序</el-button>
+
   </div>
 </template>
 
@@ -161,7 +168,7 @@ export default {
       //拿到文件的类型和大小
       const { type, size } = file;
       const istype = type === "video/mp4";
-      const issize = size / 1024 / 1024 < 1024 * 1; //乘号后面单位GB，当前是最大不超过4GB
+      const issize = size / 1024 / 1024 < 1024 * 1; //乘号后面单位GB，当前是最大不超过1GB
       if (!istype) {
         this.$message.error("目前只支持MP4格式，请重新上传");
       } else if (!issize) {
@@ -348,6 +355,23 @@ export default {
       console.log(this.fileList);
       this.serialreload();
     },
+    //根据名称编号重新排序(默认为升序，true为降序)
+    sortindex(isis){
+      console.log(isis);
+      console.log(this.fileList);
+      this.fileList.sort((a,b)=>{
+        a = parseInt(a.name)
+        b = parseInt(b.name)
+        if (isis) {
+          //降序
+          return b-a
+        }else{
+          //升序
+          return a-b
+        }
+        
+      })
+    }
   },
   computed: {
     ...mapState(["userinfo"]),
@@ -455,7 +479,7 @@ export default {
       flex-wrap: wrap;
       list-style-type: none;
       overflow: auto;
-      max-height: 245px;
+      // max-height: 245px;
       width: 100%;
     }
   }
@@ -518,5 +542,8 @@ export default {
   li:hover .del {
     display: block;
   }
+}
+.sortbutton{
+  margin-top: 10px;
 }
 </style>

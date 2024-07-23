@@ -12,7 +12,10 @@
         </el-header>
         <!-- 主体 -->
         <div style="padding: 20px; position: relative">
-          <router-view></router-view>
+          <!-- 上传组件保持存活 -->
+          <keep-alive include="Uploadsys">
+            <router-view></router-view>
+          </keep-alive>
         </div>
       </el-container>
     </el-container>

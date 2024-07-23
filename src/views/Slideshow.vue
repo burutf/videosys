@@ -31,10 +31,7 @@ export default {
       try {
         const { data } = await this.$API.videosys.getslideshowlist();
         this.list = data;
-        //触发子组件的重新初始化
-        this.$nextTick(()=>{
-          this.$refs.swiper.reinit();
-        })
+
       } catch (error) {
         console.log(error);
       }
@@ -44,8 +41,7 @@ export default {
       if (coverurl) {
         coverurl = new URL(coverurl).pathname
       }
-      
-      console.log(coverurl);
+
       try {
         await this.$API.videosys.updateslideshowimg(imgobj, videoid,coverurl);
         await this.getlist();

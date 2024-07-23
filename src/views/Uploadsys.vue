@@ -1,15 +1,18 @@
 <template>
   <div>
-    <router-view></router-view>
+    <keep-alive include="Uploadnew">
+      <router-view></router-view>
+    </keep-alive>
   </div>
 </template>
 
 <script>
 export default {
-name: "Uploadsys",
-}
+  name: "Uploadsys",
+  mounted() {
+    
+  },
+};
 </script>
 
-<style>
-
-</style>
+<style></style>
