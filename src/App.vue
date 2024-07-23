@@ -47,4 +47,12 @@ ul li {
 a {
   text-decoration: none;
 }
+
+@media (max-width: 670px) {
+  //时间范围选择器的样式
+  .pickercl {
+    overflow-x: auto;
+    width: 90% !important;
+  }
+}
 </style>

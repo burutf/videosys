@@ -149,6 +149,9 @@ export default {
         }
       });
     },
+    //表单组件通过父组件传来的服务器校验失败的文件
+    //还没做先放一放
+
     // 防抖函数:重复名字文件名不上传
     handlerepeat: debounce(function () {
       this.$message({

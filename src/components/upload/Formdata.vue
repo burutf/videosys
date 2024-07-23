@@ -12,7 +12,7 @@
         <div class="cover">
           <!-- 这里是封面上传组件 -->
           <UploadCover
-          class="avatar-uploader"
+            class="avatar-uploader"
             @covername="elcovername"
             :propimgurl="propimgurl"
           ></UploadCover>
@@ -91,7 +91,9 @@
       </el-form-item>
 
       <el-form-item class="buttonaa">
-        <el-button :loading="loading" type="primary" @click="submitForm('form')">提交</el-button>
+        <el-button :loading="loading" type="primary" @click="submitForm('form')"
+          >提交</el-button
+        >
         <el-button @click="resetForm('form')">重置</el-button>
       </el-form-item>
     </el-form>
@@ -138,7 +140,7 @@ export default {
         //首播日期
         soubdate: "",
         //视频id
-        videoid:''
+        videoid: "",
       },
       rules: {
         title: [
@@ -153,7 +155,9 @@ export default {
             required: false,
           },
         ],
-        "cover.urlname": [{ required: true, message: "请上传封面", trigger: "change" }],
+        "cover.urlname": [
+          { required: true, message: "请上传封面", trigger: "change" },
+        ],
         type: [{ required: true, message: "这里选一下", trigger: "change" }],
         soubdate: [{ required: false }],
         classify: [
@@ -182,30 +186,30 @@ export default {
       //视频分类条目列表
       classifylist: [],
       //分类条目的加载状态
-      selectloading:false,
+      selectloading: false,
       //是否禁用表单元素
-      isdisabled:false,
+      isdisabled: false,
       //上传状态
-      loading:false
+      loading: false,
     };
   },
   //
   mounted() {
     //接收传来的propformdata，并填入表单中
     this.formtt();
-    this.videoid = this.propformdata.videoid
+    this.videoid = this.propformdata.videoid;
   },
   methods: {
     //获取分类条目
-    async getclassifylist(){
-      if (this.classifylist.length>0) return
+    async getclassifylist() {
+      if (this.classifylist.length > 0) return;
       try {
-        this.selectloading = true
-        const {data} = await this.$API.extraapi.getclassifylist();
-        this.classifylist = data
-        this.selectloading = false
+        this.selectloading = true;
+        const { data } = await this.$API.extraapi.getclassifylist();
+        this.classifylist = data;
+        this.selectloading = false;
       } catch (error) {
-        this.selectloading = false
+        this.selectloading = false;
       }
     },
     //分类标签删除
@@ -248,7 +252,7 @@ export default {
           if (valid) {
             //触发父元素的loading更改函数,展示加载
             this.$emit("updataloading", true);
-            this.loading = true
+            this.loading = true;
             try {
               console.log("进行服务端上传了");
               const fulluploadres = await this.$API.uploadapi.fullupload(
@@ -263,8 +267,8 @@ export default {
               );
               //触发父元素的loading更改函数,结束加载
               this.$emit("updataloading", false);
-              this.loading = false
-              this.$emit('endeve')
+              this.loading = false;
+              this.$emit("endeve");
               this.$message({
                 type: "success",
                 message: "上传成功!",
@@ -272,17 +276,24 @@ export default {
               //路由跳转到视频上传状态页面
               this.$router.push({
                 path: "/video-upload/status",
-                query: { videoid: fulluploadres.videoid,path:this.$route.path},
+                query: {
+                  videoid: fulluploadres.videoid,
+                  path: this.$route.path,
+                },
               });
             } catch (error) {
               //触发父元素的loading更改函数,结束加载
               this.$emit("updataloading", false);
-              this.loading = false
+              this.loading = false;
+
+              if (error.code === 401) {
+                //检验失败触发父组件事件
+                this.$emit("noexist", error.data);
+              }
               this.$message({
                 type: "error",
-                message: "上传失败",
+                message: "上传失败,请等待所有文件上传完成再试",
               });
-              console.log(error);
             }
           } else {
             this.$message.error("请检查表单，有问题哦");
@@ -359,15 +370,15 @@ export default {
         this.form.status = "已完结";
       }
     },
-    filelist:function(newdata){
+    filelist: function (newdata) {
       //如果filelist视频列表没有东西，就禁用表单
       //如果有东西，判断当前列表是不是被禁用了，被禁用的话就解除禁用
-      if(newdata.length===0){
-        this.isdisabled = true
-      }else if(this.isdisabled){
-        this.isdisabled = false
+      if (newdata.length === 0) {
+        this.isdisabled = true;
+      } else if (this.isdisabled) {
+        this.isdisabled = false;
       }
-    }
+    },
   },
   components: {
     UploadCover,
@@ -461,6 +472,4 @@ export default {
   width: 100%;
   height: 100%;
 }
-
-
 </style>

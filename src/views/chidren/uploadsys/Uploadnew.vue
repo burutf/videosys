@@ -155,4 +155,7 @@ export default {
 </script>
 
 <style lang="less" scoped>
+/deep/.el-tabs__new-tab{
+  // width: 100px;
+}
 </style>

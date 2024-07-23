@@ -1,9 +1,9 @@
 <template>
     <div class="searchcl">
         <div class="datese">
-            <el-date-picker v-model="datascope" type="datetimerange" range-separator="" start-placeholder="开始日期"
+            <el-date-picker v-model="datascope" type="daterange" range-separator="-" start-placeholder="开始日期"
                 end-placeholder="结束日期"  unlink-panels :editable="false" @change="searchdata"
-                :picker-options="pickerOptions">
+                :picker-options="pickerOptions" popper-class="pickercl">
             </el-date-picker>
         </div>
         <div class="titelse">
@@ -75,4 +75,6 @@ export default {
         padding-right: 0
     }
 }
+
+
 </style>

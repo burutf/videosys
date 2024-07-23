@@ -43,11 +43,12 @@ export default {
   methods: {
     //上传前校验
     beforeAvatarUpload(file) {
+      console.log(file.type);
       console.log("进行封面校验");
-      const isJPG = file.type === "image/jpeg";
+      const isJPG = file.type === "image/jpeg" || file.type === "image/png";
       const isLt2M = file.size / 1024 / 1024 < 3;
       if (!isJPG) {
-        this.$message.error("上传图片只能是 JPG 格式!");
+        this.$message.error("上传图片只能是 JPG 或者 PNG 格式!");
       } else if (!isLt2M) {
         this.$message.error("上传图片大小不能超过 5MB!");
       }

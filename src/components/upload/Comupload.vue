@@ -3,22 +3,28 @@
     <div class="uploadsys" v-loading="loading">
       <div class="UploadFile">
         <!-- 视频上传模块 -->
-        <UploadFile @filelistcd="filelistcd"></UploadFile>
+        <UploadFile ref="upfile" @filelistcd="filelistcd"></UploadFile>
       </div>
+
+      <div v-if="existnomessage.length>0">
+        检验失败的文件（请重新上传）：
+        <el-tag style="margin-left: 5px;" type="danger" v-for="e of existnomessage" :key="e.name">{{e.name.split('/')[3]}}</el-tag>
+      </div>
+
       <!-- 表单提交模块 -->
       <Formdata
         @updataloading="updataloading"
         @endeve="endeve"
+        @noexist="noexist"
         v-if="filelist.length > 0"
         :filelist="filelist"
       ></Formdata>
-
       <!-- 描述窗口 -->
       <div v-else class="message">
         <div class="messagediv">
           <p>视频格式：mp4</p>
           <p>{{ `大小<1GB` }}</p>
-          <p>封面格式：jpg</p>
+          <p>封面格式：jpg、png</p>
           <p>{{ `大小<3MB` }}</p>
         </div>
       </div>
@@ -35,9 +41,9 @@ import UploadStatus from "@/views/chidren/uploadsys/UploadStatus.vue";
 
 export default {
   name: "Comupload",
-  props:['tabname'],
+  props: ["tabname"],
   data() {
-    return { filelist: [], loading: false, issuccess: false };
+    return { filelist: [], loading: false, issuccess: false ,existnomessage:[]};
   },
   methods: {
     //UploadFile组件的自定义事件接收文件列表
@@ -50,8 +56,22 @@ export default {
     },
     //上传成功的回调
     endeve() {
-        //通知父组件，删除掉这个tab
-      this.$emit('successdel',this.tabname)
+      //通知父组件，删除掉这个tab
+      this.$emit("successdel", this.tabname);
+    },
+    //上传失败校验出错时的处理
+    noexist(ress) {
+      console.log(ress);
+      const {isexist:{data}} = ress
+      const listarr = data.filter(e=>{
+        return e.exist === false
+      })
+      this.existnomessage = listarr
+      console.log(this.existnomessage);
+      this.$message({
+        type: "error",
+        message: "有文件未成功上传，请重新上传",
+      });
     },
   },
   components: {
