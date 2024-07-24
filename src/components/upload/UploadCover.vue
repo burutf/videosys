@@ -24,6 +24,10 @@ export default {
       type: String,
       default: "",
     },
+    ranid:{
+      type: String,
+      default: "",
+    }
   },
   data() {
     return {
@@ -36,9 +40,12 @@ export default {
     };
   },
   mounted() {
+
     if (this.propimgurl === "") return;
     //将传来的图片地址给img标签
     this.imageUrl = this.propimgurl;
+
+    
   },
   methods: {
     //上传前校验
@@ -112,7 +119,7 @@ export default {
     ...mapState(["userinfo"]),
     //拼接
     temlurl() {
-      return `${this.uploadTemUrl}/${this.userinfo.uuid}/${this.userinfo.iat}/`;
+      return `${this.uploadTemUrl}/${this.userinfo.uuid}/${this.ranid}/`;
     },
   },
 };

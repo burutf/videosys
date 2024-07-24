@@ -37,10 +37,11 @@ export const uploadcover = async (FileName, fileobj, options) => {
 ///////////////////////////////////////////////////////////////
 //全部数据准备好了后把数据发送到服务器，进行数据校验保存
 //如果传入了videoid，则视为修改操作，没有的话就是新增
-export const fullupload = (filelist, formdata, videoid = '', delvideolist = []) => {
+export const fullupload = (filelist, formdata,temid, videoid = '', delvideolist = []) => {
     return http.post('/fullupload', {
         'filelist': filelist,
         'formdata': formdata,
+        'temid':temid,
         'videoid': videoid,
         'delvideolist': delvideolist
     })

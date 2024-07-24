@@ -81,7 +81,7 @@ export default {
   //   next();
   // },
   methods: {
-    handleTabsEdit(targetName, action) {
+    async handleTabsEdit(targetName, action) {
       if (action === "add") {
         let newTabName = ++this.tabIndex + "";
         this.editableTabs.push({
@@ -91,21 +91,34 @@ export default {
         this.editableTabsValue = newTabName;
       }
       if (action === "remove") {
-        let tabs = this.editableTabs;
-        let activeName = this.editableTabsValue;
-        if (activeName === targetName) {
-          tabs.forEach((tab, index) => {
-            if (tab.name === targetName) {
-              let nextTab = tabs[index + 1] || tabs[index - 1];
-              if (nextTab) {
-                activeName = nextTab.name;
-              }
-            }
+        try {
+          await this.$confirm("您确定要删除此任务吗?", "提示", {
+            confirmButtonText: "确定",
+            cancelButtonText: "取消",
+            type: "warning",
           });
-        }
 
-        this.editableTabsValue = activeName;
-        this.editableTabs = tabs.filter((tab) => tab.name !== targetName);
+          let tabs = this.editableTabs;
+          let activeName = this.editableTabsValue;
+          if (activeName === targetName) {
+            tabs.forEach((tab, index) => {
+              if (tab.name === targetName) {
+                let nextTab = tabs[index + 1] || tabs[index - 1];
+                if (nextTab) {
+                  activeName = nextTab.name;
+                }
+              }
+            });
+          }
+
+          this.editableTabsValue = activeName;
+          this.editableTabs = tabs.filter((tab) => tab.name !== targetName);
+
+          this.$message({
+            type: 'success',
+            message: '此任务删除成功!'
+          });
+        } catch (error) {}
       }
     },
     //上传成功的回调删除掉这个tab
@@ -155,7 +168,7 @@ export default {
 </script>
 
 <style lang="less" scoped>
-/deep/.el-tabs__new-tab{
+/deep/.el-tabs__new-tab {
   // width: 100px;
 }
 </style>

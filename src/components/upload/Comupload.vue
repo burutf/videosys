@@ -3,12 +3,22 @@
     <div class="uploadsys" v-loading="loading">
       <div class="UploadFile">
         <!-- 视频上传模块 -->
-        <UploadFile ref="upfile" @filelistcd="filelistcd"></UploadFile>
+        <UploadFile
+          ref="upfile"
+          @filelistcd="filelistcd"
+          @rannanoid="rannanoid"
+        ></UploadFile>
       </div>
 
-      <div v-if="existnomessage.length>0">
+      <div v-if="existnomessage.length > 0">
         检验失败的文件（请重新上传）：
-        <el-tag style="margin-left: 5px;" type="danger" v-for="e of existnomessage" :key="e.name">{{e.name.split('/')[3]}}</el-tag>
+        <el-tag
+          style="margin-left: 5px"
+          type="danger"
+          v-for="e of existnomessage"
+          :key="e.name"
+          >{{ e.name.split("/")[3] }}</el-tag
+        >
       </div>
 
       <!-- 表单提交模块 -->
@@ -18,6 +28,7 @@
         @noexist="noexist"
         v-if="filelist.length > 0"
         :filelist="filelist"
+        :ranid="ranid"
       ></Formdata>
       <!-- 描述窗口 -->
       <div v-else class="message">
@@ -43,7 +54,14 @@ export default {
   name: "Comupload",
   props: ["tabname"],
   data() {
-    return { filelist: [], loading: false, issuccess: false ,existnomessage:[]};
+    return {
+      filelist: [],
+      loading: false,
+      issuccess: false,
+      existnomessage: [],
+      //上传目录的id
+      ranid: "",
+    };
   },
   methods: {
     //UploadFile组件的自定义事件接收文件列表
@@ -62,17 +80,31 @@ export default {
     //上传失败校验出错时的处理
     noexist(ress) {
       console.log(ress);
-      const {isexist:{data}} = ress
-      const listarr = data.filter(e=>{
-        return e.exist === false
-      })
-      this.existnomessage = listarr
+      const {
+        isexist: { data },
+      } = ress;
+      const listarr = data.filter((e) => {
+        return e.exist === false;
+      });
+      this.existnomessage = listarr;
       console.log(this.existnomessage);
       this.$message({
         type: "error",
         message: "有文件未成功上传，请重新上传",
       });
     },
+    //接收文件上传组件传来的这次上传目录的id名字，传给表单组件，统一上传目录
+    rannanoid(ranid) {
+      this.ranid = ranid;
+    },
+  },
+  beforeDestroy() {
+    try {
+      //清除临时目录
+      this.$API.osssys.delosscontents(this.ranid);
+    } catch (error) {
+      console.log("清除临时目录失败");
+    }
   },
   components: {
     UploadFile,

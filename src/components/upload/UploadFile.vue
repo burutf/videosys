@@ -55,9 +55,18 @@
       </ul>
     </div>
     <!-- 功能按钮 -->
-    <el-button v-show="fileList.length>0" @click="sortindex(false)" class="sortbutton">升序排序</el-button>
-    <el-button v-show="fileList.length>0" @click="sortindex(true)" class="sortbutton">降序排序</el-button>
-
+    <el-button
+      v-show="fileList.length > 0"
+      @click="sortindex(false)"
+      class="sortbutton"
+      >升序排序</el-button
+    >
+    <el-button
+      v-show="fileList.length > 0"
+      @click="sortindex(true)"
+      class="sortbutton"
+      >降序排序</el-button
+    >
   </div>
 </template>
 
@@ -67,6 +76,8 @@ import { debounce } from "lodash";
 import draggable from "vuedraggable";
 //引入仓库中的userinfo
 import { mapState } from "vuex";
+//随机生成id
+import { nanoid } from "nanoid";
 
 export default {
   name: "UploadFile",
@@ -94,15 +105,22 @@ export default {
       serial: 1,
       //之前已经成功上传的文件列表，通过这个列表来进行删除（不直接删除了，等用户做完所有操作后再删除）
       delvideolist: [],
+      //随机一个id，用来当做这组文件的上传目录
+      rannanoid: "",
     };
   },
   mounted() {
     this.fileList = this.chuliproplist;
+    this.rannanoid = "TP" + nanoid(10);
+    //将生成的上传目录id传递出去，同步一下
+    this.$emit("rannanoid", this.rannanoid);
   },
   methods: {
     //成功上传后的处理
     upsuccess(response, file, fileList) {
       console.log("成功上传了");
+      //分片上传完成从分片上传数组中删除
+      this.removefilefpid(file.uid)
       this.fileList.forEach((e, i) => {
         if (e.uid === file.uid) {
           //借口返回数据后，代表完全成功，进度置为100%
@@ -113,11 +131,11 @@ export default {
           this.serialreload();
         }
       });
-      console.log(this.fileList);
     },
     //自定义上传
     handleUploadFile(filec) {
       console.log("我开始上传了");
+      console.log("这次的目录id为" + this.rannanoid);
       //等下DOM再执行获取文件列表
       this.$nextTick(async () => {
         const { name } = filec.file;
@@ -135,7 +153,8 @@ export default {
           }
         } catch (error) {
           //文件传输错误
-          this.$message.error("文件上传时出错");
+          this.$message.error("文件上传时出错或已被中止");
+
           //将错误上传的文件标记为错误文件
           this.errorfile(name);
         }
@@ -252,13 +271,10 @@ export default {
           const obj = this.filefpid.find((e, i) => {
             return e.uid === uid;
           });
-          const uploadId = obj.uploadId;
+          const { uploadId, name: objname } = obj;
 
           //中断分片上传
-          await this.$API.osssys.abortMultipartUpload(
-            `${this.temlurl}${name}`,
-            uploadId
-          );
+          await this.$API.osssys.abortMultipartUpload(objname, uploadId);
           this.$message({
             showClose: true,
             message: `已经中断${name}文件上传`,
@@ -269,6 +285,7 @@ export default {
           //重新排列编号
           this.serialreload();
         } catch (error) {
+          console.error(error);
           this.$message.error("中断文件上传失败");
         }
       } else {
@@ -318,7 +335,7 @@ export default {
           //最后一个分片不执行
           if (p !== 1) {
             //下面这一段是，获取文件id和分片初始化时的id，再添加到一个数据里面，方便后面中断操作，数组有做去重处理
-            const { file, uploadId } = cpt;
+            const { file, uploadId, name } = cpt;
             //这里是做数组去重，重复的就不添加了
             const isexist = Boolean(
               this.filefpid.find((item, i) => {
@@ -326,7 +343,7 @@ export default {
               })
             );
             if (!isexist) {
-              this.filefpid.push({ uid: file.uid, uploadId: uploadId });
+              this.filefpid.push({ uid: file.uid, uploadId, name });
             }
             //filelist加进度条
             this.addjindu(cpt.file, p);
@@ -359,28 +376,43 @@ export default {
       this.serialreload();
     },
     //根据名称编号重新排序(默认为升序，true为降序)
-    sortindex(isis){
+    sortindex(isis) {
       console.log(isis);
       console.log(this.fileList);
-      this.fileList.sort((a,b)=>{
-        a = parseInt(a.name)
-        b = parseInt(b.name)
+      this.fileList.sort((a, b) => {
+        a = parseInt(a.name);
+        b = parseInt(b.name);
         if (isis) {
           //降序
-          return b-a
-        }else{
+          return b - a;
+        } else {
           //升序
-          return a-b
+          return a - b;
         }
-        
-      })
+      });
+    },
+    //取消所有进行中的分片上传
+    async closeupload() {
+      try {
+        //中断分片上传
+        this.filefpid.map(async (e) => {
+          try {
+            await this.$API.osssys.abortMultipartUpload(e.name, e.uploadId);
+          } catch (error) {}
+        });
+      } catch (error) {}
+    },
+    //分片上传完成从分片上传数组中删除
+    removefilefpid(uid){
+      const index = this.filefpid.findIndex(e=>e.uid == uid)
+      this.filefpid.splice(index,1)
     }
   },
   computed: {
     ...mapState(["userinfo"]),
     //拼接
     temlurl() {
-      return `${this.uploadTemUrl}/${this.userid}/${this.userinfo.iat}/`;
+      return `${this.uploadTemUrl}/${this.userid}/${this.rannanoid}/`;
     },
     //处理传来的proplist
     chuliproplist() {
@@ -406,6 +438,11 @@ export default {
     userid() {
       return this.$store.state.userinfo.uuid;
     },
+    
+  },
+  beforeDestroy() {
+    //取消所有进行中的分片上传
+    this.closeupload();
   },
   watch: {
     fileList: function (newdata, olddata) {
@@ -546,7 +583,7 @@ export default {
     display: block;
   }
 }
-.sortbutton{
+.sortbutton {
   margin-top: 10px;
 }
 </style>

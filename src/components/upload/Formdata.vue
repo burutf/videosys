@@ -15,6 +15,7 @@
             class="avatar-uploader"
             @covername="elcovername"
             :propimgurl="propimgurl"
+            :ranid="ranid"
           ></UploadCover>
         </div>
       </el-form-item>
@@ -119,6 +120,10 @@ export default {
       type: Array,
       default: () => [],
     },
+    ranid:{
+      type:String,
+      default:''
+    }
   },
   data() {
     return {
@@ -260,10 +265,13 @@ export default {
                 this.tidyfilelist(),
                 //表单
                 this.form,
+                //文件的临时上传目录
+                this.ranid,
                 //视频id
                 this.videoid,
                 //要删除的之前上传过的视频
-                this.delvideolist
+                this.delvideolist,
+                
               );
               //触发父元素的loading更改函数,结束加载
               this.$emit("updataloading", false);

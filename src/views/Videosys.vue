@@ -74,6 +74,7 @@
         @filelistcd="filelistcd"
         :videoid="rawdata.videoid"
         :proplist="rawdata.videolist"
+        @rannanoid="rannanoid"
       ></UploadFile>
       <!-- 表单提交模块 -->
       <Formdata
@@ -82,11 +83,17 @@
         :propformdata="rawdata"
         :filelist="filelist"
         :delvideolist="delvideolist"
+        :ranid="ranid"
       ></Formdata>
     </el-drawer>
 
     <!-- 设置栏 -->
-    <el-dialog title="设置" :visible.sync="dialogVisible" width="50%" @close="dialogclose">
+    <el-dialog
+      title="设置"
+      :visible.sync="dialogVisible"
+      width="50%"
+      @close="dialogclose"
+    >
       <Setting :rawdata="rawdata"></Setting>
     </el-dialog>
 
@@ -149,6 +156,8 @@ export default {
       statusff: "",
       //是否显示设置栏
       dialogVisible: false,
+      //上传目录的id
+      ranid: "",
     };
   },
   mounted() {
@@ -186,6 +195,13 @@ export default {
       this.$confirm("确认关闭？")
         .then((_) => {
           done();
+          try {
+            //清除临时目录
+            this.$API.osssys.delosscontents(this.ranid);
+          } catch (error) {
+            console.log('清除临时目录失败');
+          }
+
           //重新获取视频列表
           this.getvideolist();
           //清除行数据
@@ -313,11 +329,15 @@ export default {
       // this.rawdata = { setting: {}, videoid: data.videoid };
     },
     //设置栏关闭时清除行数据
-    dialogclose(){
-      this.rawdata = {}
+    dialogclose() {
+      this.rawdata = {};
       //重新获取视频列表
       this.getvideolist();
-    }
+    },
+    //接收文件上传组件传来的这次上传目录的id名字，传给表单组件，统一上传目录
+    rannanoid(ranid) {
+      this.ranid = ranid;
+    },
   },
   computed: {
     //有筛选的属性时再解开禁用
