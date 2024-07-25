@@ -5,6 +5,7 @@
     :closable="closable"
     :addable="addable"
     @edit="handleTabsEdit"
+    style="padding: 20px;"
   >
     <el-tab-pane
       :key="item.name"
@@ -116,10 +117,10 @@ export default {
           this.editableTabsValue = activeName;
           this.editableTabs = tabs.filter((tab) => tab.name !== targetName);
 
-          this.$message({
-            type: "success",
-            message: "此任务删除成功!",
-          });
+          // this.$message({
+          //   type: "success",
+          //   message: "此任务删除成功!",
+          // });
         } catch (error) {}
       }
     },

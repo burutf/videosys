@@ -55,7 +55,7 @@
       <el-form-item label="种类" prop="type">
         <el-radio-group v-model="form.type">
           <el-radio label="剧集"></el-radio>
-          <el-radio label="电影"></el-radio>
+          <el-radio label="剧场"></el-radio>
         </el-radio-group>
       </el-form-item>
 
@@ -69,6 +69,7 @@
           placeholder="请选择1-7个分类"
           :loading="selectloading"
           @focus="getclassifylist"
+          :default-first-option="true"
         >
           <el-option
             v-for="item in classifylist"
@@ -120,10 +121,10 @@ export default {
       type: Array,
       default: () => [],
     },
-    ranid:{
-      type:String,
-      default:''
-    }
+    ranid: {
+      type: String,
+      default: "",
+    },
   },
   data() {
     return {
@@ -260,6 +261,7 @@ export default {
             this.loading = true;
             try {
               console.log("进行服务端上传了");
+              console.log(this.tidyfilelist());
               const fulluploadres = await this.$API.uploadapi.fullupload(
                 //上传精简filelist数组
                 this.tidyfilelist(),
@@ -270,8 +272,7 @@ export default {
                 //视频id
                 this.videoid,
                 //要删除的之前上传过的视频
-                this.delvideolist,
-                
+                this.delvideolist
               );
               //触发父元素的loading更改函数,结束加载
               this.$emit("updataloading", false);
@@ -348,6 +349,7 @@ export default {
           type: e.type,
           status: e.status,
           isbeforup: e.isbeforup,
+          uploaddate: e.uploaddate,
         };
       });
     },
@@ -374,7 +376,7 @@ export default {
   },
   watch: {
     "form.type": function (newq, oldq) {
-      if (newq === "电影") {
+      if (newq === "剧场") {
         this.form.status = "已完结";
       }
     },

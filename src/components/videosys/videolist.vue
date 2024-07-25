@@ -98,14 +98,16 @@ export default {
     margin: 10px 10px 0 0;
   }
 }
-
+.el-table::before{
+    z-index: auto;
+  }
 .el-table {
   overflow: visible;
-  border-radius: 20px;
-
+  border-radius: 10px;
   box-shadow: 1px 1px 4px #d2d2d2;
   margin-bottom: 55px;
-
+  padding-top: 10px;
+  
   /deep/tr {
     background: none;
     background-color: #fff;

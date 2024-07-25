@@ -1,45 +1,49 @@
 <template>
   <div class="block">
     <span class="placeholdercl"></span>
-    <el-pagination layout="total,prev, pager, next" :total="sumpage" :page-size="pagesize" :current-page="currentpage"
-      @current-change="changepage" v-show="isshow">
+    <el-pagination
+      layout="total,prev, pager, next"
+      :total="sumpage"
+      :page-size="pagesize"
+      :current-page="currentpage"
+      @current-change="changepage"
+      v-show="isshow"
+    >
     </el-pagination>
   </div>
 </template>
 
 <script>
 //引入占位符媒体查询
-import '@/mediacss/placeholdercl.css'
+import "@/mediacss/placeholdercl.css";
 
 export default {
-  name: 'pagination',
+  name: "pagination",
   //总条数
-  props: ['sumpage'],
+  props: [
+    //总条数
+    "sumpage",
+    //每页显示条数
+    "pagesize",
+    //当前页数
+    "currentpage",
+  ],
   data() {
-    return {
-      //每页显示条数
-      pagesize: 10,
-      //当前页数
-      currentpage: 1,
-    }
+    return {};
   },
+  mounted() {},
   methods: {
     changepage(i) {
-      this.currentpage = i
-      this.$emit('regetlsit')
+      this.$emit("regetlsit", i);
     },
-    //页数变为1
-    setpageone(){
-      this.currentpage = 1
-    }
   },
   computed: {
     //是否显示分页
     isshow() {
-      return this.sumpage > this.pagesize
-    }
-  }
-}
+      return this.sumpage > this.pagesize;
+    },
+  },
+};
 </script>
 
 <style lang="less" scope>
@@ -64,13 +68,12 @@ export default {
       background: none;
       pointer-events: auto;
       .el-icon-arrow-left:before {
-        content: '\e792';
+        content: "\e792";
         font-size: 1.3em;
       }
     }
 
     .el-pager {
-
       //中间的按钮
       .number {
         background-color: rgb(255, 255, 255);
@@ -95,11 +98,18 @@ export default {
       background: none;
       pointer-events: auto;
       .el-icon-arrow-right:before {
-        content: '\e791';
+        content: "\e791";
         font-size: 1.3em;
       }
     }
   }
+}
 
+@media (max-width: 560px) {
+  //最左边的信息
+  .el-pagination__total {
+    position: absolute;
+    bottom: -30px;
+  }
 }
 </style>

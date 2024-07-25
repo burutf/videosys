@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="padding: 20px;">
     <el-result icon="success" title="上传成功" subTitle="继续添加请点击返回">
       <template slot="extra">
         <el-button @click="routergo" type="primary" size="medium">返回</el-button>

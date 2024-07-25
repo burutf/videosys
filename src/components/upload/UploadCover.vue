@@ -7,7 +7,7 @@
     :http-request="httpupload"
   >
     <slot>
-      <img v-if="imageUrl" :src="imageUrl" class="avatar" />
+      <img v-if="imageUrl" :src="imageUrlclass" class="avatar" />
       <i v-else class="el-icon-plus avatar-uploader-icon"></i>
     </slot>
   </el-upload>
@@ -121,6 +121,10 @@ export default {
     temlurl() {
       return `${this.uploadTemUrl}/${this.userinfo.uuid}/${this.ranid}/`;
     },
+    //拼接url文件处理
+    imageUrlclass(){
+      return this.imageUrl+process.env.VUE_APP_OSSIMGCLASS
+    }
   },
 };
 </script>

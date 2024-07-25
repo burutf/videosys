@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="padding: 20px;">
     <Searchfn
       ref="searchfn"
       @datesearchfn="datesearchfn"

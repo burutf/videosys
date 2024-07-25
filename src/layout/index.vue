@@ -11,7 +11,7 @@
           <Header></Header>
         </el-header>
         <!-- 主体 -->
-        <div style="padding: 20px; position: relative">
+        <div style="padding: 0px; position: relative">
           <!-- 上传组件保持存活 -->
           <keep-alive include="Uploadsys">
             <router-view></router-view>

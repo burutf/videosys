@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="padding: 20px;">
     <div class="chartsdiv">
       <!-- ref的值可以随便写 -->
 

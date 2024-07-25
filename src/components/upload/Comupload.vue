@@ -98,10 +98,11 @@ export default {
       this.ranid = ranid;
     },
   },
-  beforeDestroy() {
+  async beforeDestroy() {
+    if (this.filelist.length===0) return
     try {
       //清除临时目录
-      this.$API.osssys.delosscontents(this.ranid);
+      await this.$API.osssys.delosscontents(this.ranid);
     } catch (error) {
       console.log("清除临时目录失败");
     }

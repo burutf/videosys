@@ -6,17 +6,21 @@
         <img
           v-show="e.coverurl"
           class="imgcls"
-          :src="e.coverurl"
+          :src="ossclassurl(e.coverurl)"
         />
         <!-- 没有设置图片时展示的 -->
         <div v-show="!e.coverurl" class="pla">
           <span>暂无图片</span>
         </div>
         <!-- 文字展示区 -->
-        <div class="introduce">
-          <h2>{{ e.aggarr.title }}</h2>
-          <span>{{ e.aggarr.status }}</span>
-          <p>
+        <div
+          class="introduce"
+          data-swiper-parallax-opacity="0"
+          data-swiper-parallax-scale="1.1"
+        >
+          <h2 data-swiper-parallax="-100">{{ e.aggarr.title }}</h2>
+          <span data-swiper-parallax="-200">{{ e.aggarr.status }}</span>
+          <p data-swiper-parallax="-300">
             {{ e.aggarr.desc }}
           </p>
         </div>
@@ -90,6 +94,7 @@ export default {
         loop: isloop,
         //选择的样式种类
         effect: "coverflow",
+        parallax: true,
         //居中
         centeredSlides: true,
         slidesPerView: "auto",
@@ -97,9 +102,10 @@ export default {
         coverflowEffect: {
           rotate: 50,
           stretch: 10,
-          depth: 600,
+          depth: 100,
           modifier: 1,
           slideShadows: true,
+          depth: 100,
         },
         pagination: true,
         //自动轮播
@@ -130,6 +136,10 @@ export default {
     covername(imgobj, videoid, coverurl) {
       this.$emit("updatefn", imgobj, videoid, coverurl);
     },
+    //进行轮播图处理图片oss样式
+    ossclassurl(url) {
+      return url + process.env.VUE_APP_OSSSLICLASS;
+    },
   },
   beforeDestroy() {
     if (this.swiper) {
@@ -146,13 +156,13 @@ export default {
       }
     },
   },
-  watch:{
+  watch: {
     //传来的值发生改变时就初始化swiper
-    list:{
-      handler(){
-        this.reinit()
-      }
-    }
+    list: {
+      handler() {
+        this.reinit();
+      },
+    },
   },
   components: { UploadCover },
 };
@@ -162,13 +172,26 @@ export default {
 .swiper {
   width: 100%;
   height: 40vw;
-  max-height: 400px;
+  min-height: 200px;
+  max-height: 450px;
+  .swiper-button-prev{
+    // display: none;
+    opacity: 0.4;
+    &:hover{
+      opacity: 1;
+    }
+  }
+  .swiper-button-next{
+    // display: none;
+    opacity: 0.4;
+    &:hover{
+      opacity: 1;
+    }
+  }
 }
 
 .swiper-slide {
   position: relative;
-  background-position: center;
-  background-size: cover;
   width: 60vw;
   border-radius: 10px;
   box-shadow: 2px 2px 3px 0px #0000008f;
@@ -181,18 +204,20 @@ export default {
     position: absolute;
     width: 100%;
     height: 100%;
-    
+    overflow: hidden;
+    background-position: center;
+    background-size: cover;
   }
 
   .imgcls::before {
-    content: "图片加载出错，请重新上传";
+    content: "图片加载出错";
     display: block;
     width: 100%;
     height: 100%;
-    display:flex;
+    display: flex;
     justify-content: center;
     align-items: center;
-    color: rgba(255, 0, 0, 0.592)
+    color: rgba(255, 0, 0, 0.592);
   }
   .topupdate {
     position: absolute;
@@ -239,15 +264,17 @@ export default {
     bottom: 5px;
     left: 5px;
     width: 50%;
-    height: 40%;
-    // background-color: rgb(0, 0, 0);
     overflow: hidden;
     h2 {
-      color: rgba(255, 255, 255, 0.89);
+      color: rgb(255, 255, 255);
+
       margin: 10px 0;
+      text-overflow: ellipsis;
+      text-wrap: nowrap;
     }
     span {
       color: rgba(255, 255, 255, 0.914);
+      display: block;
     }
     p {
       margin: 8px 0;
@@ -276,5 +303,28 @@ export default {
 .swiper-pagination {
   //鼠标穿透
   pointer-events: none;
+}
+
+@media (max-width: 1025px) {
+  .introduce {
+    top: auto;
+    height: 60% !important;
+  }
+}
+@media (max-width: 560px) {
+  .swiper-slide{
+    width:87vw;
+  }
+  .swiper {
+    height: 50vw;
+  }
+  .swiper-button-prev{
+    // display: none;
+    opacity: 0.4;
+  }
+  .swiper-button-next{
+    // display: none;
+    opacity: 0.4;
+  }
 }
 </style>

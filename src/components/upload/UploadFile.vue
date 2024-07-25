@@ -131,6 +131,7 @@ export default {
           this.serialreload();
         }
       });
+      console.log(this.fileList);
     },
     //自定义上传
     handleUploadFile(filec) {
@@ -416,7 +417,7 @@ export default {
     },
     //处理传来的proplist
     chuliproplist() {
-      //如果没有传来proplist就返回空对象
+      //如果没有传来proplist就返回空数组
       if (this.proplist.length === 0) return [];
       const arr = this.proplist.map((e) => {
         const name = e.name;
@@ -425,11 +426,14 @@ export default {
           percentage: 100,
           serial: e.serial,
           status: e.status,
-          isbeforup: e.isbeforup,
+          //传来的视频列表是已经上传了的，做个标记
+          isbeforup: true,
           size: e.size,
+          type:e.type,
           response: {
             name: e.urlname,
           },
+          uploaddate: e.uploaddate
         };
       });
       return arr;

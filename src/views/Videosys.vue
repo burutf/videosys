@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="padding: 20px;">
     <Searchfn
       ref="searchfn"
       @datesearchfn="datesearchfn"
@@ -32,7 +32,7 @@
                 @click="redacklist(scope.row)"
                 type="text"
               >
-                编辑
+                更新
               </el-button>
             </el-dropdown-item>
             <el-dropdown-item>
@@ -99,8 +99,9 @@
 
     <!-- 分页 -->
     <Pagination
-      ref="pagech"
       :sumpage="sumpage"
+      :pagesize="pagesize"
+      :currentpage="currentpage"
       @regetlsit="regetlsit"
     ></Pagination>
   </div>
@@ -142,6 +143,10 @@ export default {
       //分页
       //总条数
       sumpage: 0,
+      //每页显示条数
+      pagesize: 10,
+      //当前页数
+      currentpage:1,
       //抽屉是否打开
       drawer: false,
       //传递的行数据
@@ -168,12 +173,10 @@ export default {
     //获取视频列表
     async getvideolist() {
       this.loading = true;
-      //拿到分页组件（子组件）中的当前页和每页条数
-      const { currentpage, pagesize } = this.$refs.pagech;
       try {
         const res = await this.$API.videosys.getvideolist({
-          currentpage,
-          pagesize,
+          currentpage: this.currentpage,
+          pagesize: this.pagesize,
           sortobj: this.sortobj,
           datefiltle: this.datefiltle,
           titlesearch: this.titlesearch,
@@ -212,7 +215,7 @@ export default {
     //子组件Searchfn触发的方法，筛选日期范围
     datesearchfn(data) {
       //将页数变为1
-      this.$refs.pagech.setpageone();
+      this.currentpage = 1;
       this.datefiltle = data;
       //重新获取视频列表
       this.getvideolist();
@@ -220,7 +223,7 @@ export default {
     //子组件Searchfn触发的方法，搜索标题
     titsearchfn(data) {
       //将页数变为1
-      this.$refs.pagech.setpageone();
+      this.currentpage = 1;
       this.titlesearch = data;
       //重新获取视频列表
       this.getvideolist();
@@ -269,7 +272,8 @@ export default {
       }
     },
     //分页组件触发的函数，重新获取列表
-    regetlsit() {
+    regetlsit(i) {
+      this.currentpage = i
       //重新获取视频列表
       this.getvideolist();
     },
@@ -293,6 +297,7 @@ export default {
     redacklist(data) {
       this.drawer = true;
       this.rawdata = data;
+      console.log(this.rawdata);
     },
     //删除列表中的一条
     async dellist(data) {

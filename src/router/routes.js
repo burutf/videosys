@@ -23,7 +23,7 @@ export const navroutes = [
         path: 'slideshow', name: '轮播图',  iconClass: 'el-icon-picture-outline-round', meta: { title: '轮播图',shownav: true, auth: 9 ,id:'slideshow'}, component: () => import('@/views/Slideshow')
     },
     {
-        path: 'usersys', name: '人员管理',  iconClass: 'el-icon-user', meta: { title: '人员管理',shownav: true, auth: 9 ,id:'usersys'}, component: () => import('@/views/Usersys')
+        path: 'usersys', name: '人员管理',  iconClass: 'el-icon-user-solid', meta: { title: '人员管理',shownav: true, auth: 9 ,id:'usersys'}, component: () => import('@/views/Usersys')
     }
 ]
 
@@ -35,10 +35,10 @@ export default [
         children: navroutes
     },
     {
-        path: '/login', name: '登陆', component: () => import('@/views/Login')
+        path: '/login', name: '登陆', meta:{title:'登陆'},component: () => import('@/views/Login')
     },
     {
-        path: '/404', name: 'error', component: () => import('@/error')
+        path: '/404', name: 'error',meta:{title:'404'}, component: () => import('@/error')
     },
     {
         path: '*', redirect: '/404'

@@ -22,7 +22,7 @@ export default {
         },
         xAxis: {
           type: "category",
-          data: ["总条数", "今日新增", "今日修改"],
+          data: ["总条数", "今日新增", "今日更新"],
         },
         yAxis: {
           type: "value",
