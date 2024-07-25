@@ -37,16 +37,13 @@ export default {
   },
   mounted() {
     this.navdata = navroutes;
-    this.navactrouter();
   },
   methods: {
     //开始时拿到当前的路由，根据路由激活现在的导航
     navactrouter() {
-      this.$nextTick(() => {
-        const ever = document.getElementById(this.$route.meta.id);
-        this.actlong = ever.clientWidth * 0.8;
-        this.actleft = ever.offsetLeft + ever.clientWidth * 0.1;
-      });
+      const ever = document.getElementById(this.$route.meta.id);
+      this.actlong = ever.clientWidth * 0.8;
+      this.actleft = ever.offsetLeft + ever.clientWidth * 0.1;
     },
     //选中跳转处理
     navfn(e) {
@@ -55,7 +52,7 @@ export default {
       //   this.actlong = target.clientWidth * 0.8;
       //   this.actleft = target.offsetLeft + target.clientWidth * 0.1;
       //跳转
-      if (this.$route.name === target.dataset.name ) return
+      if (this.$route.name === target.dataset.name) return;
       this.$router.push({ name: target.dataset.name });
     },
   },
@@ -77,13 +74,19 @@ export default {
     $route() {
       this.navactrouter();
     },
+    //监听对路由进行二次筛选的计算属性，当这个值筛出来时，进行根据路由激活现在的导航
+    navdatatwo(newdata) {
+      if (newdata.length > 0) {
+        this.$nextTick(() => {
+          this.navactrouter();
+        });
+      }
+    },
   },
 };
 </script>
 
 <style lang="less" scoped>
-
-
 .headlist {
   flex-wrap: nowrap;
   position: absolute;
@@ -110,7 +113,6 @@ export default {
 .headlist::-webkit-scrollbar {
   display: none;
 }
-
 
 @media (max-width: 560px) {
   .headlist {

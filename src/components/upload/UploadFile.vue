@@ -350,9 +350,9 @@ export default {
           }
         },
         // 设置并发上传的分片数量。
-        // parallel: 4,
+        // parallel: 5,
         // 设置分片大小。默认值为1 MB，最小值为100 KB。
-        // partSize: 1024 * 1024,
+        // partSize: 1024 * 1024 * 1,
       };
       return options;
     },

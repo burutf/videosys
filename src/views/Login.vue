@@ -35,13 +35,14 @@ export default {
     };
   },
   methods: {
-    ...mapActions(['gettoken']),
+    ...mapActions(['gettoken','refreshtoken']),
     submitForm(formName) {
       this.$refs[formName].validate(async (valid) => {
         if (valid) {
           this.loading = true
           try {
             const res = await this.gettoken(this.form);
+            // await this.refreshtoken()
             this.loading = false
             this.$message({
               message: "登录成功",

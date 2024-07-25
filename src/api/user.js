@@ -5,6 +5,11 @@ export const login = (data) => {
   return http.post("/login", data);
 };
 
+//刷新token
+// export const refreshtoken = ()=>{
+//   return http.post("/refreshtoken");
+// }
+
 //获取用户信息
 export const getuserinfo = () => {
   return http.get("/getuserinfo");

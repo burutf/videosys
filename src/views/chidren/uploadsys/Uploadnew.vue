@@ -81,7 +81,7 @@ export default {
   //   next();
   // },
   methods: {
-    async handleTabsEdit(targetName, action) {
+    async handleTabsEdit(targetName, action, issuccess=true) {
       if (action === "add") {
         let newTabName = ++this.tabIndex + "";
         this.editableTabs.push({
@@ -92,11 +92,13 @@ export default {
       }
       if (action === "remove") {
         try {
-          await this.$confirm("您确定要删除此任务吗?", "提示", {
-            confirmButtonText: "确定",
-            cancelButtonText: "取消",
-            type: "warning",
-          });
+          if (issuccess) {
+            await this.$confirm("您确定要删除此任务吗?", "提示", {
+              confirmButtonText: "确定",
+              cancelButtonText: "取消",
+              type: "warning",
+            });
+          }
 
           let tabs = this.editableTabs;
           let activeName = this.editableTabsValue;
@@ -115,15 +117,15 @@ export default {
           this.editableTabs = tabs.filter((tab) => tab.name !== targetName);
 
           this.$message({
-            type: 'success',
-            message: '此任务删除成功!'
+            type: "success",
+            message: "此任务删除成功!",
           });
         } catch (error) {}
       }
     },
     //上传成功的回调删除掉这个tab
     successdel(name) {
-      this.handleTabsEdit(name, "remove");
+      this.handleTabsEdit(name, "remove", false);
     },
   },
   watch: {
