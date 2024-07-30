@@ -43,7 +43,7 @@ export default {
 
     if (this.propimgurl === "") return;
     //将传来的图片地址给img标签
-    this.imageUrl = this.propimgurl;
+    this.imageUrl = process.env.VUE_APP_CN + "/" + this.propimgurl;
 
     
   },
@@ -88,7 +88,6 @@ export default {
           this.filecovername = uploadreturn.name;
           //触发父组件的自定义事件，进行传值
           this.$emit("covername", {
-            url: uploadreturn.url,
             urlname: uploadreturn.name,
             size: filec.file.size,
             type: filec.file.type,

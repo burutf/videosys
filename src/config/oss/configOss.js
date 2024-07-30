@@ -34,8 +34,8 @@ export const configOss = async () => {
         //配置OSS
         const client = new OSS({
             //自定义的域名
-            endpoint: process.env.VUE_APP_CN,
-            cname: true,
+            // endpoint: process.env.VUE_APP_CN,
+            // cname: true,
             // yourRegion填写Bucket所在地域。以华东1（杭州）为例，yourRegion填写为oss-cn-hangzhou。
             region: process.env.VUE_APP_REGION,
             accessKeyId: token.AccessKeyId,

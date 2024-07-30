@@ -84,7 +84,7 @@ export default {
         isexist: { data },
       } = ress;
       const listarr = data.filter((e) => {
-        return e.exist === false;
+        return e.exist !== true;
       });
       this.existnomessage = listarr;
       console.log(this.existnomessage);

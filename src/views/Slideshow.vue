@@ -37,13 +37,13 @@ export default {
       }
     },
     //更改
-    async updatefn(imgobj, videoid,coverurl) {
-      if (coverurl) {
-        coverurl = new URL(coverurl).pathname
-      }
-
+    async updatefn(imgobj, videoid,urlname) {
+      // if (urlname) {
+      //   urlname = new URL(urlname).pathname
+      // }
+      console.log(urlname);
       try {
-        await this.$API.videosys.updateslideshowimg(imgobj, videoid,coverurl);
+        await this.$API.videosys.updateslideshowimg(imgobj, videoid,urlname);
         await this.getlist();
 
         

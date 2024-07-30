@@ -371,7 +371,7 @@ export default {
     //将封面url地址传给子组件，当没有接收到封面url时，给子组件传空值
     propimgurl() {
       if (!this.propformdata.cover) return "";
-      return this.propformdata.cover.url;
+      return this.propformdata.cover.urlname;
     },
   },
   watch: {

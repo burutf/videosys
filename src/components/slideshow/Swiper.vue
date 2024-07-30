@@ -4,12 +4,12 @@
       <div v-for="(e, i) of list" :key="i" class="swiper-slide">
         <!-- 图片展示区 -->
         <img
-          v-show="e.coverurl"
+          v-show="e.urlname"
           class="imgcls"
-          :src="ossclassurl(e.coverurl)"
+          :src="ossclassurl(e.urlname)"
         />
         <!-- 没有设置图片时展示的 -->
-        <div v-show="!e.coverurl" class="pla">
+        <div v-show="!e.urlname" class="pla">
           <span>暂无图片</span>
         </div>
         <!-- 文字展示区 -->
@@ -28,7 +28,7 @@
         <!-- 只有当前激活的才会显示这里 -->
         <div class="topupdate" v-show="actindex === i">
           <!-- 更换按钮 -->
-          <UploadCover @covername="covername($event, e.videoid, e.coverurl)">
+          <UploadCover @covername="covername($event, e.videoid, e.urlname)">
             <i :data-index="i" class="el-icon-refresh updatebutton"></i>
           </UploadCover>
           <!-- 删除按钮 -->
@@ -133,12 +133,13 @@ export default {
       });
     },
     //进行更改图片
-    covername(imgobj, videoid, coverurl) {
-      this.$emit("updatefn", imgobj, videoid, coverurl);
+    covername(imgobj, videoid, urlname) {
+      console.log(urlname);
+      this.$emit("updatefn", imgobj, videoid, urlname);
     },
     //进行轮播图处理图片oss样式
     ossclassurl(url) {
-      return url + process.env.VUE_APP_OSSSLICLASS;
+      return process.env.VUE_APP_CN + "/" + url + process.env.VUE_APP_OSSSLICLASS;
     },
   },
   beforeDestroy() {
