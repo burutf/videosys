@@ -22,37 +22,39 @@
       </el-upload>
 
       <!-- 文件列表 -->
-      <ul class="ullist">
-        <draggable
-          v-model="fileList"
-          @end="onEnd"
-          animation="200"
-          easing="cubic-bezier(1, 0, 0, 1)"
-        >
-          <transition-group>
-            <li v-for="(item, i) in fileList" :key="i">
-              <span :class="{ errclass: item.status === 'fail' }">{{
-                item.name
-              }}</span>
-              <!-- 显示当前的上传成没成功 -->
-              <i
-                v-if="item.status === 'success'"
-                class="el-icon-success success"
-              ></i>
-              <i v-if="item.status === 'fail'" class="el-icon-error error"></i>
-              <el-progress
-                v-if="!item.isbeforup && item.status !== 'fail'"
-                :percentage="item.percentage"
-              ></el-progress>
+      <draggable
+        v-model="fileList"
+        @change="onEnd"
+        animation="200"
+        easing="cubic-bezier(1, 0, 0, 1)"
+        :delay="300"
+        dragClass="sortable-drag"
+        ghostClass="sortable-drag"
+        chosenClass="sortable-drag"
+      >
+        <transition-group class="ullist" tag="ul">
+          <li v-for="(item, i) in fileList" :key="i">
+            <span :class="{ errclass: item.status === 'fail' }">{{
+              item.name
+            }}</span>
+            <!-- 显示当前的上传成没成功 -->
+            <i
+              v-if="item.status === 'success'"
+              class="el-icon-success success"
+            ></i>
+            <i v-if="item.status === 'fail'" class="el-icon-error error"></i>
+            <el-progress
+              v-if="!item.isbeforup && item.status !== 'fail'"
+              :percentage="item.percentage"
+            ></el-progress>
 
-              <span class="serial" v-show="item.serial"
-                >第{{ item.serial }}回</span
-              >
-              <i @click="delflielist(item)" class="el-icon-close del"></i>
-            </li>
-          </transition-group>
-        </draggable>
-      </ul>
+            <span class="serial" v-show="item.serial"
+              >第{{ item.serial }}回</span
+            >
+            <i @click="delflielist(item)" class="el-icon-close del"></i>
+          </li>
+        </transition-group>
+      </draggable>
     </div>
     <!-- 功能按钮 -->
     <el-button
@@ -120,7 +122,7 @@ export default {
     upsuccess(response, file, fileList) {
       console.log("成功上传了");
       //分片上传完成从分片上传数组中删除
-      this.removefilefpid(file.uid)
+      this.removefilefpid(file.uid);
       this.fileList.forEach((e, i) => {
         if (e.uid === file.uid) {
           //借口返回数据后，代表完全成功，进度置为100%
@@ -404,10 +406,10 @@ export default {
       } catch (error) {}
     },
     //分片上传完成从分片上传数组中删除
-    removefilefpid(uid){
-      const index = this.filefpid.findIndex(e=>e.uid == uid)
-      this.filefpid.splice(index,1)
-    }
+    removefilefpid(uid) {
+      const index = this.filefpid.findIndex((e) => e.uid == uid);
+      this.filefpid.splice(index, 1);
+    },
   },
   computed: {
     ...mapState(["userinfo"]),
@@ -429,11 +431,11 @@ export default {
           //传来的视频列表是已经上传了的，做个标记
           isbeforup: true,
           size: e.size,
-          type:e.type,
+          type: e.type,
           response: {
             name: e.urlname,
           },
-          uploaddate: e.uploaddate
+          uploaddate: e.uploaddate,
         };
       });
       return arr;
@@ -442,7 +444,6 @@ export default {
     userid() {
       return this.$store.state.userinfo.uuid;
     },
-    
   },
   beforeDestroy() {
     //取消所有进行中的分片上传
@@ -468,11 +469,11 @@ export default {
 </script>
 
 <style lang="less" scoped>
-@media (max-width: 560px) {
-  //当窗口过小时，视频上传列表的处理
-  .listdiv {
-    flex-direction: column-reverse;
-  }
+//设置拖动元素的class的占位符的类名。
+//拖动元素的class
+// 设置被选中的元素的class
+.sortable-drag {
+  border: solid 2px #3089dc !important;
 }
 
 .listdiv {
@@ -488,6 +489,7 @@ export default {
   cursor: pointer;
   border-radius: 10px;
   background-color: white;
+  margin-right: 10px;
   .avatar-uploader-icon {
     font-size: 28px;
     color: #8c939d;
@@ -516,25 +518,18 @@ export default {
   margin: 0;
   padding: 0;
   width: 100%;
-  > div {
-    > span {
-      flex: 1;
-      display: flex;
-      flex-wrap: wrap;
-      list-style-type: none;
-      overflow: auto;
-      // max-height: 245px;
-      width: 100%;
-    }
-  }
-
+  flex: 1;
+  display: flex;
+  flex-wrap: wrap;
+  list-style-type: none;
+  overflow: auto;
+  gap: 8px;
   li {
     position: relative;
-    flex: 1;
-    margin: 5px;
     border: 1px rgba(0, 0, 0, 0.099) solid;
-    min-width: 130px;
+    width: 160px;
     height: 110px;
+    flex-grow: 1;
     background-color: white;
     border-radius: 10px;
     padding: 10px;
@@ -543,6 +538,7 @@ export default {
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+    cursor:grab;
     .success {
       position: absolute;
       bottom: 5px;
@@ -589,5 +585,12 @@ export default {
 }
 .sortbutton {
   margin-top: 10px;
+}
+
+@media (max-width: 560px) {
+  //当窗口过小时，视频上传列表的处理
+  .listdiv {
+    flex-direction: column-reverse;
+  }
 }
 </style>

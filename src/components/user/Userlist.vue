@@ -74,26 +74,6 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.el-table {
-  overflow: visible;
-  border-radius: 10px;
-  padding-top: 10px;
-  box-shadow: 1px 1px 4px #d2d2d2;
-  margin-bottom: 55px;
-
-  /deep/tr {
-    background: none;
-  }
-
-  /deep/th {
-    background: none;
-  }
-
-  /deep/.el-table__header-wrapper {
-    position: sticky;
-    top: 55px;
-    z-index: 10;
-    background: linear-gradient(#fff 80%, rgba(255, 255, 255, 0.8) 100%);
-  }
-}
+//引入表格样式
+@import "@/assets/style/table.css";
 </style>

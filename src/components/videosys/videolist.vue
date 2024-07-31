@@ -93,6 +93,9 @@ export default {
 </script>
 
 <style lang="less" scoped>
+//引入表格样式
+@import "@/assets/style/table.css";
+
 .cell {
   .el-tag {
     margin: 10px 10px 0 0;
@@ -101,34 +104,6 @@ export default {
 .el-table::before{
     z-index: auto;
   }
-.el-table {
-  overflow: visible;
-  border-radius: 10px;
-  box-shadow: 1px 1px 4px #d2d2d2;
-  margin-bottom: 55px;
-  padding-top: 10px;
-  
-  /deep/tr {
-    background: none;
-    background-color: #fff;
-  }
-
-  /deep/th {
-    background: none;
-    background-color: #fff;
-    padding-top: 20px;
-  }
-
-  /deep/.el-table__header-wrapper {
-    position: sticky;
-    top: 55px;
-    z-index: 10;
-    background: linear-gradient(#fff 80%, rgba(255, 255, 255, 0.8) 100%);
-  }
-}
-.opcl {
-  z-index: 999;
-}
 /deep/.el-table__empty-block {
   min-height: 400px;
 }

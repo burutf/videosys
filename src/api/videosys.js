@@ -25,9 +25,9 @@ export const updatalist = (videoid,setdata)=>{
 }
 
 //设置轮播图展示
-export const setslideshow= (settingobj,videoid)=>{
+export const setslideshow= (isslideshow,videoid)=>{
     return http.post('/setslideshow',{
-        settingobj,videoid
+        isslideshow,videoid
     })
 }
 
@@ -37,11 +37,21 @@ export const getslideshowlist = ()=>{
 }
 
 //删除一条轮播图
-export const delslideshowlist = (videoid)=>{
-    return http.delete('/delslideshowlist',{params:{videoid}})
+export const delslideshowlist = (videoid,isthoroughdel)=>{
+    return http.delete('/delslideshowlist',{params:{videoid,isthoroughdel}})
 }
 
 //更换和上传轮播图中一条的图片
-export const updateslideshowimg = (imgobj,videoid,coverurl) =>{
-    return http.post('/updateslideshowimg',{imgobj,videoid,coverurl})
+export const updateslideshowimg = (imgobj,videoid,urlname) =>{
+    return http.post('/updateslideshowimg',{imgobj,videoid,urlname})
+}
+
+//获取轮播图历史列表
+export const gethistorylist = ()=>{
+    return http.get('/gethistorylist')
+}
+
+//进行轮播图排序
+export const setserialslideshow = (videoidlist)=>{
+    return http.post('/setserialslideshow',{videoidlist})
 }

@@ -37,7 +37,7 @@ export default {
     //轮播图开关
     slideshowchange() {
       try {
-        this.$API.videosys.setslideshow(this.setting, this.videoid);
+        this.$API.videosys.setslideshow(this.setting.isslideshow, this.videoid);
         console.log("OK");
       } catch (error) {
         console.log(error);
