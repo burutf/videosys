@@ -260,8 +260,6 @@ export default {
             this.$emit("updataloading", true);
             this.loading = true;
             try {
-              console.log("进行服务端上传了");
-              console.log(this.tidyfilelist());
               const fulluploadres = await this.$API.uploadapi.fullupload(
                 //上传精简filelist数组
                 this.tidyfilelist(),

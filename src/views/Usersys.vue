@@ -181,7 +181,6 @@ export default {
           type: "success",
         });
       } catch (error) {
-        console.log(error);
         this.$message({
           message: "删除用户失败",
           type: "error",

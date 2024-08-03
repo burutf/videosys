@@ -8,7 +8,7 @@ module.exports = {
       //当请求前缀是这个时就代理请求
       '/api':{
         //请求的地址
-        target:'http://localhost:3030',
+        target:'http://yfengxing.cn:3030',
       }
     }
   },

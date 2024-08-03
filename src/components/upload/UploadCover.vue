@@ -5,6 +5,7 @@
     :show-file-list="false"
     :before-upload="beforeAvatarUpload"
     :http-request="httpupload"
+    class="ovfi"
   >
     <slot>
       <img v-if="imageUrl" :src="imageUrlclass" class="avatar" />
@@ -50,8 +51,6 @@ export default {
   methods: {
     //上传前校验
     beforeAvatarUpload(file) {
-      console.log(file.type);
-      console.log("进行封面校验");
       const isJPG = file.type === "image/jpeg" || file.type === "image/png";
       const isLt2M = file.size / 1024 / 1024 < 3;
       if (!isJPG) {
@@ -63,7 +62,6 @@ export default {
     },
     //最后的上传
     async httpupload(filec) {
-      console.log("封面上传");
       //删除掉之前的文件,不走同步，继续执行下面
       this.delcover(this.filecovername);
 
@@ -128,4 +126,6 @@ export default {
 };
 </script>
 
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+
+</style>

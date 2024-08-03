@@ -6,6 +6,7 @@
         <img
           v-show="e.urlname"
           class="imgcls"
+          style="object-fit: cover"
           :src="ossclassurl(e.urlname)"
         />
         <!-- 没有设置图片时展示的 -->
@@ -28,8 +29,13 @@
         <!-- 只有当前激活的才会显示这里 -->
         <div class="topupdate" v-show="actindex === i">
           <!-- 更换按钮 -->
-          <UploadCover @covername="covername($event, e.videoid, e.urlname)">
-            <i :data-index="i" class="el-icon-refresh updatebutton"></i>
+          <UploadCover
+            class="upload"
+            @covername="covername($event, e.videoid, e.urlname)"
+          >
+            <template v-slot>
+              <i :data-index="i" class="el-icon-refresh updatebutton"></i>
+            </template>
           </UploadCover>
           <!-- 删除按钮 -->
           <i
@@ -50,11 +56,13 @@
 </template>
 
 <script>
-// import Swiper bundle with all modules installed
-import Swiper from "swiper/bundle";
+import Swiper from "swiper";
+import { Navigation, Pagination, EffectCoverflow } from "swiper/modules";
 
-// import styles bundle
-import "swiper/css/bundle";
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
+import "swiper/css/effect-coverflow";
 
 import UploadCover from "@/components/upload/UploadCover.vue";
 
@@ -90,6 +98,7 @@ export default {
       //   isloop = true;
       // }
       this.swiper = new Swiper(".swiper", {
+        modules: [Navigation, Pagination, EffectCoverflow],
         //无缝滚动
         loop: isloop,
         //选择的样式种类
@@ -134,12 +143,13 @@ export default {
     },
     //进行更改图片
     covername(imgobj, videoid, urlname) {
-      console.log(urlname);
       this.$emit("updatefn", imgobj, videoid, urlname);
     },
     //进行轮播图处理图片oss样式
     ossclassurl(url) {
-      return process.env.VUE_APP_CN + "/" + url + process.env.VUE_APP_OSSSLICLASS;
+      return (
+        process.env.VUE_APP_CN + "/" + url + process.env.VUE_APP_OSSSLICLASS
+      );
     },
   },
   beforeDestroy() {
@@ -175,17 +185,17 @@ export default {
   height: 40vw;
   min-height: 200px;
   max-height: 450px;
-  .swiper-button-prev{
+  .swiper-button-prev {
     // display: none;
     opacity: 0.4;
-    &:hover{
+    &:hover {
       opacity: 1;
     }
   }
-  .swiper-button-next{
+  .swiper-button-next {
     // display: none;
     opacity: 0.4;
-    &:hover{
+    &:hover {
       opacity: 1;
     }
   }
@@ -193,7 +203,7 @@ export default {
 
 .swiper-slide {
   position: relative;
-  width: 60vw;
+  width: 60%;
   border-radius: 10px;
   box-shadow: 2px 2px 3px 0px #0000008f;
   display: flex;
@@ -233,19 +243,23 @@ export default {
     &:hover {
       opacity: 1;
     }
-    //中间更改按钮
-    .updatebutton {
-      font-size: 3em;
-      color: rgb(74, 74, 74);
-      padding: 10px;
-      background-color: #ffffffc0;
-      border-radius: 50px;
+    .upload {
       overflow: hidden;
-      &:hover {
-        color: rgb(18, 243, 78);
-        cursor: pointer;
+      border-radius: 100%;
+      //中间更改按钮
+      .updatebutton {
+        font-size: 3em;
+        color: rgb(74, 74, 74);
+        padding: 10px;
+        background-color: #ffffffc0;
+        border-radius: 100%;
+        &:hover {
+          color: rgb(18, 243, 78);
+          cursor: pointer;
+        }
       }
     }
+
     .delcover {
       position: absolute;
       top: 5px;
@@ -313,17 +327,17 @@ export default {
   }
 }
 @media (max-width: 560px) {
-  .swiper-slide{
-    width:87vw;
+  .swiper-slide {
+    width: 87vw;
   }
   .swiper {
     height: 50vw;
   }
-  .swiper-button-prev{
+  .swiper-button-prev {
     // display: none;
     opacity: 0.4;
   }
-  .swiper-button-next{
+  .swiper-button-next {
     // display: none;
     opacity: 0.4;
   }

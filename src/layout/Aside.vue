@@ -6,7 +6,7 @@
       <el-radio-button :label="true">收起</el-radio-button>
     </el-radio-group> -->
 
-    <a href=""
+    <a href="/"
       ><h1 class="logoh1">
         <span>视频</span>
         <img src="../assets/logo.png" style="width: 40px; height: 40px" /><span

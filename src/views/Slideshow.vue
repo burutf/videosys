@@ -67,9 +67,7 @@ export default {
       try {
         await this.$API.videosys.updateslideshowimg(imgobj, videoid, urlname);
         await this.getlist();
-      } catch (error) {
-        console.log(error);
-      }
+      } catch (error) {}
     },
     //删除(有设置图片就放到历史记录中，没有就彻底删除)
     async delfn(videoid) {
@@ -77,9 +75,7 @@ export default {
         await this.$API.videosys.delslideshowlist(videoid);
         await this.getlist();
         await this.githistorylist();
-      } catch (error) {
-        console.log(error);
-      }
+      } catch (error) {}
     },
     //彻底删除
     async delslideshowlist(videoid){

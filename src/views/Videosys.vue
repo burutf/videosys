@@ -201,9 +201,7 @@ export default {
           try {
             //清除临时目录
             this.$API.osssys.delosscontents(this.ranid);
-          } catch (error) {
-            console.log('清除临时目录失败');
-          }
+          } catch (error) {}
 
           //重新获取视频列表
           this.getvideolist();
@@ -261,9 +259,7 @@ export default {
             type: "success",
             message: "删除成功!",
           });
-        } catch (error) {
-          console.log(error);
-        }
+        } catch (error) {}
       } catch (error) {
         this.$message({
           type: "info",
@@ -297,7 +293,6 @@ export default {
     redacklist(data) {
       this.drawer = true;
       this.rawdata = data;
-      console.log(this.rawdata);
     },
     //删除列表中的一条
     async dellist(data) {
@@ -305,9 +300,7 @@ export default {
         const ress = await this.$API.videosys.dellist(data.videoid);
         //重新获取视频列表
         this.getvideolist();
-      } catch (error) {
-        console.log(error);
-      }
+      } catch (error) {}
     },
     //排序
     sorttable(data) {

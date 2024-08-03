@@ -38,10 +38,7 @@ export default {
     slideshowchange() {
       try {
         this.$API.videosys.setslideshow(this.setting.isslideshow, this.videoid);
-        console.log("OK");
-      } catch (error) {
-        console.log(error);
-      }
+      } catch (error) {}
     },
     //init
     init() {

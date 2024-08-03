@@ -73,7 +73,8 @@
 </template>
 
 <script>
-import { debounce } from "lodash";
+//引入节流函数
+import debounce from "lodash/debounce";
 //引入拖拽排序
 import draggable from "vuedraggable";
 //引入仓库中的userinfo
@@ -120,7 +121,6 @@ export default {
   methods: {
     //成功上传后的处理
     upsuccess(response, file, fileList) {
-      console.log("成功上传了");
       //分片上传完成从分片上传数组中删除
       this.removefilefpid(file.uid);
       this.fileList.forEach((e, i) => {
@@ -133,12 +133,9 @@ export default {
           this.serialreload();
         }
       });
-      console.log(this.fileList);
     },
     //自定义上传
     handleUploadFile(filec) {
-      console.log("我开始上传了");
-      console.log("这次的目录id为" + this.rannanoid);
       //等下DOM再执行获取文件列表
       this.$nextTick(async () => {
         const { name } = filec.file;
@@ -189,7 +186,6 @@ export default {
         return false;
       }
 
-      console.log("我进行上传前校验了");
       //拿到文件的类型和大小
       const { type, size } = file;
       const istype = type === "video/mp4";
@@ -210,7 +206,6 @@ export default {
     },
     //删除文件时也要更新列表
     async beforeremove(file, fileList) {
-      console.log("检测到了删除文件");
       //是否删除
       let isdel = true;
       //拿到名字去删除已经上传的OSS文件，拿到uid去获取指定的分片id中断上传
@@ -301,7 +296,6 @@ export default {
     },
     //文件列表发生更改时，更新fileList数组
     onchange(file, fileList) {
-      console.log("文件列表发生改变了");
       this.$nextTick(() => {
         this.fileList = fileList;
       });
@@ -375,13 +369,10 @@ export default {
     },
     //拖拽排序后进行的操作
     onEnd() {
-      console.log(this.fileList);
       this.serialreload();
     },
     //根据名称编号重新排序(默认为升序，true为降序)
     sortindex(isis) {
-      console.log(isis);
-      console.log(this.fileList);
       this.fileList.sort((a, b) => {
         a = parseInt(a.name);
         b = parseInt(b.name);

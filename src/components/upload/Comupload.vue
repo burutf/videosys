@@ -79,7 +79,6 @@ export default {
     },
     //上传失败校验出错时的处理
     noexist(ress) {
-      console.log(ress);
       const {
         isexist: { data },
       } = ress;
@@ -87,7 +86,6 @@ export default {
         return e.exist !== true;
       });
       this.existnomessage = listarr;
-      console.log(this.existnomessage);
       this.$message({
         type: "error",
         message: "有文件未成功上传，请重新上传",
@@ -104,7 +102,6 @@ export default {
       //清除临时目录
       await this.$API.osssys.delosscontents(this.ranid);
     } catch (error) {
-      console.log("清除临时目录失败");
     }
   },
   components: {
