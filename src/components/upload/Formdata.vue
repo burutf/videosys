@@ -420,9 +420,13 @@ export default {
   background-color: white;
   padding: 17px;
   border-radius: 10px;
+  width: 100%;
   /deep/.el-form-item__label {
-    padding-right: 30px;
+    // padding-right: 30px;
   }
+}
+.el-date-editor{
+  width: auto;
 }
 
 .el-tag + .el-tag {

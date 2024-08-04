@@ -2,9 +2,11 @@
 
 用到的技术:Vue2全家桶、Element-ui
 
-在线地址：admin.yfengxing.cn
+后台管理系统：https://github.com/burutf/videosys
 
+后台：https://github.com/burutf/videosys
 
+前台：https://github.com/burutf/videoindex
 
 暂不支持注册功能
 

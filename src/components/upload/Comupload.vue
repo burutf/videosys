@@ -114,9 +114,6 @@ export default {
 
 <style lang="less" scoped>
 .uploadsys {
-  .UploadFile {
-    margin-bottom: 20px;
-  }
   .message {
     display: flex;
     justify-content: center;

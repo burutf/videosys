@@ -1,5 +1,17 @@
 <template>
   <div>
+    <el-alert type="success">
+      <template v-slot:title>
+        <div>
+          如需<span style="font-weight: 600">添加</span>更多请前往
+          <span style="font-weight: 600">视频管理</span>><span
+            style="font-weight: 600"
+            >更改</span
+          >
+          里进行添加
+        </div>
+      </template>
+    </el-alert>
     <!-- 轮播图展示 -->
     <Swiper
       @updatefn="updatefn"
@@ -9,9 +21,19 @@
     ></Swiper>
     <div style="padding: 20px">
       <!-- 排序 -->
-      <Sortslideshow @sortslideshowfn="sortslideshowfn" @switchindex="switchindex" :list="list" v-if="list"></Sortslideshow>
-       <!-- 历史记录 -->
-      <History @delslideshowlist="delslideshowlist" @restore="restore" :tableData="historylist" :loading="loading"></History>
+      <Sortslideshow
+        @sortslideshowfn="sortslideshowfn"
+        @switchindex="switchindex"
+        :list="list"
+        v-if="list"
+      ></Sortslideshow>
+      <!-- 历史记录 -->
+      <History
+        @delslideshowlist="delslideshowlist"
+        @restore="restore"
+        :tableData="historylist"
+        :loading="loading"
+      ></History>
     </div>
   </div>
 </template>
@@ -38,6 +60,13 @@ export default {
   created() {
     this.getlist();
     this.githistorylist();
+  },
+  mounted() {
+    if (sessionStorage.hasOwnProperty("isshowmessage")) return;
+    sessionStorage.setItem("isshowmessage", "true");
+    this.$alert("如需添加更多请前往 视频管理>更改 里进行添加", "添加轮播图", {
+      confirmButtonText: "确定",
+    });
   },
   methods: {
     //获取轮播图列表
@@ -78,36 +107,36 @@ export default {
       } catch (error) {}
     },
     //彻底删除
-    async delslideshowlist(videoid){
+    async delslideshowlist(videoid) {
       try {
         await this.$API.videosys.delslideshowlist(videoid, true);
         await this.githistorylist();
       } catch (error) {}
     },
     //还原（从历史记录中移出）
-    async restore(videoid){
+    async restore(videoid) {
       try {
-        await this.$API.videosys.setslideshow(true,videoid)
+        await this.$API.videosys.setslideshow(true, videoid);
         await this.githistorylist();
         await this.getlist();
       } catch (error) {}
     },
     //排序
-    async sortslideshowfn(videoidlist){
+    async sortslideshowfn(videoidlist) {
       try {
-        this.$API.videosys.setserialslideshow(videoidlist)
+        this.$API.videosys.setserialslideshow(videoidlist);
         await this.getlist();
       } catch (error) {}
     },
     //点击切换到对应的轮播图
-    switchindex(index){
-      this.$refs.swiper.swiper.slideTo(index)
-    }
+    switchindex(index) {
+      this.$refs.swiper.swiper.slideTo(index);
+    },
   },
   components: {
     Swiper,
     History,
-    Sortslideshow
+    Sortslideshow,
   },
 };
 </script>

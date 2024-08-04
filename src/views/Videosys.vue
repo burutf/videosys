@@ -392,4 +392,8 @@ export default {
 /deep/.el-dialog {
   min-width: 200px;
 }
+/deep/.el-drawer__body{
+  background-color: rgb(250, 250, 250);
+  padding: 10px;
+}
 </style>

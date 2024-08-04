@@ -11,12 +11,12 @@
           <Header></Header>
         </el-header>
         <!-- 主体 -->
-        <div style="padding: 0px; position: relative">
+        <el-main style="padding: 0px; position: relative">
           <!-- 上传组件保持存活 -->
           <keep-alive include="Uploadsys">
             <router-view></router-view>
           </keep-alive>
-        </div>
+        </el-main>
       </el-container>
     </el-container>
   </div>
@@ -55,6 +55,11 @@ export default {
   padding-top: 10px;
   box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.05);
   text-align: center;
+}
+
+.el-main {
+  min-width: 350px;
+  overflow-y: hidden;
 }
 
 //侧边栏

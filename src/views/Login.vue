@@ -44,10 +44,10 @@ export default {
             const res = await this.gettoken(this.form);
             // await this.refreshtoken()
             this.loading = false
-            this.$message({
-              message: "登录成功",
-              type: "success",
-            });
+            // this.$message({
+            //   message: "登录成功",
+            //   type: "success",
+            // });
             //登录成功的操作
             this.$router.push({ path:'/' });
           } catch (error) {

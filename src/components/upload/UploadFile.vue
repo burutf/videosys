@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="margin-bottom: 10px;">
     <div class="listdiv">
       <el-upload
         class="upload-demo"
@@ -26,6 +26,7 @@
         v-model="fileList"
         @change="onEnd"
         animation="200"
+        class="draggable"
         easing="cubic-bezier(1, 0, 0, 1)"
         :delay="300"
         dragClass="sortable-drag"
@@ -469,10 +470,12 @@ export default {
 
 .listdiv {
   display: flex;
-  align-items: flex-start;
   background-color: rgb(238, 238, 239);
   border-radius: 7px;
   padding: 10px;
+  .draggable{
+    flex: 1;
+  }
 }
 .upload-demo {
   position: relative;
@@ -481,6 +484,7 @@ export default {
   border-radius: 10px;
   background-color: white;
   margin-right: 10px;
+  align-self: flex-start;
   .avatar-uploader-icon {
     font-size: 28px;
     color: #8c939d;
@@ -509,16 +513,15 @@ export default {
   margin: 0;
   padding: 0;
   width: 100%;
-  flex: 1;
   display: flex;
   flex-wrap: wrap;
   list-style-type: none;
   overflow: auto;
-  gap: 8px;
+  // margin-bottom: 10px;
   li {
     position: relative;
     border: 1px rgba(0, 0, 0, 0.099) solid;
-    width: 160px;
+    width: 150px;
     height: 110px;
     flex-grow: 1;
     background-color: white;
@@ -530,6 +533,7 @@ export default {
     white-space: nowrap;
     text-overflow: ellipsis;
     cursor:grab;
+    margin: 0 10px 10px 0;
     .success {
       position: absolute;
       bottom: 5px;
