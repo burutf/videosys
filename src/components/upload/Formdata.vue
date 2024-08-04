@@ -272,22 +272,22 @@ export default {
                 //要删除的之前上传过的视频
                 this.delvideolist
               );
-              //触发父元素的loading更改函数,结束加载
-              this.$emit("updataloading", false);
-              this.loading = false;
-              this.$emit("endeve");
               this.$message({
                 type: "success",
                 message: "上传成功!",
               });
+              //触发父元素的loading更改函数,结束加载
+              this.$emit("updataloading", false);
+              this.loading = false;
               //路由跳转到视频上传状态页面
-              this.$router.push({
+              await this.$router.push({
                 path: "/video-upload/status",
                 query: {
                   videoid: fulluploadres.videoid,
                   path: this.$route.path,
                 },
               });
+              this.$emit("endeve");
             } catch (error) {
               //触发父元素的loading更改函数,结束加载
               this.$emit("updataloading", false);

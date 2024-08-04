@@ -21,6 +21,7 @@ export default {
     },
     // 设置路由钩子
     beforeRouteEnter(to, from, next){
+      
       //不能随便进入这个组件,只有从上传路由及其子路由可以
       if ((from.path).includes('video-upload')) {
         next()

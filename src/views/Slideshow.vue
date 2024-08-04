@@ -3,12 +3,13 @@
     <el-alert type="success">
       <template v-slot:title>
         <div>
-          如需<span style="font-weight: 600">添加</span>更多请前往
-          <span style="font-weight: 600">视频管理</span>><span
-            style="font-weight: 600"
-            >更改</span
+          如需
+          <span style="font-weight: 600">添加</span>
+          更多请前往
+          <span style="font-weight: 600">视频管理</span>
           >
-          里进行添加
+          <span style="font-weight: 600">更改</span>
+          进行添加
         </div>
       </template>
     </el-alert>
@@ -64,7 +65,7 @@ export default {
   mounted() {
     if (sessionStorage.hasOwnProperty("isshowmessage")) return;
     sessionStorage.setItem("isshowmessage", "true");
-    this.$alert("如需添加更多请前往 视频管理>更改 里进行添加", "添加轮播图", {
+    this.$alert("如需添加更多请前往 视频管理>更改 进行添加", "添加轮播图", {
       confirmButtonText: "确定",
     });
   },

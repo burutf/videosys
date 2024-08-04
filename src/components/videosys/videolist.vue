@@ -11,7 +11,7 @@
       @selection-change="handleSelectionChange"
       @filter-change="filterchange"
     >
-      <el-table-column type="selection"> </el-table-column>
+      <el-table-column type="selection"></el-table-column>
       <el-table-column
         prop="lastupdate"
         label="更新日期"
