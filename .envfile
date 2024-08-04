@@ -1,0 +1,11 @@
+# 填写Bucket所在地域
+VUE_APP_REGION=
+# 填写Bucket名称
+VUE_APP_BUCKET=
+# 自定义域名
+VUE_APP_CN=
+
+# 图片处理样式
+VUE_APP_OSSIMGCLASS=
+# 轮播图处理样式
+VUE_APP_OSSSLICLASS=
