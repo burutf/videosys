@@ -2,7 +2,7 @@
 
 用到的技术:Vue2全家桶、Element-ui
 
-后台管理系统：https://github.com/burutf/videosys
+后台管理系统：https://github.com/burutf/videoadmin
 
 后台：https://github.com/burutf/videosys
 
